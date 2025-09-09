@@ -1,0 +1,132 @@
+{
+  "name": "Cultura Popular",
+  "language": "es",
+  "theme": "pop_culture", 
+  "questions": [
+    {
+      "id": "pc_es_0001",
+      "question": "¿Quién creó a Mickey Mouse?",
+      "correct_answer": "Walt Disney"
+    },
+    {
+      "id": "pc_es_0002",
+      "question": "¿Cuál es la película que más dinero ha recaudado de todos los tiempos?",
+      "correct_answer": "Avatar (2009)"
+    },
+    {
+      "id": "pc_es_0003",
+      "question": "¿Qué artista pintó 'La Noche Estrellada'?",
+      "correct_answer": "Vincent van Gogh"
+    },
+    {
+      "id": "pc_es_0004",
+      "question": "¿Cuál fue la primera consola de videojuegos?",
+      "correct_answer": "Magnavox Odyssey"
+    },
+    {
+      "id": "pc_es_0005",
+      "question": "¿Quién escribió la serie de Harry Potter?",
+      "correct_answer": "J.K. Rowling"
+    },
+    {
+      "id": "pc_es_0006",
+      "question": "¿Cuál es el video más visto de YouTube de todos los tiempos?",
+      "correct_answer": "Baby Shark Dance"
+    },
+    {
+      "id": "pc_es_0007",
+      "question": "¿Qué película ganó el primer Premio de la Academia a la Mejor Película?",
+      "correct_answer": "Wings (1927)"
+    },
+    {
+      "id": "pc_es_0008",
+      "question": "¿Cuál es el álbum más vendido de todos los tiempos?",
+      "correct_answer": "Thriller de Michael Jackson"
+    },
+    {
+      "id": "pc_es_0009",
+      "question": "¿Quién inventó la World Wide Web?",
+      "correct_answer": "Tim Berners-Lee"
+    },
+    {
+      "id": "pc_es_0010",
+      "question": "¿Cuál fue la primera película del Universo Cinematográfico de Marvel?",
+      "correct_answer": "Iron Man (2008)"
+    },
+    {
+      "id": "pc_es_0011",
+      "question": "¿Qué plataforma de redes sociales se lanzó primero?",
+      "correct_answer": "Facebook"
+    },
+    {
+      "id": "pc_es_0012",
+      "question": "¿Cuál es la serie de televisión animada más longeva?",
+      "correct_answer": "Los Simpson"
+    },
+    {
+      "id": "pc_es_0013",
+      "question": "¿Quién compuso la música de Star Wars?",
+      "correct_answer": "John Williams"
+    },
+    {
+      "id": "pc_es_0014",
+      "question": "¿Cuándo se lanzó el primer iPhone?",
+      "correct_answer": "2007"
+    },
+    {
+      "id": "pc_es_0015",
+      "question": "¿Qué banda lanzó el álbum 'Abbey Road'?",
+      "correct_answer": "The Beatles"
+    },
+    {
+      "id": "pc_es_0016",
+      "question": "¿Cuál es el servicio de streaming más popular mundialmente?",
+      "correct_answer": "Netflix"
+    },
+    {
+      "id": "pc_es_0017",
+      "question": "¿Quién dirigió la película 'Tiburón'?",
+      "correct_answer": "Steven Spielberg"
+    },
+    {
+      "id": "pc_es_0018",
+      "question": "¿Cuál es la cuenta de Instagram con más seguidores?",
+      "correct_answer": "Cristiano Ronaldo"
+    },
+    {
+      "id": "pc_es_0019",
+      "question": "¿Qué videojuego presenta al personaje Master Chief?",
+      "correct_answer": "Halo"
+    },
+    {
+      "id": "pc_es_0020",
+      "question": "¿Cuál fue la primera película de Pixar?",
+      "correct_answer": "Toy Story"
+    },
+    {
+      "id": "pc_es_0021",
+      "question": "¿Quién creó la serie de TV 'Friends'?",
+      "correct_answer": "David Crane y Marta Kauffman"
+    },
+    {
+      "id": "pc_es_0022",
+      "question": "¿Cuál es el videojuego más vendido de todos los tiempos?",
+      "correct_answer": "Minecraft"
+    },
+    {
+      "id": "pc_es_0023",
+      "question": "¿Qué actor interpretó a James Bond más veces?",
+      "correct_answer": "Roger Moore"
+    },
+    {
+      "id": "pc_es_0024",
+      "question": "¿Cuál fue el primer reality show?",
+      "correct_answer": "The Real World"
+    },
+    {
+      "id": "pc_es_0025",
+      "question": "¿Quién creó el personaje de cómic Superman?",
+      "correct_answer": "Jerry Siegel y Joe Shuster"
+    }
+  ]
+}

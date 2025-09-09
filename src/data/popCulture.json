@@ -1,0 +1,132 @@
+{
+  "name": "Pop Culture",
+  "language": "en", 
+  "theme": "pop_culture",
+  "questions": [
+    {
+      "id": "pc_0001",
+      "question": "Who created Mickey Mouse?",
+      "correct_answer": "Walt Disney"
+    },
+    {
+      "id": "pc_0002", 
+      "question": "What is the highest-grossing film of all time?",
+      "correct_answer": "Avatar (2009)"
+    },
+    {
+      "id": "pc_0003",
+      "question": "Which artist painted 'The Starry Night'?",
+      "correct_answer": "Vincent van Gogh"
+    },
+    {
+      "id": "pc_0004",
+      "question": "What was the first video game console?",
+      "correct_answer": "Magnavox Odyssey"
+    },
+    {
+      "id": "pc_0005",
+      "question": "Who wrote the Harry Potter series?",
+      "correct_answer": "J.K. Rowling"
+    },
+    {
+      "id": "pc_0006",
+      "question": "What is the most-watched YouTube video of all time?",
+      "correct_answer": "Baby Shark Dance"
+    },
+    {
+      "id": "pc_0007",
+      "question": "Which movie won the first Academy Award for Best Picture?",
+      "correct_answer": "Wings (1927)"
+    },
+    {
+      "id": "pc_0008",
+      "question": "What is the best-selling album of all time?",
+      "correct_answer": "Thriller by Michael Jackson"
+    },
+    {
+      "id": "pc_0009",
+      "question": "Who invented the World Wide Web?",
+      "correct_answer": "Tim Berners-Lee"
+    },
+    {
+      "id": "pc_0010",
+      "question": "What was the first Marvel Cinematic Universe movie?",
+      "correct_answer": "Iron Man (2008)"
+    },
+    {
+      "id": "pc_0011",
+      "question": "Which social media platform was launched first?",
+      "correct_answer": "Facebook"
+    },
+    {
+      "id": "pc_0012",
+      "question": "What is the longest-running animated TV show?",
+      "correct_answer": "The Simpsons"
+    },
+    {
+      "id": "pc_0013",
+      "question": "Who composed the music for Star Wars?",
+      "correct_answer": "John Williams"
+    },
+    {
+      "id": "pc_0014",
+      "question": "What was the first iPhone released?",
+      "correct_answer": "2007"
+    },
+    {
+      "id": "pc_0015",
+      "question": "Which band released the album 'Abbey Road'?",
+      "correct_answer": "The Beatles"
+    },
+    {
+      "id": "pc_0016",
+      "question": "What is the most popular streaming service worldwide?",
+      "correct_answer": "Netflix"
+    },
+    {
+      "id": "pc_0017",
+      "question": "Who directed the movie 'Jaws'?",
+      "correct_answer": "Steven Spielberg"
+    },
+    {
+      "id": "pc_0018",
+      "question": "What is the most-followed Instagram account?",
+      "correct_answer": "Cristiano Ronaldo"
+    },
+    {
+      "id": "pc_0019",
+      "question": "Which video game features the character Master Chief?",
+      "correct_answer": "Halo"
+    },
+    {
+      "id": "pc_0020",
+      "question": "What was the first Pixar movie?",
+      "correct_answer": "Toy Story"
+    },
+    {
+      "id": "pc_0021",
+      "question": "Who created the TV show 'Friends'?",
+      "correct_answer": "David Crane and Marta Kauffman"
+    },
+    {
+      "id": "pc_0022",
+      "question": "What is the best-selling video game of all time?",
+      "correct_answer": "Minecraft"
+    },
+    {
+      "id": "pc_0023",
+      "question": "Which actor played James Bond the most times?",
+      "correct_answer": "Roger Moore"
+    },
+    {
+      "id": "pc_0024",
+      "question": "What was the first reality TV show?",
+      "correct_answer": "The Real World"
+    },
+    {
+      "id": "pc_0025",
+      "question": "Who created the comic book character Superman?",
+      "correct_answer": "Jerry Siegel and Joe Shuster"
+    }
+  ]
+}
