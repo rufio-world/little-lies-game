@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useToast } from "@/hooks/use-toast";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
@@ -127,11 +128,11 @@ export default function GameRound() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <textarea
+              <Textarea
                 value={playerAnswer}
                 onChange={(e) => setPlayerAnswer(e.target.value)}
                 placeholder="Type your answer here..."
-                className="w-full h-24 p-3 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+                className="h-24 resize-none"
                 disabled={timeLeft === 0}
               />
               <Button 
