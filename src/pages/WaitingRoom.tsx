@@ -21,6 +21,7 @@ export default function WaitingRoom() {
   const [gameRoom, setGameRoom] = useState<GameRoom | null>(null);
   const [isHost, setIsHost] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
+  const [soloWarningShown, setSoloWarningShown] = useState(false);
 
   useEffect(() => {
     // Get current player from storage
@@ -69,17 +70,18 @@ export default function WaitingRoom() {
   const handleStartGame = () => {
     if (!gameRoom) return;
 
-    if (gameRoom.players.length === 1) {
-      // Show warning for solo play
+    if (gameRoom.players.length === 1 && !soloWarningShown) {
+      // Show warning for solo play first time
       toast({
         title: t('waitingRoom.soloWarning'),
-        description: "Click Start Game again to confirm",
+        description: "Click Start Game again to confirm solo play",
         duration: 3000
       });
+      setSoloWarningShown(true);
       return;
     }
 
-    // TODO: Start game in Supabase
+    // Start the game (solo or multiplayer)
     toast({
       title: "Starting game...",
       description: "Redirecting to game..."
