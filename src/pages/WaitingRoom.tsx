@@ -89,7 +89,12 @@ export default function WaitingRoom() {
     
     // Navigate to game (placeholder)
     setTimeout(() => {
-      navigate('/game-round', { state: { gameRoom } });
+      navigate('/game-round', { 
+        state: { 
+          gameRoom,
+          currentPlayer: currentPlayer
+        } 
+      });
     }, 1500);
   };
 

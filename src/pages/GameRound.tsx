@@ -1,15 +1,13 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useToast } from "@/hooks/use-toast";
-import { PlayerAvatar } from "@/components/PlayerAvatar";
-import { GameRoom, GameState, QuestionPack } from "@/lib/gameState";
-import { Clock, Users, Trophy } from "lucide-react";
+import { GameRoom, GameState, QuestionPack, Question, GameLogic } from "@/lib/gameState";
+import { QuestionDisplay } from "@/components/game/QuestionDisplay";
+import { AnswerSubmission } from "@/components/game/AnswerSubmission";
+import { VotingPhase } from "@/components/game/VotingPhase";
+import { ScoringResults } from "@/components/game/ScoringResults";
+import { FinalResults } from "@/components/game/FinalResults";
 import popCultureEn from "@/data/popCulture.json";
 import popCultureEs from "@/data/popCultureEs.json";
 
@@ -20,9 +18,8 @@ export default function GameRound() {
   const { toast } = useToast();
 
   const [gameRoom, setGameRoom] = useState<GameRoom | null>(null);
-  const [currentQuestion, setCurrentQuestion] = useState<any>(null);
-  const [timeLeft, setTimeLeft] = useState(30);
-  const [playerAnswer, setPlayerAnswer] = useState("");
+  const [allQuestions, setAllQuestions] = useState<Question[]>([]);
+  const [currentPlayer, setCurrentPlayer] = useState<any>(null);
 
   useEffect(() => {
     if (!location.state?.gameRoom) {
@@ -31,7 +28,10 @@ export default function GameRound() {
     }
 
     const room = location.state.gameRoom as GameRoom;
+    const player = location.state.currentPlayer;
+    
     setGameRoom(room);
+    setCurrentPlayer(player);
 
     // Load question packs based on selected packs
     const questionPacks: QuestionPack[] = [];
@@ -40,39 +40,32 @@ export default function GameRound() {
       questionPacks.push(popCultureEs as QuestionPack);
     }
 
-    // Get first question
-    if (questionPacks.length > 0) {
-      const allQuestions = questionPacks.flatMap(pack => pack.questions);
-      const firstQuestion = allQuestions[room.currentQuestionIndex];
-      setCurrentQuestion(firstQuestion);
+    // Set all questions for the game
+    const questions = questionPacks.flatMap(pack => pack.questions);
+    setAllQuestions(GameLogic.shuffleArray(questions));
+
+    // Initialize game with first question if not already started
+    if (room.gameState === 'waiting') {
+      const updatedRoom = {
+        ...room,
+        gameState: 'question-display' as GameState
+      };
+      setGameRoom(updatedRoom);
     }
   }, [location.state, navigate]);
 
-  useEffect(() => {
-    if (timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
-    } else {
-      // Time's up - submit answer
-      handleSubmitAnswer();
-    }
-  }, [timeLeft]);
-
-  const handleSubmitAnswer = () => {
-    if (!gameRoom || !currentQuestion) return;
-
-    toast({
-      title: "Answer submitted!",
-      description: playerAnswer || "No answer provided"
-    });
-
-    // TODO: Submit to Supabase and move to voting phase
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
+  const updateGameRoom = (updates: Partial<GameRoom>) => {
+    if (!gameRoom) return;
+    const updatedRoom = { ...gameRoom, ...updates };
+    setGameRoom(updatedRoom);
   };
 
-  if (!gameRoom || !currentQuestion) {
+  const getCurrentQuestion = () => {
+    if (!allQuestions.length || !gameRoom) return null;
+    return allQuestions[gameRoom.currentQuestionIndex];
+  };
+
+  if (!gameRoom || !allQuestions.length || !currentPlayer) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
         <div className="text-center">
@@ -83,100 +76,143 @@ export default function GameRound() {
     );
   }
 
-  const progress = ((30 - timeLeft) / 30) * 100;
+  const currentQuestion = getCurrentQuestion();
+  if (!currentQuestion) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg font-medium mb-2">No more questions!</p>
+          <p className="text-muted-foreground">The game has ended.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Render appropriate component based on game state
+  const renderGamePhase = () => {
+    switch (gameRoom.gameState) {
+      case 'question-display':
+        return (
+          <QuestionDisplay
+            question={currentQuestion}
+            gameRoom={gameRoom}
+            onContinue={() => updateGameRoom({ gameState: 'answer-submission' })}
+          />
+        );
+      
+      case 'answer-submission':
+        return (
+          <AnswerSubmission
+            question={currentQuestion}
+            gameRoom={gameRoom}
+            currentPlayer={currentPlayer}
+            onSubmitAnswer={(answer) => {
+              // For now, just move to voting phase
+              // In real implementation, this would sync with Supabase
+              const updatedRoom = {
+                ...gameRoom,
+                gameState: 'voting' as GameState,
+                currentRound: {
+                  questionId: currentQuestion.id,
+                  question: currentQuestion.question,
+                  correctAnswer: currentQuestion.correct_answer,
+                  answers: GameLogic.createGameAnswers(
+                    { [currentPlayer.id]: answer },
+                    currentQuestion.correct_answer,
+                    currentQuestion.question
+                  ),
+                  playerAnswers: { [currentPlayer.id]: answer },
+                  playerVotes: {}
+                }
+              };
+              setGameRoom(updatedRoom);
+            }}
+          />
+        );
+      
+      case 'voting':
+        return (
+          <VotingPhase
+            gameRoom={gameRoom}
+            currentPlayer={currentPlayer}
+            onVote={(answerId) => {
+              if (!gameRoom.currentRound) return;
+              
+              const updatedRound = {
+                ...gameRoom.currentRound,
+                playerVotes: { ...gameRoom.currentRound.playerVotes, [currentPlayer.id]: answerId }
+              };
+              
+              // Calculate scores and move to results
+              const scores = GameLogic.calculateScores(updatedRound, gameRoom.players);
+              const updatedPlayers = gameRoom.players.map(player => ({
+                ...player,
+                score: player.score + (scores[player.id] || 0)
+              }));
+              
+              const updatedRoom = {
+                ...gameRoom,
+                gameState: 'results' as GameState,
+                currentRound: updatedRound,
+                players: updatedPlayers,
+                rounds: [...gameRoom.rounds, updatedRound]
+              };
+              setGameRoom(updatedRoom);
+            }}
+          />
+        );
+      
+      case 'results':
+        return (
+          <ScoringResults
+            gameRoom={gameRoom}
+            currentPlayer={currentPlayer}
+            onContinue={() => {
+              const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
+              
+              if (nextQuestionIndex >= gameRoom.maxQuestions || nextQuestionIndex >= allQuestions.length) {
+                // Game finished
+                updateGameRoom({ gameState: 'game-end' });
+              } else {
+                // Next question
+                updateGameRoom({
+                  gameState: 'question-display',
+                  currentQuestionIndex: nextQuestionIndex,
+                  currentRound: undefined
+                });
+              }
+            }}
+          />
+        );
+      
+      case 'game-end':
+        return (
+          <FinalResults
+            gameRoom={gameRoom}
+            onPlayAgain={() => {
+              // Reset game
+              const resetRoom = {
+                ...gameRoom,
+                gameState: 'question-display' as GameState,
+                currentQuestionIndex: 0,
+                rounds: [],
+                currentRound: undefined,
+                players: gameRoom.players.map(p => ({ ...p, score: 0 }))
+              };
+              setGameRoom(resetRoom);
+            }}
+            onReturnToMenu={() => navigate('/')}
+          />
+        );
+      
+      default:
+        return <div>Loading...</div>;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold mb-2">{gameRoom.name}</h1>
-          <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Users className="h-4 w-4" />
-              {gameRoom.players.length} players
-            </div>
-            <div className="flex items-center gap-1">
-              <Trophy className="h-4 w-4" />
-              Round {gameRoom.currentQuestionIndex + 1}
-            </div>
-          </div>
-        </div>
-
-        {/* Timer */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <Clock className="h-5 w-5 text-primary" />
-              <div className="flex-1">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">Time Remaining</span>
-                  <Badge variant={timeLeft <= 10 ? "destructive" : "secondary"}>
-                    {timeLeft}s
-                  </Badge>
-                </div>
-                <Progress value={progress} className="h-2" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Question */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-xl">{currentQuestion.question}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <Textarea
-                value={playerAnswer}
-                onChange={(e) => setPlayerAnswer(e.target.value)}
-                placeholder="Type your answer here..."
-                className="h-24 resize-none"
-                disabled={timeLeft === 0}
-              />
-              <Button 
-                onClick={handleSubmitAnswer}
-                disabled={!playerAnswer.trim() || timeLeft === 0}
-                className="w-full"
-              >
-                Submit Answer
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Players */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Players</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-3">
-              {gameRoom.players.map(player => (
-                <div 
-                  key={player.id}
-                  className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg"
-                >
-                  <PlayerAvatar 
-                    name={player.name}
-                    avatar={player.avatar}
-                    isHost={player.isHost}
-                    isGuest={player.isGuest}
-                    size="sm"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{player.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Score: {player.score}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {renderGamePhase()}
     </div>
   );
 }
