@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, RefreshCw, Play } from "lucide-react";
-import { GameLogic } from "@/lib/gameState";
 import { storage } from "@/lib/storage";
+import { GameLogic } from "@/lib/gameState";
+import { GameService } from "@/services/gameService";
 import { useToast } from "@/hooks/use-toast";
 
 export default function CreateGame() {
@@ -79,23 +80,41 @@ export default function CreateGame() {
       return;
     }
 
-    // TODO: Create room in Supabase
-    toast({
-      title: "Game Created!",
-      description: `Game code: ${gameCode}. Redirecting to waiting room...`
-    });
-    
-    // Navigate to waiting room with game data
-    setTimeout(() => {
-      navigate(`/waiting-room/${gameCode}`, {
-        state: {
-          gameName,
-          selectedPacks,
-          maxQuestions,
-          isHost: true
+    try {
+      const profile = storage.getPlayerProfile();
+      const { gameCode: createdCode, roomId, playerId } = await GameService.createGame({
+        name: gameName,
+        selectedPacks,
+        maxQuestions,
+        hostPlayer: {
+          name: profile.name,
+          avatar: profile.avatar,
+          isGuest: profile.isGuest
         }
       });
-    }, 1500);
+
+      // Store player info for the waiting room
+      storage.setCurrentPlayer({
+        id: playerId,
+        roomId,
+        isHost: true
+      });
+
+      toast({
+        title: "Game created!",
+        description: `Room ${createdCode} is ready to play`
+      });
+
+      // Navigate to waiting room
+      navigate(`/waiting-room/${createdCode}`);
+    } catch (error) {
+      console.error('Error creating game:', error);
+      toast({
+        title: t('common.error'),
+        description: error instanceof Error ? error.message : "Failed to create game",
+        variant: "destructive"
+      });
+    }
   };
 
   return (

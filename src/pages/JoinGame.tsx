@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Users } from "lucide-react";
+import { storage } from "@/lib/storage";
+import { GameService } from "@/services/gameService";
 import { useToast } from "@/hooks/use-toast";
 
 export default function JoinGame() {
@@ -37,23 +39,36 @@ export default function JoinGame() {
     setIsJoining(true);
     
     try {
-      // TODO: Check if room exists in Supabase
-      // For now, simulate joining
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Joining game...",
-        description: `Code: ${gameCode.toUpperCase()}`
+      const profile = storage.getPlayerProfile();
+      const { roomId, playerId } = await GameService.joinGame({
+        gameCode: gameCode.toUpperCase(),
+        player: {
+          name: profile.name,
+          avatar: profile.avatar,
+          isGuest: profile.isGuest
+        }
       });
 
-      // Navigate to waiting room
-      navigate(`/waiting-room/${gameCode.toUpperCase()}`, {
-        state: { isHost: false }
+      // Store player info for the waiting room
+      storage.setCurrentPlayer({
+        id: playerId,
+        roomId,
+        isHost: false
       });
+
+      toast({
+        title: "Joined game!",
+        description: `Successfully joined game ${gameCode.toUpperCase()}`
+      });
+      
+      // Navigate to waiting room
+      navigate(`/waiting-room/${gameCode.toUpperCase()}`);
+      
     } catch (error) {
+      console.error('Error joining game:', error);
       toast({
         title: t('joinGame.invalidCode'),
-        description: "Could not find a game with this code",
+        description: error instanceof Error ? error.message : "Game not found or already started",
         variant: "destructive"
       });
     } finally {

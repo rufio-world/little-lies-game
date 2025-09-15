@@ -5,6 +5,12 @@ export interface PlayerProfile {
   guestId?: string;
 }
 
+export interface CurrentPlayer {
+  id: string;
+  roomId: string;
+  isHost: boolean;
+}
+
 export interface GameSettings {
   language: 'en' | 'es';
   playerProfile: PlayerProfile;
@@ -14,6 +20,7 @@ const STORAGE_KEYS = {
   LANGUAGE: 'littleLiesLanguage',
   PLAYER_PROFILE: 'littleLiesProfile',
   OWNED_PACKS: 'littleLiesOwnedPacks',
+  CURRENT_PLAYER: 'littleLiesCurrentPlayer',
 } as const;
 
 class StorageManager {
@@ -81,6 +88,27 @@ class StorageManager {
       owned.push(packId);
       this.setOwnedPacks(owned);
     }
+  }
+
+  // Current Player
+  getCurrentPlayer(): CurrentPlayer | null {
+    const saved = localStorage.getItem(STORAGE_KEYS.CURRENT_PLAYER);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to parse current player:', e);
+      }
+    }
+    return null;
+  }
+
+  setCurrentPlayer(player: CurrentPlayer) {
+    localStorage.setItem(STORAGE_KEYS.CURRENT_PLAYER, JSON.stringify(player));
+  }
+
+  clearCurrentPlayer() {
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_PLAYER);
   }
 
   // Clear all data

@@ -14,7 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      game_rooms: {
+        Row: {
+          code: string
+          created_at: string | null
+          current_question_index: number | null
+          game_state: string | null
+          host_id: string
+          id: string
+          max_questions: number | null
+          name: string
+          selected_packs: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          current_question_index?: number | null
+          game_state?: string | null
+          host_id: string
+          id?: string
+          max_questions?: number | null
+          name: string
+          selected_packs?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          current_question_index?: number | null
+          game_state?: string | null
+          host_id?: string
+          id?: string
+          max_questions?: number | null
+          name?: string
+          selected_packs?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      players: {
+        Row: {
+          avatar: string
+          connected: boolean | null
+          created_at: string | null
+          id: string
+          is_guest: boolean | null
+          is_host: boolean | null
+          name: string
+          room_id: string
+          score: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar: string
+          connected?: boolean | null
+          created_at?: string | null
+          id?: string
+          is_guest?: boolean | null
+          is_host?: boolean | null
+          name: string
+          room_id: string
+          score?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar?: string
+          connected?: boolean | null
+          created_at?: string | null
+          id?: string
+          is_guest?: boolean | null
+          is_host?: boolean | null
+          name?: string
+          room_id?: string
+          score?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "players_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "game_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

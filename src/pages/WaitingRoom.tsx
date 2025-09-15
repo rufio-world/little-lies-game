@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,54 +8,37 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useToast } from "@/hooks/use-toast";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { storage } from "@/lib/storage";
-import { GameRoom, Player, createMockGameRoom } from "@/lib/gameState";
+import { Player } from "@/lib/gameState";
+import { useGameRoom } from "@/hooks/useGameRoom";
+import { GameService } from "@/services/gameService";
 import { Copy, Crown, Users, Play, AlertTriangle, X } from "lucide-react";
 
 export default function WaitingRoom() {
   const { gameCode } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { toast } = useToast();
 
-  const [gameRoom, setGameRoom] = useState<GameRoom | null>(null);
-  const [isHost, setIsHost] = useState(false);
+  const { gameRoom, loading, error } = useGameRoom(gameCode || '');
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
   const [soloWarningShown, setSoloWarningShown] = useState(false);
 
   useEffect(() => {
-    // Get current player from storage
-    const profile = storage.getPlayerProfile();
-    
-    // Create or get game room (mock for now)
-    const mockRoom = createMockGameRoom();
-    mockRoom.code = gameCode || 'TEST1';
-    
-    // Set game data from location state if available
-    if (location.state) {
-      const { gameName, selectedPacks, maxQuestions, isHost: hostFlag } = location.state;
-      if (gameName) mockRoom.name = gameName;
-      if (selectedPacks) mockRoom.selectedPacks = selectedPacks;
-      if (maxQuestions) mockRoom.maxQuestions = maxQuestions;
-      setIsHost(hostFlag || false);
+    const currentPlayerData = storage.getCurrentPlayer();
+    if (!currentPlayerData) {
+      // If no current player data, redirect to home
+      navigate('/');
+      return;
     }
 
-    // Add current player to room
-    const player: Player = {
-      id: `player-${Date.now()}`,
-      name: profile.name,
-      avatar: profile.avatar,
-      score: 0,
-      isHost: location.state?.isHost || false,
-      isGuest: profile.isGuest
-    };
-
-    mockRoom.players = [player];
-    mockRoom.hostId = player.id;
-
-    setCurrentPlayer(player);
-    setGameRoom(mockRoom);
-  }, [gameCode, location.state]);
+    // Find current player in the game room
+    if (gameRoom) {
+      const player = gameRoom.players.find(p => p.id === currentPlayerData.id);
+      if (player) {
+        setCurrentPlayer(player);
+      }
+    }
+  }, [gameRoom, navigate]);
 
   const copyGameCode = () => {
     if (gameCode) {
@@ -67,8 +50,8 @@ export default function WaitingRoom() {
     }
   };
 
-  const handleStartGame = () => {
-    if (!gameRoom) return;
+  const handleStartGame = async () => {
+    if (!gameRoom || !currentPlayer) return;
 
     if (gameRoom.players.length === 1 && !soloWarningShown) {
       // Show warning for solo play first time
@@ -81,43 +64,75 @@ export default function WaitingRoom() {
       return;
     }
 
-    // Start the game (solo or multiplayer)
-    toast({
-      title: "Starting game...",
-      description: "Redirecting to game..."
-    });
-    
-    // Navigate to game (placeholder)
-    setTimeout(() => {
-      navigate('/game-round', { 
-        state: { 
-          gameRoom,
-          currentPlayer: currentPlayer
-        } 
+    try {
+      await GameService.startGame(gameRoom.id);
+      
+      toast({
+        title: "Starting game...",
+        description: "Redirecting to game..."
       });
-    }, 1500);
+      
+      // Navigate to game
+      setTimeout(() => {
+        navigate('/game-round', { 
+          state: { 
+            gameRoom,
+            currentPlayer: currentPlayer
+          } 
+        });
+      }, 1500);
+    } catch (error) {
+      console.error('Error starting game:', error);
+      toast({
+        title: "Error",
+        description: "Failed to start game",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleLeaveGame = () => {
-    navigate('/');
+  const handleLeaveGame = async () => {
+    if (currentPlayer) {
+      try {
+        await GameService.leaveGame(currentPlayer.id);
+      } catch (error) {
+        console.error('Error leaving game:', error);
+      } finally {
+        storage.clearCurrentPlayer();
+        navigate('/');
+      }
+    } else {
+      navigate('/');
+    }
   };
 
-  const kickPlayer = (playerId: string) => {
-    if (!gameRoom || !isHost) return;
+  const kickPlayer = async (playerId: string) => {
+    if (!gameRoom || !currentPlayer || !currentPlayer.isHost) return;
     
-    // TODO: Implement kick functionality
-    toast({
-      title: "Player kicked",
-      description: "Player has been removed from the game"
-    });
+    try {
+      await GameService.kickPlayer(playerId, currentPlayer.id);
+      toast({
+        title: "Player kicked",
+        description: "Player has been removed from the game"
+      });
+    } catch (error) {
+      console.error('Error kicking player:', error);
+      toast({
+        title: "Error",
+        description: "Failed to kick player",
+        variant: "destructive"
+      });
+    }
   };
 
-  if (!gameRoom || !currentPlayer) {
+  if (loading || !gameRoom || !currentPlayer) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading game room...</p>
+          <p className="text-muted-foreground">
+            {error ? error : 'Loading game room...'}
+          </p>
         </div>
       </div>
     );
@@ -193,7 +208,7 @@ export default function WaitingRoom() {
                       )}
                     </div>
                   </div>
-                  {isHost && !player.isHost && (
+                  {currentPlayer.isHost && !player.isHost && (
                     <Button 
                       variant="ghost" 
                       size="sm"
@@ -228,7 +243,7 @@ export default function WaitingRoom() {
             {t('waitingRoom.leaveGame')}
           </Button>
           
-          {isHost && (
+          {currentPlayer.isHost && (
             <Button 
               onClick={handleStartGame}
               className="flex-1"
@@ -242,7 +257,7 @@ export default function WaitingRoom() {
         {/* Instructions */}
         <div className="text-center text-sm text-muted-foreground mt-6 space-y-1">
           <p>Share the game code with friends to join</p>
-          {isHost && <p>As the host, you can start the game anytime</p>}
+          {currentPlayer.isHost && <p>As the host, you can start the game anytime</p>}
         </div>
       </div>
     </div>
