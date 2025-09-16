@@ -31,7 +31,7 @@ export class GameService {
       .insert({
         code: gameCode,
         name: params.name,
-        host_id: '', // Will be updated after creating the player
+        host_id: null, // Will be updated after creating the player
         selected_packs: params.selectedPacks,
         max_questions: params.maxQuestions,
         game_state: 'waiting'
