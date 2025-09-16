@@ -65,7 +65,7 @@ export default function WaitingRoom() {
     }
 
     try {
-      await GameService.startGame(gameRoom.id);
+      await GameService.startGame(gameRoom.id, currentPlayer.id);
       
       toast({
         title: "Starting game...",

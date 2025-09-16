@@ -131,7 +131,19 @@ export class GameService {
     }
   }
 
-  static async startGame(roomId: string): Promise<void> {
+  static async startGame(roomId: string, hostPlayerId: string): Promise<void> {
+    // Verify the requester is the host before starting the game
+    const { data: hostData, error: hostError } = await supabase
+      .from('players')
+      .select('is_host, room_id')
+      .eq('id', hostPlayerId)
+      .eq('room_id', roomId)
+      .single();
+
+    if (hostError || !hostData?.is_host) {
+      throw new Error('Only the host can start the game');
+    }
+
     const { error } = await supabase
       .from('game_rooms')
       .update({ game_state: 'question-display' })
