@@ -1,6 +1,6 @@
 {
   "name": "Pop Culture",
-  "language": "en", 
+  "language": "en",
   "theme": "pop_culture",
   "questions": [
     {
@@ -9,7 +9,7 @@
       "correct_answer": "Walt Disney"
     },
     {
-      "id": "pc_0002", 
+      "id": "pc_0002",
       "question": "What is the highest-grossing film of all time?",
       "correct_answer": "Avatar (2009)"
     },
@@ -127,6 +127,131 @@
       "id": "pc_0025",
       "question": "Who created the comic book character Superman?",
       "correct_answer": "Jerry Siegel and Joe Shuster"
+    },
+    {
+      "id": "pc_0026",
+      "question": "Who played Jack in the movie 'Titanic'?",
+      "correct_answer": "Leonardo DiCaprio"
+    },
+    {
+      "id": "pc_0027",
+      "question": "Which video game franchise features characters like Mario and Luigi?",
+      "correct_answer": "Super Mario"
+    },
+    {
+      "id": "pc_0028",
+      "question": "Who is known as the 'King of Pop'?",
+      "correct_answer": "Michael Jackson"
+    },
+    {
+      "id": "pc_0029",
+      "question": "What TV series features the Iron Throne?",
+      "correct_answer": "Game of Thrones"
+    },
+    {
+      "id": "pc_0030",
+      "question": "Which singer is famous for the hit song 'Like a Virgin'?",
+      "correct_answer": "Madonna"
+    },
+    {
+      "id": "pc_0031",
+      "question": "What year did the Berlin Wall fall?",
+      "correct_answer": "1989"
+    },
+    {
+      "id": "pc_0032",
+      "question": "Who played the character Forrest Gump?",
+      "correct_answer": "Tom Hanks"
+    },
+    {
+      "id": "pc_0033",
+      "question": "Which company created the PlayStation console?",
+      "correct_answer": "Sony"
+    },
+    {
+      "id": "pc_0034",
+      "question": "What is the most popular podcast in the world?",
+      "correct_answer": "The Joe Rogan Experience"
+    },
+    {
+      "id": "pc_0035",
+      "question": "Which band was Freddie Mercury the lead singer of?",
+      "correct_answer": "Queen"
+    },
+    {
+      "id": "pc_0036",
+      "question": "Which TV series is about a chemistry teacher turned drug dealer?",
+      "correct_answer": "Breaking Bad"
+    },
+    {
+      "id": "pc_0037",
+      "question": "Who played Wolverine in the X-Men movies?",
+      "correct_answer": "Hugh Jackman"
+    },
+    {
+      "id": "pc_0038",
+      "question": "What company created the streaming service Disney+?",
+      "correct_answer": "The Walt Disney Company"
+    },
+    {
+      "id": "pc_0039",
+      "question": "Which pop star is known as the 'Material Girl'?",
+      "correct_answer": "Madonna"
+    },
+    {
+      "id": "pc_0040",
+      "question": "What is the name of the fictional wizarding school in Harry Potter?",
+      "correct_answer": "Hogwarts"
+    },
+    {
+      "id": "pc_0041",
+      "question": "Who directed 'Pulp Fiction'?",
+      "correct_answer": "Quentin Tarantino"
+    },
+    {
+      "id": "pc_0042",
+      "question": "Which superhero is known as the 'Caped Crusader'?",
+      "correct_answer": "Batman"
+    },
+    {
+      "id": "pc_0043",
+      "question": "Who sang the hit 'Rolling in the Deep'?",
+      "correct_answer": "Adele"
+    },
+    {
+      "id": "pc_0044",
+      "question": "Which sitcom features the characters Sheldon, Leonard, and Penny?",
+      "correct_answer": "The Big Bang Theory"
+    },
+    {
+      "id": "pc_0045",
+      "question": "What video game character is known for collecting rings?",
+      "correct_answer": "Sonic the Hedgehog"
+    },
+    {
+      "id": "pc_0046",
+      "question": "Which actor voiced Woody in 'Toy Story'?",
+      "correct_answer": "Tom Hanks"
+    },
+    {
+      "id": "pc_0047",
+      "question": "What is the name of the fictional continent in 'Game of Thrones'?",
+      "correct_answer": "Westeros"
+    },
+    {
+      "id": "pc_0048",
+      "question": "Who wrote 'The Lord of the Rings'?",
+      "correct_answer": "J.R.R. Tolkien"
+    },
+    {
+      "id": "pc_0049",
+      "question": "Which rapper is known for the album 'The Marshall Mathers LP'?",
+      "correct_answer": "Eminem"
+    },
+    {
+      "id": "pc_0050",
+      "question": "What is the longest-running primetime live-action TV show in the US?",
+      "correct_answer": "Law & Order: Special Victims Unit"
     }
   ]
 }
