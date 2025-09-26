@@ -25,13 +25,16 @@ export class GameService {
   static async createGame(params: CreateGameParams): Promise<{ gameCode: string; roomId: string; playerId: string }> {
     const gameCode = GameLogic.generateGameCode();
     
-    // Create game room
+    // Generate UUID for the host player first
+    const hostPlayerId = crypto.randomUUID();
+    
+    // Create game room with the host_id
     const { data: roomData, error: roomError } = await supabase
       .from('game_rooms')
       .insert({
         code: gameCode,
         name: params.name,
-        host_id: null, // Will be updated after creating the player
+        host_id: hostPlayerId,
         selected_packs: params.selectedPacks,
         max_questions: params.maxQuestions,
         game_state: 'waiting'
@@ -43,10 +46,11 @@ export class GameService {
       throw new Error(`Failed to create game room: ${roomError.message}`);
     }
 
-    // Create host player
+    // Create host player with the pre-generated ID
     const { data: playerData, error: playerError } = await supabase
       .from('players')
       .insert({
+        id: hostPlayerId,
         room_id: roomData.id,
         name: params.hostPlayer.name,
         avatar: params.hostPlayer.avatar,
@@ -60,16 +64,6 @@ export class GameService {
 
     if (playerError) {
       throw new Error(`Failed to create host player: ${playerError.message}`);
-    }
-
-    // Update room with host_id
-    const { error: updateError } = await supabase
-      .from('game_rooms')
-      .update({ host_id: playerData.id })
-      .eq('id', roomData.id);
-
-    if (updateError) {
-      throw new Error(`Failed to update room host: ${updateError.message}`);
     }
 
     return {
