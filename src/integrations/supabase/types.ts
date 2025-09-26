@@ -100,6 +100,48 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          avatar: string | null
+          created_at: string | null
+          games_played: number | null
+          games_won: number | null
+          id: string
+          players_tricked: number | null
+          second_places: number | null
+          times_tricked: number | null
+          total_points: number | null
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          avatar?: string | null
+          created_at?: string | null
+          games_played?: number | null
+          games_won?: number | null
+          id: string
+          players_tricked?: number | null
+          second_places?: number | null
+          times_tricked?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          avatar?: string | null
+          created_at?: string | null
+          games_played?: number | null
+          games_won?: number | null
+          id?: string
+          players_tricked?: number | null
+          second_places?: number | null
+          times_tricked?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

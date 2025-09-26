@@ -3,11 +3,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
-import { Gamepad2, Users, Settings, Store, Trophy, LogOut } from "lucide-react";
+import { Gamepad2, Users, Settings, Store, Trophy, LogOut, LogIn, User } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function MainMenu() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   const menuItems = [
     {
@@ -46,7 +48,40 @@ export default function MainMenu() {
     <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center p-4">
-        <div></div> {/* Spacer */}
+        <div className="flex items-center gap-2">
+          {user ? (
+            <>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/settings')}
+                className="hover:bg-primary/10"
+              >
+                <User className="h-4 w-4 mr-2" />
+                Profile
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={signOut}
+                className="hover:bg-destructive/10"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate('/auth')}
+              className="hover:bg-primary/10"
+            >
+              <LogIn className="h-4 w-4 mr-2" />
+              Sign In
+            </Button>
+          )}
+        </div>
         <LanguageToggle />
       </div>
 
