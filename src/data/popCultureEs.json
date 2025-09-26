@@ -1,132 +1,257 @@
 {
-  "name": "Cultura Popular",
+  "name": "Cultura Pop",
   "language": "es",
-  "theme": "pop_culture", 
+  "theme": "cultura_pop",
   "questions": [
     {
-      "id": "pc_es_0001",
+      "id": "pc_0001",
       "question": "¿Quién creó a Mickey Mouse?",
       "correct_answer": "Walt Disney"
     },
     {
-      "id": "pc_es_0002",
-      "question": "¿Cuál es la película que más dinero ha recaudado de todos los tiempos?",
+      "id": "pc_0002",
+      "question": "¿Cuál es la película más taquillera de todos los tiempos?",
       "correct_answer": "Avatar (2009)"
     },
     {
-      "id": "pc_es_0003",
-      "question": "¿Qué artista pintó 'La Noche Estrellada'?",
+      "id": "pc_0003",
+      "question": "¿Qué artista pintó 'La noche estrellada'?",
       "correct_answer": "Vincent van Gogh"
     },
     {
-      "id": "pc_es_0004",
+      "id": "pc_0004",
       "question": "¿Cuál fue la primera consola de videojuegos?",
       "correct_answer": "Magnavox Odyssey"
     },
     {
-      "id": "pc_es_0005",
-      "question": "¿Quién escribió la serie de Harry Potter?",
+      "id": "pc_0005",
+      "question": "¿Quién escribió la saga de Harry Potter?",
       "correct_answer": "J.K. Rowling"
     },
     {
-      "id": "pc_es_0006",
-      "question": "¿Cuál es el video más visto de YouTube de todos los tiempos?",
+      "id": "pc_0006",
+      "question": "¿Cuál es el video más visto en YouTube de todos los tiempos?",
       "correct_answer": "Baby Shark Dance"
     },
     {
-      "id": "pc_es_0007",
-      "question": "¿Qué película ganó el primer Premio de la Academia a la Mejor Película?",
+      "id": "pc_0007",
+      "question": "¿Qué película ganó el primer Óscar a Mejor Película?",
       "correct_answer": "Wings (1927)"
     },
     {
-      "id": "pc_es_0008",
-      "question": "¿Cuál es el álbum más vendido de todos los tiempos?",
+      "id": "pc_0008",
+      "question": "¿Cuál es el disco más vendido de todos los tiempos?",
       "correct_answer": "Thriller de Michael Jackson"
     },
     {
-      "id": "pc_es_0009",
+      "id": "pc_0009",
       "question": "¿Quién inventó la World Wide Web?",
       "correct_answer": "Tim Berners-Lee"
     },
     {
-      "id": "pc_es_0010",
+      "id": "pc_0010",
       "question": "¿Cuál fue la primera película del Universo Cinematográfico de Marvel?",
       "correct_answer": "Iron Man (2008)"
     },
     {
-      "id": "pc_es_0011",
-      "question": "¿Qué plataforma de redes sociales se lanzó primero?",
+      "id": "pc_0011",
+      "question": "¿Qué red social se lanzó primero?",
       "correct_answer": "Facebook"
     },
     {
-      "id": "pc_es_0012",
-      "question": "¿Cuál es la serie de televisión animada más longeva?",
+      "id": "pc_0012",
+      "question": "¿Cuál es la serie animada más longeva de la televisión?",
       "correct_answer": "Los Simpson"
     },
     {
-      "id": "pc_es_0013",
+      "id": "pc_0013",
       "question": "¿Quién compuso la música de Star Wars?",
       "correct_answer": "John Williams"
     },
     {
-      "id": "pc_es_0014",
-      "question": "¿Cuándo se lanzó el primer iPhone?",
+      "id": "pc_0014",
+      "question": "¿En qué año se lanzó el primer iPhone?",
       "correct_answer": "2007"
     },
     {
-      "id": "pc_es_0015",
-      "question": "¿Qué banda lanzó el álbum 'Abbey Road'?",
+      "id": "pc_0015",
+      "question": "¿Qué banda publicó el álbum 'Abbey Road'?",
       "correct_answer": "The Beatles"
     },
     {
-      "id": "pc_es_0016",
-      "question": "¿Cuál es el servicio de streaming más popular mundialmente?",
+      "id": "pc_0016",
+      "question": "¿Cuál es el servicio de streaming más popular del mundo?",
       "correct_answer": "Netflix"
     },
     {
-      "id": "pc_es_0017",
-      "question": "¿Quién dirigió la película 'Tiburón'?",
+      "id": "pc_0017",
+      "question": "¿Quién dirigió la película 'Tiburón' (Jaws)?",
       "correct_answer": "Steven Spielberg"
     },
     {
-      "id": "pc_es_0018",
-      "question": "¿Cuál es la cuenta de Instagram con más seguidores?",
+      "id": "pc_0018",
+      "question": "¿Quién tiene la cuenta de Instagram con más seguidores?",
       "correct_answer": "Cristiano Ronaldo"
     },
     {
-      "id": "pc_es_0019",
-      "question": "¿Qué videojuego presenta al personaje Master Chief?",
+      "id": "pc_0019",
+      "question": "¿En qué videojuego aparece el personaje Master Chief?",
       "correct_answer": "Halo"
     },
     {
-      "id": "pc_es_0020",
+      "id": "pc_0020",
       "question": "¿Cuál fue la primera película de Pixar?",
       "correct_answer": "Toy Story"
     },
     {
-      "id": "pc_es_0021",
-      "question": "¿Quién creó la serie de TV 'Friends'?",
+      "id": "pc_0021",
+      "question": "¿Quién creó la serie de televisión 'Friends'?",
       "correct_answer": "David Crane y Marta Kauffman"
     },
     {
-      "id": "pc_es_0022",
+      "id": "pc_0022",
       "question": "¿Cuál es el videojuego más vendido de todos los tiempos?",
       "correct_answer": "Minecraft"
     },
     {
-      "id": "pc_es_0023",
+      "id": "pc_0023",
       "question": "¿Qué actor interpretó a James Bond más veces?",
       "correct_answer": "Roger Moore"
     },
     {
-      "id": "pc_es_0024",
-      "question": "¿Cuál fue el primer reality show?",
+      "id": "pc_0024",
+      "question": "¿Cuál fue el primer reality show de la televisión?",
       "correct_answer": "The Real World"
     },
     {
-      "id": "pc_es_0025",
-      "question": "¿Quién creó el personaje de cómic Superman?",
+      "id": "pc_0025",
+      "question": "¿Quién creó al personaje de cómic Superman?",
       "correct_answer": "Jerry Siegel y Joe Shuster"
+    },
+    {
+      "id": "pc_0026",
+      "question": "¿Quién interpretó a Jack en la película 'Titanic'?",
+      "correct_answer": "Leonardo DiCaprio"
+    },
+    {
+      "id": "pc_0027",
+      "question": "¿Qué franquicia de videojuegos tiene a Mario y Luigi?",
+      "correct_answer": "Super Mario"
+    },
+    {
+      "id": "pc_0028",
+      "question": "¿Quién es conocido como el 'Rey del Pop'?",
+      "correct_answer": "Michael Jackson"
+    },
+    {
+      "id": "pc_0029",
+      "question": "¿Qué serie de televisión presenta el Trono de Hierro?",
+      "correct_answer": "Juego de Tronos"
+    },
+    {
+      "id": "pc_0030",
+      "question": "¿Qué cantante es famosa por la canción 'Like a Virgin'?",
+      "correct_answer": "Madonna"
+    },
+    {
+      "id": "pc_0031",
+      "question": "¿En qué año cayó el Muro de Berlín?",
+      "correct_answer": "1989"
+    },
+    {
+      "id": "pc_0032",
+      "question": "¿Qué actor interpretó a Forrest Gump?",
+      "correct_answer": "Tom Hanks"
+    },
+    {
+      "id": "pc_0033",
+      "question": "¿Qué compañía creó la consola PlayStation?",
+      "correct_answer": "Sony"
+    },
+    {
+      "id": "pc_0034",
+      "question": "¿Cuál es el pódcast más popular del mundo?",
+      "correct_answer": "The Joe Rogan Experience"
+    },
+    {
+      "id": "pc_0035",
+      "question": "¿De qué banda fue Freddie Mercury cantante principal?",
+      "correct_answer": "Queen"
+    },
+    {
+      "id": "pc_0036",
+      "question": "¿Qué serie trata de un profesor de química que se convierte en narcotraficante?",
+      "correct_answer": "Breaking Bad"
+    },
+    {
+      "id": "pc_0037",
+      "question": "¿Quién interpretó a Wolverine en las películas de X-Men?",
+      "correct_answer": "Hugh Jackman"
+    },
+    {
+      "id": "pc_0038",
+      "question": "¿Qué compañía creó el servicio de streaming Disney+?",
+      "correct_answer": "The Walt Disney Company"
+    },
+    {
+      "id": "pc_0039",
+      "question": "¿Qué estrella pop es conocida como la 'Chica Material'?",
+      "correct_answer": "Madonna"
+    },
+    {
+      "id": "pc_0040",
+      "question": "¿Cómo se llama la escuela de magia en Harry Potter?",
+      "correct_answer": "Hogwarts"
+    },
+    {
+      "id": "pc_0041",
+      "question": "¿Quién dirigió 'Pulp Fiction'?",
+      "correct_answer": "Quentin Tarantino"
+    },
+    {
+      "id": "pc_0042",
+      "question": "¿Qué superhéroe es conocido como el 'Caballero Oscuro'?",
+      "correct_answer": "Batman"
+    },
+    {
+      "id": "pc_0043",
+      "question": "¿Quién cantó el éxito 'Rolling in the Deep'?",
+      "correct_answer": "Adele"
+    },
+    {
+      "id": "pc_0044",
+      "question": "¿Qué sitcom incluye a Sheldon, Leonard y Penny?",
+      "correct_answer": "The Big Bang Theory"
+    },
+    {
+      "id": "pc_0045",
+      "question": "¿Qué personaje de videojuegos es famoso por recolectar anillos?",
+      "correct_answer": "Sonic the Hedgehog"
+    },
+    {
+      "id": "pc_0046",
+      "question": "¿Qué actor puso voz a Woody en 'Toy Story'?",
+      "correct_answer": "Tom Hanks"
+    },
+    {
+      "id": "pc_0047",
+      "question": "¿Cómo se llama el continente ficticio en 'Juego de Tronos'?",
+      "correct_answer": "Westeros"
+    },
+    {
+      "id": "pc_0048",
+      "question": "¿Quién escribió 'El Señor de los Anillos'?",
+      "correct_answer": "J.R.R. Tolkien"
+    },
+    {
+      "id": "pc_0049",
+      "question": "¿Qué rapero es conocido por el álbum 'The Marshall Mathers LP'?",
+      "correct_answer": "Eminem"
+    },
+    {
+      "id": "pc_0050",
+      "question": "¿Cuál es la serie de acción en vivo en horario estelar más longeva de EE.UU.?",
+      "correct_answer": "Law & Order: Special Victims Unit"
     }
   ]
 }
