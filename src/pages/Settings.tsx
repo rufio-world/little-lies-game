@@ -9,7 +9,8 @@ import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { storage, type PlayerProfile } from "@/lib/storage";
-import { ArrowLeft, Upload, UserCircle, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, UserCircle, Eye, EyeOff, ChevronDown } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -150,31 +151,48 @@ export default function Settings() {
     }
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        if (user && userProfile) {
-          setUserProfile({ ...userProfile, avatar: result });
-        } else {
-          setProfile({ ...profile, avatar: result });
-        }
-      };
-      reader.readAsDataURL(file);
+  const avatarOptions = [
+    // People Archetypes
+    { category: "People", label: "Ninja", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=ninja" },
+    { category: "People", label: "Pirate", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=pirate" },
+    { category: "People", label: "Firefighter", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=firefighter" },
+    { category: "People", label: "Clown", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=clown" },
+    { category: "People", label: "Wizard", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=wizard" },
+    { category: "People", label: "Knight", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=knight" },
+    { category: "People", label: "Doctor", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=doctor" },
+    { category: "People", label: "Detective", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=detective" },
+    
+    // Fantastic Creatures
+    { category: "Creatures", label: "Dragon", value: "https://api.dicebear.com/7.x/bottts/svg?seed=dragon" },
+    { category: "Creatures", label: "Phoenix", value: "https://api.dicebear.com/7.x/bottts/svg?seed=phoenix" },
+    { category: "Creatures", label: "Unicorn", value: "https://api.dicebear.com/7.x/bottts/svg?seed=unicorn" },
+    { category: "Creatures", label: "Griffin", value: "https://api.dicebear.com/7.x/bottts/svg?seed=griffin" },
+    { category: "Creatures", label: "Kraken", value: "https://api.dicebear.com/7.x/bottts/svg?seed=kraken" },
+    { category: "Creatures", label: "Fairy", value: "https://api.dicebear.com/7.x/bottts/svg?seed=fairy" },
+    
+    // Animals
+    { category: "Animals", label: "Lion", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=lion" },
+    { category: "Animals", label: "Eagle", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=eagle" },
+    { category: "Animals", label: "Wolf", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=wolf" },
+    { category: "Animals", label: "Bear", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=bear" },
+    { category: "Animals", label: "Fox", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=fox" },
+    { category: "Animals", label: "Owl", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=owl" },
+    { category: "Animals", label: "Shark", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=shark" },
+    { category: "Animals", label: "Tiger", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=tiger" },
+  ];
+
+  const handleAvatarChange = (avatarUrl: string) => {
+    if (user && userProfile) {
+      setUserProfile({ ...userProfile, avatar: avatarUrl });
+    } else {
+      setProfile({ ...profile, avatar: avatarUrl });
     }
   };
 
-  const useDefaultAvatar = () => {
-    const randomSeed = Math.random().toString(36).substring(2, 8);
-    const newAvatar = `https://api.dicebear.com/7.x/adventurer/svg?seed=${randomSeed}`;
-    
-    if (user && userProfile) {
-      setUserProfile({ ...userProfile, avatar: newAvatar });
-    } else {
-      setProfile({ ...profile, avatar: newAvatar });
-    }
+  const getCurrentAvatarLabel = () => {
+    const currentAvatar = isAuthenticated && userProfile ? userProfile.avatar : profile.avatar;
+    const option = avatarOptions.find(opt => opt.value === currentAvatar);
+    return option ? `${option.category}: ${option.label}` : "Select Avatar";
   };
 
   const handlePasswordChange = async () => {
@@ -294,40 +312,46 @@ export default function Settings() {
               />
             </div>
 
-            {/* Profile Image */}
+            {/* Avatar Selection */}
             <div className="space-y-4">
-              <Label>{t('settings.profileImage')}</Label>
+              <Label>Choose Avatar</Label>
               
-              <div className="flex gap-2">
-                <div className="flex-1">
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    disabled={isGuestMode && !isAuthenticated}
-                    className="hidden"
-                    id="avatar-upload"
-                  />
-                  <Label 
-                    htmlFor="avatar-upload" 
-                    className="flex items-center justify-center gap-2 h-10 px-4 py-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md cursor-pointer"
-                  >
-                    <Upload className="h-4 w-4" />
-                    {t('settings.uploadImage')}
-                  </Label>
-                </div>
-                
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={useDefaultAvatar}
-                  disabled={isGuestMode && !isAuthenticated}
-                  className="flex-1"
-                >
-                  <UserCircle className="h-4 w-4 mr-2" />
-                  {t('settings.defaultAvatar')}
-                </Button>
-              </div>
+              <Select
+                value={isAuthenticated && userProfile ? userProfile.avatar || '' : profile.avatar}
+                onValueChange={handleAvatarChange}
+                disabled={isGuestMode && !isAuthenticated}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={getCurrentAvatarLabel()} />
+                </SelectTrigger>
+                <SelectContent className="bg-background border shadow-lg z-50">
+                  {["People", "Creatures", "Animals"].map((category) => (
+                    <div key={category}>
+                      <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground bg-muted/50">
+                        {category}
+                      </div>
+                      {avatarOptions
+                        .filter(option => option.category === category)
+                        .map((option) => (
+                          <SelectItem 
+                            key={option.value} 
+                            value={option.value}
+                            className="flex items-center gap-2 hover:bg-accent"
+                          >
+                            <div className="flex items-center gap-2">
+                              <img 
+                                src={option.value} 
+                                alt={option.label}
+                                className="w-6 h-6 rounded-full"
+                              />
+                              {option.label}
+                            </div>
+                          </SelectItem>
+                        ))}
+                    </div>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Statistics - Only for authenticated users */}
