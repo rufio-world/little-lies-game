@@ -139,16 +139,10 @@ export default function Settings() {
 
   const toggleGuestMode = (enabled: boolean) => {
     setIsGuestMode(enabled);
-    if (enabled) {
-      const guestProfile = storage.createGuestProfile();
-      setProfile(guestProfile);
-    } else {
-      setProfile({
-        name: "Player",
-        avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=player",
-        isGuest: false
-      });
-    }
+    setProfile(prevProfile => ({
+      ...prevProfile,
+      isGuest: enabled
+    }));
   };
 
   const avatarOptions = [
