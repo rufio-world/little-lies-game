@@ -153,32 +153,62 @@ export default function Settings() {
 
   const avatarOptions = [
     // People Archetypes
-    { category: "People", label: "Ninja", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=ninja" },
-    { category: "People", label: "Pirate", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=pirate" },
-    { category: "People", label: "Firefighter", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=firefighter" },
-    { category: "People", label: "Clown", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=clown" },
-    { category: "People", label: "Wizard", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=wizard" },
-    { category: "People", label: "Knight", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=knight" },
-    { category: "People", label: "Doctor", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=doctor" },
-    { category: "People", label: "Detective", value: "https://api.dicebear.com/7.x/adventurer/svg?seed=detective" },
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=ninja",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=pirate",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=firefighter",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=clown",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=wizard",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=knight",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=doctor",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=detective",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=chef",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=artist",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=musician",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=teacher",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=pilot",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=astronaut",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=superhero",
+    "https://api.dicebear.com/7.x/adventurer/svg?seed=cowboy",
     
     // Fantastic Creatures
-    { category: "Creatures", label: "Dragon", value: "https://api.dicebear.com/7.x/bottts/svg?seed=dragon" },
-    { category: "Creatures", label: "Phoenix", value: "https://api.dicebear.com/7.x/bottts/svg?seed=phoenix" },
-    { category: "Creatures", label: "Unicorn", value: "https://api.dicebear.com/7.x/bottts/svg?seed=unicorn" },
-    { category: "Creatures", label: "Griffin", value: "https://api.dicebear.com/7.x/bottts/svg?seed=griffin" },
-    { category: "Creatures", label: "Kraken", value: "https://api.dicebear.com/7.x/bottts/svg?seed=kraken" },
-    { category: "Creatures", label: "Fairy", value: "https://api.dicebear.com/7.x/bottts/svg?seed=fairy" },
+    "https://api.dicebear.com/7.x/bottts/svg?seed=dragon",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=phoenix",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=unicorn",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=griffin",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=kraken",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=fairy",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=demon",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=angel",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=vampire",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=ghost",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=troll",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=elf",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=goblin",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=orc",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=centaur",
+    "https://api.dicebear.com/7.x/bottts/svg?seed=mermaid",
     
     // Animals
-    { category: "Animals", label: "Lion", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=lion" },
-    { category: "Animals", label: "Eagle", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=eagle" },
-    { category: "Animals", label: "Wolf", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=wolf" },
-    { category: "Animals", label: "Bear", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=bear" },
-    { category: "Animals", label: "Fox", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=fox" },
-    { category: "Animals", label: "Owl", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=owl" },
-    { category: "Animals", label: "Shark", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=shark" },
-    { category: "Animals", label: "Tiger", value: "https://api.dicebear.com/7.x/lorelei/svg?seed=tiger" },
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=lion",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=eagle",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=wolf",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=bear",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=fox",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=owl",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=shark",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=tiger",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=elephant",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=dolphin",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=panda",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=penguin",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=rabbit",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=cat",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=dog",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=horse",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=monkey",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=snake",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=turtle",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=octopus",
   ];
 
   const handleAvatarChange = (avatarUrl: string) => {
@@ -187,12 +217,6 @@ export default function Settings() {
     } else {
       setProfile({ ...profile, avatar: avatarUrl });
     }
-  };
-
-  const getCurrentAvatarLabel = () => {
-    const currentAvatar = isAuthenticated && userProfile ? userProfile.avatar : profile.avatar;
-    const option = avatarOptions.find(opt => opt.value === currentAvatar);
-    return option ? `${option.category}: ${option.label}` : "Select Avatar";
   };
 
   const handlePasswordChange = async () => {
@@ -316,42 +340,35 @@ export default function Settings() {
             <div className="space-y-4">
               <Label>Choose Avatar</Label>
               
-              <Select
-                value={isAuthenticated && userProfile ? userProfile.avatar || '' : profile.avatar}
-                onValueChange={handleAvatarChange}
-                disabled={isGuestMode && !isAuthenticated}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={getCurrentAvatarLabel()} />
-                </SelectTrigger>
-                <SelectContent className="bg-background border shadow-lg z-50">
-                  {["People", "Creatures", "Animals"].map((category) => (
-                    <div key={category}>
-                      <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground bg-muted/50">
-                        {category}
-                      </div>
-                      {avatarOptions
-                        .filter(option => option.category === category)
-                        .map((option) => (
-                          <SelectItem 
-                            key={option.value} 
-                            value={option.value}
-                            className="flex items-center gap-2 hover:bg-accent"
-                          >
-                            <div className="flex items-center gap-2">
-                              <img 
-                                src={option.value} 
-                                alt={option.label}
-                                className="w-6 h-6 rounded-full"
-                              />
-                              {option.label}
-                            </div>
-                          </SelectItem>
-                        ))}
-                    </div>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="grid grid-cols-6 gap-3 max-h-48 overflow-y-auto p-3 border rounded-lg bg-secondary/10">
+                {avatarOptions.map((avatarUrl, index) => {
+                  const currentAvatar = isAuthenticated && userProfile ? userProfile.avatar : profile.avatar;
+                  const isSelected = currentAvatar === avatarUrl;
+                  
+                  return (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => handleAvatarChange(avatarUrl)}
+                      disabled={isGuestMode && !isAuthenticated}
+                      className={`
+                        relative w-12 h-12 rounded-full border-2 transition-all hover:scale-110
+                        ${isSelected 
+                          ? 'border-primary ring-2 ring-primary/30 scale-110' 
+                          : 'border-border hover:border-primary/50'
+                        }
+                        ${isGuestMode && !isAuthenticated ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                      `}
+                    >
+                      <img 
+                        src={avatarUrl} 
+                        alt=""
+                        className="w-full h-full rounded-full"
+                      />
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Statistics - Only for authenticated users */}
