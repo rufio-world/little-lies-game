@@ -42,6 +42,8 @@ export function useGameRoom(gameCode: string) {
 
     const setupRealtimeSubscription = async () => {
       try {
+        console.log('🚀 Setting up real-time subscription for:', gameCode);
+        
         // Fetch initial game room data
         const { data: roomData, error: roomError } = await supabase
           .from('game_rooms')
@@ -50,10 +52,13 @@ export function useGameRoom(gameCode: string) {
           .single();
 
         if (roomError) {
+          console.error('❌ Room fetch error:', roomError);
           setError('Game room not found');
           setLoading(false);
           return;
         }
+
+        console.log('✅ Room data loaded:', roomData);
 
         // Fetch initial players data
         const { data: playersData, error: playersError } = await supabase
@@ -62,26 +67,13 @@ export function useGameRoom(gameCode: string) {
           .eq('room_id', roomData.id);
 
         if (playersError) {
-          console.error('Error fetching players:', playersError);
+          console.error('❌ Players fetch error:', playersError);
           setError('Error loading players');
           setLoading(false);
           return;
         }
 
-        // Convert database format to app format
-        const room: GameRoom = {
-          id: roomData.id,
-          code: roomData.code,
-          name: roomData.name,
-          hostId: roomData.host_id,
-          players: [], // Will be populated from players subscription
-          selectedPacks: roomData.selected_packs || [],
-          maxQuestions: roomData.max_questions,
-          currentQuestionIndex: roomData.current_question_index,
-          gameState: roomData.game_state as any,
-          rounds: [],
-          createdAt: new Date(roomData.created_at).getTime()
-        };
+        console.log('✅ Players data loaded:', playersData);
 
         const appPlayers: Player[] = playersData.map((p: DatabasePlayer) => ({
           id: p.id,
@@ -91,6 +83,21 @@ export function useGameRoom(gameCode: string) {
           isHost: p.is_host,
           isGuest: p.is_guest
         }));
+
+        // Convert database format to app format with initial players
+        const room: GameRoom = {
+          id: roomData.id,
+          code: roomData.code,
+          name: roomData.name,
+          hostId: roomData.host_id,
+          players: appPlayers, // Set initial players here
+          selectedPacks: roomData.selected_packs || [],
+          maxQuestions: roomData.max_questions,
+          currentQuestionIndex: roomData.current_question_index,
+          gameState: roomData.game_state as any,
+          rounds: [],
+          createdAt: new Date(roomData.created_at).getTime()
+        };
 
         setGameRoom(room);
         setPlayers(appPlayers);
@@ -108,16 +115,24 @@ export function useGameRoom(gameCode: string) {
               filter: `id=eq.${roomData.id}`
             },
             (payload) => {
+              console.log('🔄 Game room updated:', payload);
               const updatedRoom = payload.new as DatabaseGameRoom;
               setGameRoom(prev => prev ? {
                 ...prev,
                 name: updatedRoom.name,
                 gameState: updatedRoom.game_state as any,
-                currentQuestionIndex: updatedRoom.current_question_index
+                currentQuestionIndex: updatedRoom.current_question_index,
+                selectedPacks: updatedRoom.selected_packs || [],
+                maxQuestions: updatedRoom.max_questions
               } : null);
+              
+              // Also update players state to trigger gameRoom update
+              setPlayers(prevPlayers => [...prevPlayers]);
             }
           )
-          .subscribe();
+          .subscribe((status) => {
+            console.log('🔗 Game room subscription status:', status);
+          });
 
         // Subscribe to players changes
         playersChannel = supabase
@@ -131,6 +146,7 @@ export function useGameRoom(gameCode: string) {
               filter: `room_id=eq.${roomData.id}`
             },
             (payload) => {
+              console.log('👤 Player joined:', payload);
               const newPlayer = payload.new as DatabasePlayer;
               const appPlayer: Player = {
                 id: newPlayer.id,
@@ -140,7 +156,11 @@ export function useGameRoom(gameCode: string) {
                 isHost: newPlayer.is_host,
                 isGuest: newPlayer.is_guest
               };
-              setPlayers(prev => [...prev, appPlayer]);
+              setPlayers(prev => {
+                const updated = [...prev, appPlayer];
+                console.log('👥 Updated players list:', updated);
+                return updated;
+              });
             }
           )
           .on(
@@ -152,6 +172,7 @@ export function useGameRoom(gameCode: string) {
               filter: `room_id=eq.${roomData.id}`
             },
             (payload) => {
+              console.log('👤 Player left:', payload);
               const deletedPlayer = payload.old as DatabasePlayer;
               setPlayers(prev => prev.filter(p => p.id !== deletedPlayer.id));
             }
@@ -165,6 +186,7 @@ export function useGameRoom(gameCode: string) {
               filter: `room_id=eq.${roomData.id}`
             },
             (payload) => {
+              console.log('👤 Player updated:', payload);
               const updatedPlayer = payload.new as DatabasePlayer;
               const appPlayer: Player = {
                 id: updatedPlayer.id,
@@ -177,7 +199,9 @@ export function useGameRoom(gameCode: string) {
               setPlayers(prev => prev.map(p => p.id === appPlayer.id ? appPlayer : p));
             }
           )
-          .subscribe();
+          .subscribe((status) => {
+            console.log('👥 Players subscription status:', status);
+          });
 
       } catch (err) {
         console.error('Error setting up game room:', err);
@@ -199,15 +223,16 @@ export function useGameRoom(gameCode: string) {
     };
   }, [gameCode]);
 
-  // Update game room with players
+  // Update game room with current players whenever players change
   useEffect(() => {
-    if (gameRoom) {
+    if (gameRoom && players) {
+      console.log('🔄 Updating gameRoom with players:', players);
       setGameRoom(prev => prev ? { ...prev, players } : null);
     }
-  }, [players]);
+  }, [players, gameRoom?.id]); // Only depend on players and room id to avoid infinite loops
 
   return {
-    gameRoom: gameRoom ? { ...gameRoom, players } : null,
+    gameRoom,
     loading,
     error
   };
