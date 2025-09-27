@@ -209,6 +209,21 @@ export default function Settings() {
     "https://api.dicebear.com/7.x/lorelei/svg?seed=snake",
     "https://api.dicebear.com/7.x/lorelei/svg?seed=turtle",
     "https://api.dicebear.com/7.x/lorelei/svg?seed=octopus",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=giraffe",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=zebra",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=kangaroo",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=koala",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=hippo",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=rhino",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=deer",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=moose",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=buffalo",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=raccoon",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=squirrel",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=beaver",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=hedgehog",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=flamingo",
+    "https://api.dicebear.com/7.x/lorelei/svg?seed=parrot",
   ];
 
   const handleAvatarChange = (avatarUrl: string) => {
