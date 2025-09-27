@@ -8,6 +8,8 @@ import { AnswerSubmission } from "@/components/game/AnswerSubmission";
 import { VotingPhase } from "@/components/game/VotingPhase";
 import { ScoringResults } from "@/components/game/ScoringResults";
 import { FinalResults } from "@/components/game/FinalResults";
+import { useGameRound } from "@/hooks/useGameRound";
+import { GameRoundService } from "@/services/gameRoundService";
 import popCultureEn from "@/data/popCulture.json";
 import popCultureEs from "@/data/popCultureEs.json";
 
@@ -44,28 +46,76 @@ export default function GameRound() {
     const questions = questionPacks.flatMap(pack => pack.questions);
     setAllQuestions(GameLogic.shuffleArray(questions));
 
-    // Initialize game with first question if not already started
-    if (room.gameState === 'waiting') {
-      const updatedRoom = {
-        ...room,
-        gameState: 'question-display' as GameState
-      };
-      setGameRoom(updatedRoom);
+    // Start first round if this is the host and no round exists
+    if (room.gameState === 'waiting' && player?.isHost) {
+      startNewRound(room, questions);
     }
   }, [location.state, navigate]);
 
-  const updateGameRoom = (updates: Partial<GameRoom>) => {
-    if (!gameRoom) return;
-    const updatedRoom = { ...gameRoom, ...updates };
-    setGameRoom(updatedRoom);
+  const {
+    currentRound,
+    answers,
+    votes,
+    loading: roundLoading,
+    hasSubmittedAnswer,
+    hasVoted,
+    allAnswersSubmitted,
+    allVotesSubmitted
+  } = useGameRound(gameRoom?.id || '', currentPlayer?.id || '');
+
+  // Auto-advance phases based on completion
+  useEffect(() => {
+    if (!currentRound || !gameRoom || !currentPlayer?.isHost) return;
+
+    const advancePhase = async () => {
+      try {
+        if (currentRound.phase === 'answer-submission' && allAnswersSubmitted) {
+          await GameRoundService.updateRoundPhase(currentRound.id, 'voting');
+        } else if (currentRound.phase === 'voting' && allVotesSubmitted) {
+          // Calculate scores and advance to results
+          const scores = await GameRoundService.calculateRoundScores(currentRound.id);
+          await GameRoundService.updatePlayerScores(gameRoom.id, scores);
+          await GameRoundService.updateRoundPhase(currentRound.id, 'results');
+        }
+      } catch (error) {
+        console.error('Error advancing phase:', error);
+      }
+    };
+
+    advancePhase();
+  }, [allAnswersSubmitted, allVotesSubmitted, currentRound, gameRoom, currentPlayer]);
+
+  const startNewRound = async (room: GameRoom, questions: Question[]) => {
+    try {
+      const currentQuestion = questions[room.currentQuestionIndex];
+      if (!currentQuestion) return;
+
+      await GameRoundService.createRound(
+        room.id,
+        room.currentQuestionIndex + 1,
+        currentQuestion
+      );
+
+      toast({
+        title: "New round started!",
+        description: "Get ready to answer the question."
+      });
+    } catch (error) {
+      console.error('Error starting round:', error);
+      toast({
+        title: "Error",
+        description: "Failed to start new round",
+        variant: "destructive"
+      });
+    }
   };
 
   const getCurrentQuestion = () => {
-    if (!allQuestions.length || !gameRoom) return null;
-    return allQuestions[gameRoom.currentQuestionIndex];
+    if (!allQuestions.length || !gameRoom || !currentRound) return null;
+    return allQuestions.find(q => q.id === currentRound.question_id);
   };
 
-  if (!gameRoom || !allQuestions.length || !currentPlayer) {
+  if (!gameRoom || !allQuestions.length || !currentPlayer || roundLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
         <div className="text-center">
@@ -76,56 +126,57 @@ export default function GameRound() {
     );
   }
 
-  const currentQuestion = getCurrentQuestion();
-  if (!currentQuestion) {
+  if (!currentRound) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-lg font-medium mb-2">No more questions!</p>
-          <p className="text-muted-foreground">The game has ended.</p>
+          <p className="text-lg font-medium mb-2">Waiting for round to start...</p>
+          <p className="text-muted-foreground">The host will start the next round.</p>
         </div>
       </div>
     );
   }
 
-  // Render appropriate component based on game state
+  const currentQuestion = getCurrentQuestion();
+  if (!currentQuestion) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg font-medium mb-2">Question not found!</p>
+          <p className="text-muted-foreground">There was an error loading the question.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Render appropriate component based on round phase
   const renderGamePhase = () => {
-    switch (gameRoom.gameState) {
-      case 'question-display':
-        return (
-          <QuestionDisplay
-            question={currentQuestion}
-            gameRoom={gameRoom}
-            onContinue={() => updateGameRoom({ gameState: 'answer-submission' })}
-          />
-        );
-      
+    if (!currentRound) return <div>Loading...</div>;
+
+    switch (currentRound.phase) {
       case 'answer-submission':
         return (
           <AnswerSubmission
             question={currentQuestion}
             gameRoom={gameRoom}
             currentPlayer={currentPlayer}
-            onSubmitAnswer={(answer) => {
-              // For now, just move to voting phase
-              // In real implementation, this would sync with Supabase
-              const updatedRoom = {
-                ...gameRoom,
-                gameState: 'voting' as GameState,
-                currentRound: {
-                  questionId: currentQuestion.id,
-                  question: currentQuestion.question,
-                  correctAnswer: currentQuestion.correct_answer,
-                  answers: GameLogic.createGameAnswers(
-                    { [currentPlayer.id]: answer },
-                    currentQuestion.correct_answer,
-                    currentQuestion.question
-                  ),
-                  playerAnswers: { [currentPlayer.id]: answer },
-                  playerVotes: {}
-                }
-              };
-              setGameRoom(updatedRoom);
+            round={currentRound}
+            hasSubmitted={hasSubmittedAnswer}
+            allSubmitted={allAnswersSubmitted}
+            onSubmitAnswer={async (answer) => {
+              try {
+                await GameRoundService.submitAnswer(currentRound.id, currentPlayer.id, answer);
+                toast({
+                  title: "Answer submitted!",
+                  description: "Waiting for other players..."
+                });
+              } catch (error) {
+                toast({
+                  title: "Error",
+                  description: "Failed to submit answer",
+                  variant: "destructive"
+                });
+              }
             }}
           />
         );
@@ -133,31 +184,32 @@ export default function GameRound() {
       case 'voting':
         return (
           <VotingPhase
+            question={currentQuestion}
             gameRoom={gameRoom}
             currentPlayer={currentPlayer}
-            onVote={(answerId) => {
-              if (!gameRoom.currentRound) return;
-              
-              const updatedRound = {
-                ...gameRoom.currentRound,
-                playerVotes: { ...gameRoom.currentRound.playerVotes, [currentPlayer.id]: answerId }
-              };
-              
-              // Calculate scores and move to results
-              const scores = GameLogic.calculateScores(updatedRound, gameRoom.players);
-              const updatedPlayers = gameRoom.players.map(player => ({
-                ...player,
-                score: player.score + (scores[player.id] || 0)
-              }));
-              
-              const updatedRoom = {
-                ...gameRoom,
-                gameState: 'results' as GameState,
-                currentRound: updatedRound,
-                players: updatedPlayers,
-                rounds: [...gameRoom.rounds, updatedRound]
-              };
-              setGameRoom(updatedRoom);
+            round={currentRound}
+            answers={answers}
+            hasVoted={hasVoted}
+            allVoted={allVotesSubmitted}
+            onVote={async (answerId, isCorrect) => {
+              try {
+                await GameRoundService.submitVote(
+                  currentRound.id, 
+                  currentPlayer.id, 
+                  isCorrect ? undefined : answerId,
+                  isCorrect
+                );
+                toast({
+                  title: "Vote submitted!",
+                  description: "Waiting for other players..."
+                });
+              } catch (error) {
+                toast({
+                  title: "Error",
+                  description: "Failed to submit vote",
+                  variant: "destructive"
+                });
+              }
             }}
           />
         );
@@ -165,48 +217,32 @@ export default function GameRound() {
       case 'results':
         return (
           <ScoringResults
+            question={currentQuestion}
             gameRoom={gameRoom}
             currentPlayer={currentPlayer}
-            onContinue={() => {
+            round={currentRound}
+            answers={answers}
+            votes={votes}
+            onContinue={async () => {
+              if (!currentPlayer.isHost) return;
+
               const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
               
               if (nextQuestionIndex >= gameRoom.maxQuestions || nextQuestionIndex >= allQuestions.length) {
-                // Game finished
-                updateGameRoom({ gameState: 'game-end' });
-              } else {
-                // Next question
-                updateGameRoom({
-                  gameState: 'question-display',
-                  currentQuestionIndex: nextQuestionIndex,
-                  currentRound: undefined
+                // Game finished - navigate to final results
+                navigate('/final-results', { 
+                  state: { gameRoom, currentPlayer } 
                 });
+              } else {
+                // Start next round
+                await startNewRound({ ...gameRoom, currentQuestionIndex: nextQuestionIndex }, allQuestions);
               }
             }}
           />
         );
       
-      case 'game-end':
-        return (
-          <FinalResults
-            gameRoom={gameRoom}
-            onPlayAgain={() => {
-              // Reset game
-              const resetRoom = {
-                ...gameRoom,
-                gameState: 'question-display' as GameState,
-                currentQuestionIndex: 0,
-                rounds: [],
-                currentRound: undefined,
-                players: gameRoom.players.map(p => ({ ...p, score: 0 }))
-              };
-              setGameRoom(resetRoom);
-            }}
-            onReturnToMenu={() => navigate('/')}
-          />
-        );
-      
       default:
-        return <div>Loading...</div>;
+        return <div>Loading game phase...</div>;
     }
   };
 

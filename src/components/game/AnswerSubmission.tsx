@@ -5,36 +5,54 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { GameRoom, Question } from "@/lib/gameState";
+import { GameRound, PlayerAnswer } from "@/services/gameRoundService";
 import { Clock, Users, Trophy, Lightbulb } from "lucide-react";
 
 interface AnswerSubmissionProps {
   question: Question;
   gameRoom: GameRoom;
   currentPlayer: any;
-  onSubmitAnswer: (answer: string) => void;
+  round: GameRound;
+  hasSubmitted: boolean;
+  allSubmitted: boolean;
+  onSubmitAnswer: (answer: string) => Promise<void>;
 }
 
-export function AnswerSubmission({ question, gameRoom, currentPlayer, onSubmitAnswer }: AnswerSubmissionProps) {
+export function AnswerSubmission({ 
+  question, 
+  gameRoom, 
+  currentPlayer, 
+  round, 
+  hasSubmitted, 
+  allSubmitted, 
+  onSubmitAnswer 
+}: AnswerSubmissionProps) {
   const [answer, setAnswer] = useState("");
-  const [timeLeft, setTimeLeft] = useState(60); // 60 seconds to write answer
-  const [submitted, setSubmitted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   useEffect(() => {
-    if (timeLeft > 0 && !submitted) {
+    if (timeLeft > 0 && !hasSubmitted) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && !submitted) {
+    } else if (timeLeft === 0 && !hasSubmitted && !isSubmitting) {
       // Auto submit if time runs out
       handleSubmit();
     }
-  }, [timeLeft, submitted]);
+  }, [timeLeft, hasSubmitted, isSubmitting]);
 
-  const handleSubmit = () => {
-    if (submitted) return;
+  const handleSubmit = async () => {
+    if (hasSubmitted || isSubmitting) return;
     
-    const finalAnswer = answer.trim() || "No answer provided";
-    setSubmitted(true);
-    onSubmitAnswer(finalAnswer);
+    setIsSubmitting(true);
+    try {
+      const finalAnswer = answer.trim() || "No answer provided";
+      await onSubmitAnswer(finalAnswer);
+    } catch (error) {
+      console.error('Error submitting answer:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const progress = ((60 - timeLeft) / 60) * 100;
@@ -80,7 +98,7 @@ export function AnswerSubmission({ question, gameRoom, currentPlayer, onSubmitAn
           <CardTitle className="text-xl">{question.question}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {!submitted ? (
+          {!hasSubmitted && !allSubmitted ? (
             <>
               <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
                 <div className="flex items-start gap-3">
@@ -103,15 +121,15 @@ export function AnswerSubmission({ question, gameRoom, currentPlayer, onSubmitAn
                   onChange={(e) => setAnswer(e.target.value)}
                   placeholder="Type your fake answer here... Make it convincing!"
                   className="h-32 resize-none"
-                  disabled={submitted}
+                  disabled={hasSubmitted || isSubmitting}
                 />
                 <Button 
                   onClick={handleSubmit}
-                  disabled={!answer.trim() || submitted}
+                  disabled={!answer.trim() || hasSubmitted || isSubmitting}
                   className="w-full"
                   size="lg"
                 >
-                  Submit Your Answer
+                  {isSubmitting ? "Submitting..." : "Submit Your Answer"}
                 </Button>
               </div>
             </>
@@ -119,17 +137,19 @@ export function AnswerSubmission({ question, gameRoom, currentPlayer, onSubmitAn
             <div className="text-center space-y-4">
               <div className="bg-green-50 dark:bg-green-950/30 p-6 rounded-lg border border-green-200 dark:border-green-800">
                 <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-2">
-                  Answer Submitted! ✓
+                  {hasSubmitted ? "Answer Submitted! ✓" : "All Answers In!"}
                 </h3>
                 <p className="text-green-700 dark:text-green-300">
-                  Waiting for other players to submit their answers...
+                  {allSubmitted ? "Moving to voting phase..." : "Waiting for other players to submit their answers..."}
                 </p>
               </div>
               
-              <div className="bg-muted p-4 rounded-lg">
-                <p className="text-sm text-muted-foreground mb-2">Your answer:</p>
-                <p className="font-medium">{answer}</p>
-              </div>
+              {hasSubmitted && answer && (
+                <div className="bg-muted p-4 rounded-lg">
+                  <p className="text-sm text-muted-foreground mb-2">Your answer:</p>
+                  <p className="font-medium">{answer}</p>
+                </div>
+              )}
             </div>
           )}
         </CardContent>
@@ -154,8 +174,8 @@ export function AnswerSubmission({ question, gameRoom, currentPlayer, onSubmitAn
                     <Badge variant="secondary" className="text-xs">You</Badge>
                   )}
                 </div>
-                <Badge variant={submitted && player.id === currentPlayer.id ? "default" : "secondary"}>
-                  {submitted && player.id === currentPlayer.id ? "Submitted" : "Writing..."}
+                <Badge variant={hasSubmitted && player.id === currentPlayer.id ? "default" : "secondary"}>
+                  {hasSubmitted && player.id === currentPlayer.id ? "Submitted" : "Writing..."}
                 </Badge>
               </div>
             ))}

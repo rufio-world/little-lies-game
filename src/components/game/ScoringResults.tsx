@@ -1,50 +1,70 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { GameRoom } from "@/lib/gameState";
-import { Trophy, CheckCircle, XCircle, Users, Star, Target, Zap } from "lucide-react";
+import { GameRoom, Question } from "@/lib/gameState";
+import { GameRound, PlayerAnswer, PlayerVote } from "@/services/gameRoundService";
+import { Trophy, Users, CheckCircle, XCircle, Target, Zap, Star } from "lucide-react";
 
 interface ScoringResultsProps {
+  question: Question;
   gameRoom: GameRoom;
   currentPlayer: any;
+  round: GameRound;
+  answers: PlayerAnswer[];
+  votes: PlayerVote[];
   onContinue: () => void;
 }
 
-export function ScoringResults({ gameRoom, currentPlayer, onContinue }: ScoringResultsProps) {
-  if (!gameRoom.currentRound) {
-    return <div>Loading results...</div>;
-  }
-
-  const { currentRound } = gameRoom;
-  const correctAnswer = currentRound.answers.find(a => a.isCorrect);
-  const playerVote = currentRound.playerVotes[currentPlayer.id];
-  const playerAnswer = currentRound.answers.find(a => a.playerId === currentPlayer.id);
-  const votedCorrectly = playerVote === correctAnswer?.id;
+export function ScoringResults({ 
+  question, 
+  gameRoom, 
+  currentPlayer, 
+  round, 
+  answers, 
+  votes, 
+  onContinue 
+}: ScoringResultsProps) {
+  // Calculate current player's vote and results
+  const currentPlayerVote = votes.find(v => v.player_id === currentPlayer.id);
+  const currentPlayerAnswer = answers.find(a => a.player_id === currentPlayer.id);
   
-  // Calculate points earned this round
-  let pointsEarned = 0;
-  if (votedCorrectly) pointsEarned += 1;
-  if (playerAnswer) {
-    pointsEarned += playerAnswer.votes.length;
-  }
+  // Calculate scores for this round
+  const roundScores: Record<string, number> = {};
+  
+  // Initialize scores
+  gameRoom.players.forEach(player => {
+    roundScores[player.id] = 0;
+  });
 
-  // Sort players by total score
-  const sortedPlayers = [...gameRoom.players].sort((a, b) => b.score - a.score);
+  // Award points for correct votes
+  votes.forEach(vote => {
+    if (vote.voted_for_correct) {
+      roundScores[vote.player_id] = (roundScores[vote.player_id] || 0) + 1;
+    }
+  });
 
-  // Find who tricked the current player (if they voted wrong)
-  const whoTrickedYou = !votedCorrectly && playerVote 
-    ? currentRound.answers.find(a => a.id === playerVote && !a.isCorrect) 
-    : null;
-  const trickerPlayer = whoTrickedYou 
-    ? gameRoom.players.find(p => p.id === whoTrickedYou.playerId) 
-    : null;
+  // Award points for tricking other players
+  votes.forEach(vote => {
+    if (vote.voted_for_answer_id) {
+      const answer = answers.find(a => a.id === vote.voted_for_answer_id);
+      if (answer) {
+        roundScores[answer.player_id] = (roundScores[answer.player_id] || 0) + 1;
+      }
+    }
+  });
 
-  // Find who the current player tricked (who voted for their fake answer)
-  const playersYouTricked = playerAnswer 
-    ? playerAnswer.votes.map(voterId => 
-        gameRoom.players.find(p => p.id === voterId)
-      ).filter(Boolean)
-    : [];
+  // Find who voted for current player's answer
+  const playersVotedForMe = votes.filter(v => 
+    v.voted_for_answer_id && 
+    answers.find(a => a.id === v.voted_for_answer_id)?.player_id === currentPlayer.id
+  );
+
+  // Check if current player was tricked
+  const trickedByAnswer = currentPlayerVote?.voted_for_answer_id ? 
+    answers.find(a => a.id === currentPlayerVote.voted_for_answer_id) : null;
+
+  const trickerPlayer = trickedByAnswer ? 
+    gameRoom.players.find(p => p.id === trickedByAnswer.player_id) : null;
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -58,7 +78,7 @@ export function ScoringResults({ gameRoom, currentPlayer, onContinue }: ScoringR
           </div>
           <div className="flex items-center gap-1">
             <Trophy className="h-4 w-4" />
-            Question {gameRoom.currentQuestionIndex + 1} Results
+            Round {round.round_number} Results
           </div>
         </div>
       </div>
@@ -66,102 +86,68 @@ export function ScoringResults({ gameRoom, currentPlayer, onContinue }: ScoringR
       {/* Your Results */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle className="text-center">Your Results</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            Your Results This Round
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-primary mb-2">
-              +{pointsEarned} Points
-            </div>
-            <p className="text-muted-foreground">Earned this round</p>
+          <div className="flex items-center justify-between p-4 bg-primary/5 rounded-lg border">
+            <span className="font-medium">Points Earned:</span>
+            <Badge variant="default" className="text-lg px-3 py-1">
+              +{roundScores[currentPlayer.id] || 0}
+            </Badge>
           </div>
 
-          <div className="grid grid-cols-1 gap-4">
-            {/* Voting Result */}
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <div className="flex items-center gap-3 mb-2">
-                {votedCorrectly ? (
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                ) : (
-                  <XCircle className="h-5 w-5 text-red-600" />
-                )}
-                <h3 className="font-semibold">
-                  {votedCorrectly ? "Correct Answer!" : "Wrong Answer"}
-                </h3>
-                {votedCorrectly && <Badge variant="default">+1 pt</Badge>}
-              </div>
-              <p className="text-sm text-muted-foreground mb-2">
-                Correct answer: <span className="font-medium">{correctAnswer?.answer}</span>
-              </p>
-              {!votedCorrectly && (
-                <p className="text-sm text-muted-foreground">
-                  You voted for: {currentRound.answers.find(a => a.id === playerVote)?.answer}
-                </p>
+          <div className="space-y-3">
+            {/* Voting result */}
+            <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+              {currentPlayerVote?.voted_for_correct ? (
+                <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+              ) : (
+                <XCircle className="h-5 w-5 text-red-600 mt-0.5" />
               )}
+              <div className="flex-1">
+                <p className="font-medium">
+                  {currentPlayerVote?.voted_for_correct ? "Correct Vote! ✓" : "Incorrect Vote"}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {currentPlayerVote?.voted_for_correct 
+                    ? "You correctly identified the real answer!" 
+                    : trickerPlayer 
+                      ? `You were tricked by ${trickerPlayer.name}'s fake answer`
+                      : "You didn't vote for the correct answer"
+                  }
+                </p>
+              </div>
             </div>
 
-            {/* Who Tricked You */}
-            {trickerPlayer && (
-              <div className="bg-red-50 dark:bg-red-950/30 p-4 rounded-lg border border-red-200 dark:border-red-800">
-                <div className="flex items-center gap-3 mb-2">
-                  <Target className="h-5 w-5 text-red-600" />
-                  <h3 className="font-semibold text-red-900 dark:text-red-100">You Were Tricked By</h3>
-                </div>
-                <div className="flex items-center gap-3">
-                  <img 
-                    src={trickerPlayer.avatar} 
-                    alt={trickerPlayer.name}
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <div>
-                    <p className="font-medium text-red-900 dark:text-red-100">{trickerPlayer.name}</p>
-                    <p className="text-sm text-red-700 dark:text-red-300">
-                      Their fake answer: "{whoTrickedYou?.answer}"
-                    </p>
-                  </div>
+            {/* Tricking results */}
+            {playersVotedForMe.length > 0 && (
+              <div className="flex items-start gap-3 p-3 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-800">
+                <Zap className="h-5 w-5 text-green-600 mt-0.5" />
+                <div className="flex-1">
+                  <p className="font-medium text-green-900 dark:text-green-100">
+                    Great Deception! 🎭
+                  </p>
+                  <p className="text-sm text-green-700 dark:text-green-300">
+                    You tricked {playersVotedForMe.length} player{playersVotedForMe.length > 1 ? 's' : ''}: {" "}
+                    {playersVotedForMe.map(vote => 
+                      gameRoom.players.find(p => p.id === vote.player_id)?.name
+                    ).join(', ')}
+                  </p>
                 </div>
               </div>
             )}
 
-            {/* Who You Tricked */}
-            {playerAnswer && playersYouTricked.length > 0 && (
-              <div className="bg-green-50 dark:bg-green-950/30 p-4 rounded-lg border border-green-200 dark:border-green-800">
-                <div className="flex items-center gap-3 mb-3">
-                  <Zap className="h-5 w-5 text-green-600" />
-                  <h3 className="font-semibold text-green-900 dark:text-green-100">You Tricked</h3>
-                  <Badge variant="default" className="bg-green-600">+{playersYouTricked.length} pts</Badge>
-                </div>
-                <p className="text-sm text-green-700 dark:text-green-300 mb-3">
-                  Your fake answer: "{playerAnswer.answer}"
-                </p>
-                <div className="space-y-2">
-                  {playersYouTricked.map(player => (
-                    <div key={player?.id} className="flex items-center gap-3">
-                      <img 
-                        src={player?.avatar} 
-                        alt={player?.name}
-                        className="w-6 h-6 rounded-full"
-                      />
-                      <span className="text-sm font-medium text-green-900 dark:text-green-100">
-                        {player?.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Summary if no tricks happened */}
-            {!trickerPlayer && playersYouTricked.length === 0 && (
-              <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+            {playersVotedForMe.length === 0 && currentPlayerAnswer && (
+              <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
                 <div className="flex items-center gap-3 mb-2">
                   <Star className="h-5 w-5 text-blue-600" />
                   <h3 className="font-semibold text-blue-900 dark:text-blue-100">Round Summary</h3>
                 </div>
                 <p className="text-sm text-blue-700 dark:text-blue-300">
-                  {votedCorrectly 
-                    ? "You voted correctly and weren't tricked by anyone!"
-                    : "You voted correctly but didn't trick any other players."}
+                  No one was fooled by your answer this round, but you can still earn points by voting correctly!
                 </p>
               </div>
             )}
@@ -176,33 +162,42 @@ export function ScoringResults({ gameRoom, currentPlayer, onContinue }: ScoringR
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {currentRound.answers.map(answer => {
-              const isCorrect = answer.isCorrect;
-              const authorName = answer.playerId === 'system' 
-                ? 'Official Answer' 
-                : gameRoom.players.find(p => p.id === answer.playerId)?.name || 'Unknown';
+            {/* Show correct answer first */}
+            <div className="p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border-2 border-green-200 dark:border-green-800">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="font-medium text-green-900 dark:text-green-100">Correct Answer</span>
+                  </div>
+                  <p className="text-green-800 dark:text-green-200">{round.correct_answer}</p>
+                </div>
+                <Badge variant="secondary" className="bg-green-100 dark:bg-green-900">
+                  {votes.filter(v => v.voted_for_correct).length} votes
+                </Badge>
+              </div>
+            </div>
+
+            {/* Show player answers */}
+            {answers.map(answer => {
+              const answerVotes = votes.filter(v => v.voted_for_answer_id === answer.id);
+              const author = gameRoom.players.find(p => p.id === answer.player_id);
               
               return (
-                <div 
-                  key={answer.id}
-                  className={`p-4 rounded-lg border-2 ${
-                    isCorrect 
-                      ? 'border-green-500 bg-green-50 dark:bg-green-950/30' 
-                      : 'border-gray-200 bg-gray-50 dark:bg-gray-950/30'
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
+                <div key={answer.id} className="p-4 bg-muted/30 rounded-lg border">
+                  <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        {isCorrect && <CheckCircle className="h-4 w-4 text-green-600" />}
-                        <span className="font-medium">{answer.answer}</span>
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="w-3 h-3 rounded-full bg-primary"></div>
+                        <span className="font-medium">{author?.name}'s Answer</span>
+                        {answer.player_id === currentPlayer.id && (
+                          <Badge variant="outline" className="text-xs">You</Badge>
+                        )}
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {isCorrect ? 'Correct Answer' : `by ${authorName}`}
-                      </p>
+                      <p className="text-foreground">{answer.answer_text}</p>
                     </div>
                     <Badge variant="secondary">
-                      {answer.votes.length} vote{answer.votes.length !== 1 ? 's' : ''}
+                      {answerVotes.length} vote{answerVotes.length !== 1 ? 's' : ''}
                     </Badge>
                   </div>
                 </div>
@@ -222,7 +217,7 @@ export function ScoringResults({ gameRoom, currentPlayer, onContinue }: ScoringR
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {sortedPlayers.map((player, index) => {
+            {[...gameRoom.players].sort((a, b) => b.score - a.score).map((player, index) => {
               const isCurrentPlayer = player.id === currentPlayer.id;
               const rank = index + 1;
               const rankIcon = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
@@ -263,7 +258,7 @@ export function ScoringResults({ gameRoom, currentPlayer, onContinue }: ScoringR
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {gameRoom.currentQuestionIndex + 1} question{gameRoom.currentQuestionIndex + 1 !== 1 ? 's' : ''} played
+                        Round {round.round_number} of {gameRoom.maxQuestions}
                       </p>
                     </div>
                   </div>
@@ -281,11 +276,19 @@ export function ScoringResults({ gameRoom, currentPlayer, onContinue }: ScoringR
       {/* Continue Button */}
       <Card>
         <CardContent className="pt-6">
-          <Button onClick={onContinue} className="w-full" size="lg">
-            {gameRoom.currentQuestionIndex + 1 >= gameRoom.maxQuestions 
-              ? "View Final Results" 
-              : "Continue to Next Question"
-            }
+          <Button 
+            onClick={onContinue} 
+            className="w-full" 
+            size="lg"
+            disabled={!currentPlayer.isHost}
+          >
+            {currentPlayer.isHost ? (
+              round.round_number >= gameRoom.maxQuestions ? 
+                "View Final Results" : 
+                "Continue to Next Round"
+            ) : (
+              "Waiting for host to continue..."
+            )}
           </Button>
         </CardContent>
       </Card>

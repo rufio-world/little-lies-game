@@ -53,6 +53,138 @@ export type Database = {
         }
         Relationships: []
       }
+      game_rounds: {
+        Row: {
+          correct_answer: string
+          created_at: string
+          id: string
+          phase: string
+          question_id: string
+          question_text: string
+          room_id: string
+          round_number: number
+          updated_at: string
+        }
+        Insert: {
+          correct_answer: string
+          created_at?: string
+          id?: string
+          phase?: string
+          question_id: string
+          question_text: string
+          room_id: string
+          round_number: number
+          updated_at?: string
+        }
+        Update: {
+          correct_answer?: string
+          created_at?: string
+          id?: string
+          phase?: string
+          question_id?: string
+          question_text?: string
+          room_id?: string
+          round_number?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_rounds_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "game_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      player_answers: {
+        Row: {
+          answer_text: string
+          id: string
+          player_id: string
+          round_id: string
+          submitted_at: string
+        }
+        Insert: {
+          answer_text: string
+          id?: string
+          player_id: string
+          round_id: string
+          submitted_at?: string
+        }
+        Update: {
+          answer_text?: string
+          id?: string
+          player_id?: string
+          round_id?: string
+          submitted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_answers_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_answers_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "game_rounds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      player_votes: {
+        Row: {
+          id: string
+          player_id: string
+          round_id: string
+          voted_at: string
+          voted_for_answer_id: string | null
+          voted_for_correct: boolean | null
+        }
+        Insert: {
+          id?: string
+          player_id: string
+          round_id: string
+          voted_at?: string
+          voted_for_answer_id?: string | null
+          voted_for_correct?: boolean | null
+        }
+        Update: {
+          id?: string
+          player_id?: string
+          round_id?: string
+          voted_at?: string
+          voted_for_answer_id?: string | null
+          voted_for_correct?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_votes_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_votes_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "game_rounds"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_votes_voted_for_answer_id_fkey"
+            columns: ["voted_for_answer_id"]
+            isOneToOne: false
+            referencedRelation: "player_answers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       players: {
         Row: {
           avatar: string
