@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GameRoom } from "@/lib/gameState";
-import { Trophy, CheckCircle, XCircle, Users, Star } from "lucide-react";
+import { Trophy, CheckCircle, XCircle, Users, Star, Target, Zap } from "lucide-react";
 
 interface ScoringResultsProps {
   gameRoom: GameRoom;
@@ -30,6 +30,21 @@ export function ScoringResults({ gameRoom, currentPlayer, onContinue }: ScoringR
 
   // Sort players by total score
   const sortedPlayers = [...gameRoom.players].sort((a, b) => b.score - a.score);
+
+  // Find who tricked the current player (if they voted wrong)
+  const whoTrickedYou = !votedCorrectly && playerVote 
+    ? currentRound.answers.find(a => a.id === playerVote && !a.isCorrect) 
+    : null;
+  const trickerPlayer = whoTrickedYou 
+    ? gameRoom.players.find(p => p.id === whoTrickedYou.playerId) 
+    : null;
+
+  // Find who the current player tricked (who voted for their fake answer)
+  const playersYouTricked = playerAnswer 
+    ? playerAnswer.votes.map(voterId => 
+        gameRoom.players.find(p => p.id === voterId)
+      ).filter(Boolean)
+    : [];
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -85,24 +100,68 @@ export function ScoringResults({ gameRoom, currentPlayer, onContinue }: ScoringR
               )}
             </div>
 
-            {/* Fooling Others */}
-            {playerAnswer && (
-              <div className="bg-muted/50 p-4 rounded-lg">
+            {/* Who Tricked You */}
+            {trickerPlayer && (
+              <div className="bg-red-50 dark:bg-red-950/30 p-4 rounded-lg border border-red-200 dark:border-red-800">
                 <div className="flex items-center gap-3 mb-2">
-                  <Star className="h-5 w-5 text-yellow-600" />
-                  <h3 className="font-semibold">Players Fooled</h3>
-                  {playerAnswer.votes.length > 0 && (
-                    <Badge variant="default">+{playerAnswer.votes.length} pts</Badge>
-                  )}
+                  <Target className="h-5 w-5 text-red-600" />
+                  <h3 className="font-semibold text-red-900 dark:text-red-100">You Were Tricked By</h3>
                 </div>
-                <p className="text-sm text-muted-foreground mb-2">
-                  Your answer: <span className="font-medium">{playerAnswer.answer}</span>
+                <div className="flex items-center gap-3">
+                  <img 
+                    src={trickerPlayer.avatar} 
+                    alt={trickerPlayer.name}
+                    className="w-8 h-8 rounded-full"
+                  />
+                  <div>
+                    <p className="font-medium text-red-900 dark:text-red-100">{trickerPlayer.name}</p>
+                    <p className="text-sm text-red-700 dark:text-red-300">
+                      Their fake answer: "{whoTrickedYou?.answer}"
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Who You Tricked */}
+            {playerAnswer && playersYouTricked.length > 0 && (
+              <div className="bg-green-50 dark:bg-green-950/30 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                <div className="flex items-center gap-3 mb-3">
+                  <Zap className="h-5 w-5 text-green-600" />
+                  <h3 className="font-semibold text-green-900 dark:text-green-100">You Tricked</h3>
+                  <Badge variant="default" className="bg-green-600">+{playersYouTricked.length} pts</Badge>
+                </div>
+                <p className="text-sm text-green-700 dark:text-green-300 mb-3">
+                  Your fake answer: "{playerAnswer.answer}"
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  {playerAnswer.votes.length === 0 
-                    ? "No players were fooled by your answer"
-                    : `${playerAnswer.votes.length} player(s) voted for your answer!`
-                  }
+                <div className="space-y-2">
+                  {playersYouTricked.map(player => (
+                    <div key={player?.id} className="flex items-center gap-3">
+                      <img 
+                        src={player?.avatar} 
+                        alt={player?.name}
+                        className="w-6 h-6 rounded-full"
+                      />
+                      <span className="text-sm font-medium text-green-900 dark:text-green-100">
+                        {player?.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Summary if no tricks happened */}
+            {!trickerPlayer && playersYouTricked.length === 0 && (
+              <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex items-center gap-3 mb-2">
+                  <Star className="h-5 w-5 text-blue-600" />
+                  <h3 className="font-semibold text-blue-900 dark:text-blue-100">Round Summary</h3>
+                </div>
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  {votedCorrectly 
+                    ? "You voted correctly and weren't tricked by anyone!"
+                    : "You voted correctly but didn't trick any other players."}
                 </p>
               </div>
             )}
@@ -156,31 +215,65 @@ export function ScoringResults({ gameRoom, currentPlayer, onContinue }: ScoringR
       {/* Current Standings */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Current Standings</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Trophy className="h-5 w-5" />
+            Current Scoreboard
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            {sortedPlayers.map((player, index) => (
-              <div 
-                key={player.id}
-                className={`flex items-center justify-between p-3 rounded-lg ${
-                  player.id === currentPlayer.id ? 'bg-primary/10 border border-primary/20' : 'bg-muted/50'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold">
-                    {index + 1}
+          <div className="space-y-3">
+            {sortedPlayers.map((player, index) => {
+              const isCurrentPlayer = player.id === currentPlayer.id;
+              const rank = index + 1;
+              const rankIcon = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
+              
+              return (
+                <div 
+                  key={player.id}
+                  className={`flex items-center justify-between p-4 rounded-lg border ${
+                    isCurrentPlayer 
+                      ? 'bg-primary/10 border-primary/20 ring-2 ring-primary/10' 
+                      : 'bg-muted/50 border-border'
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
+                        rank === 1 ? 'bg-yellow-100 dark:bg-yellow-900/30' :
+                        rank === 2 ? 'bg-gray-100 dark:bg-gray-900/30' :
+                        rank === 3 ? 'bg-orange-100 dark:bg-orange-900/30' :
+                        'bg-muted'
+                      }`}>
+                        {rankIcon}
+                      </div>
+                      <img 
+                        src={player.avatar} 
+                        alt={player.name}
+                        className="w-8 h-8 rounded-full"
+                      />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">{player.name}</span>
+                        {isCurrentPlayer && (
+                          <Badge variant="secondary" className="text-xs">You</Badge>
+                        )}
+                        {player.isHost && (
+                          <Badge variant="outline" className="text-xs">Host</Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {gameRoom.currentQuestionIndex + 1} question{gameRoom.currentQuestionIndex + 1 !== 1 ? 's' : ''} played
+                      </p>
+                    </div>
                   </div>
-                  <span className="font-medium">{player.name}</span>
-                  {player.id === currentPlayer.id && (
-                    <Badge variant="secondary" className="text-xs">You</Badge>
-                  )}
+                  <div className="text-right">
+                    <div className="text-xl font-bold text-primary">{player.score}</div>
+                    <p className="text-xs text-muted-foreground">points</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="font-bold">{player.score} pts</div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>
