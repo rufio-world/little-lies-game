@@ -40,6 +40,25 @@ export default function WaitingRoom() {
     }
   }, [gameRoom, navigate]);
 
+  // Listen for game state changes and redirect when game starts
+  useEffect(() => {
+    if (gameRoom && gameRoom.gameState !== 'waiting' && currentPlayer) {
+      toast({
+        title: "Game started!",
+        description: "Redirecting to game..."
+      });
+      
+      setTimeout(() => {
+        navigate('/game-round', { 
+          state: { 
+            gameRoom,
+            currentPlayer: currentPlayer
+          } 
+        });
+      }, 1000);
+    }
+  }, [gameRoom?.gameState, currentPlayer, navigate, toast]);
+
   const copyGameCode = () => {
     if (gameCode) {
       navigator.clipboard.writeText(gameCode);
