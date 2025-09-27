@@ -32,6 +32,11 @@ export default function Auth() {
         navigate('/');
       }
     });
+
+    // Check URL hash for signup mode
+    if (window.location.hash === '#signup') {
+      setIsLogin(false);
+    }
   }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {

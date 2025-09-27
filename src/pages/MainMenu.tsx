@@ -71,15 +71,25 @@ export default function MainMenu() {
               </Button>
             </>
           ) : (
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => navigate('/auth')}
-              className="hover:bg-primary/10"
-            >
-              <LogIn className="h-4 w-4 mr-2" />
-              Sign In
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/auth')}
+                className="hover:bg-primary/10"
+              >
+                <LogIn className="h-4 w-4 mr-2" />
+                Sign In
+              </Button>
+              <Button 
+                variant="default" 
+                size="sm"
+                onClick={() => navigate('/auth#signup')}
+                className="hover:bg-primary/90"
+              >
+                Sign Up
+              </Button>
+            </div>
           )}
         </div>
         <LanguageToggle />
