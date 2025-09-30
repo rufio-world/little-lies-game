@@ -10,6 +10,7 @@ import { ScoringResults } from "@/components/game/ScoringResults";
 import { FinalResults } from "@/components/game/FinalResults";
 import { useGameRound } from "@/hooks/useGameRound";
 import { GameRoundService } from "@/services/gameRoundService";
+import { GameService } from "@/services/gameService";
 import popCultureEn from "@/data/popCulture.json";
 import popCultureEs from "@/data/popCultureEs.json";
 
@@ -80,30 +81,6 @@ export default function GameRound() {
     advancePhase();
   }, [allAnswersSubmitted, allVotesSubmitted, currentRound, gameRoom, currentPlayer]);
 
-  const startNewRound = async (room: GameRoom, questions: Question[]) => {
-    try {
-      const currentQuestion = questions[room.currentQuestionIndex];
-      if (!currentQuestion) return;
-
-      await GameRoundService.createRound(
-        room.id,
-        room.currentQuestionIndex + 1,
-        currentQuestion
-      );
-
-      toast({
-        title: "New round started!",
-        description: "Get ready to answer the question."
-      });
-    } catch (error) {
-      console.error('Error starting round:', error);
-      toast({
-        title: "Error",
-        description: "Failed to start new round",
-        variant: "destructive"
-      });
-    }
-  };
 
   const getCurrentQuestion = () => {
     if (!allQuestions.length || !gameRoom || !currentRound) return null;
@@ -221,16 +198,38 @@ export default function GameRound() {
             onContinue={async () => {
               if (!currentPlayer.isHost) return;
 
-              const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
-              
-              if (nextQuestionIndex >= gameRoom.maxQuestions || nextQuestionIndex >= allQuestions.length) {
-                // Game finished - navigate to final results
-                navigate('/final-results', { 
-                  state: { gameRoom, currentPlayer } 
+              try {
+                const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
+                
+                if (nextQuestionIndex >= gameRoom.maxQuestions || nextQuestionIndex >= allQuestions.length) {
+                  // Game finished - navigate to final results
+                  navigate('/final-results', { 
+                    state: { gameRoom, currentPlayer } 
+                  });
+                } else {
+                  // Update the question index in the database first
+                  const updatedIndex = await GameService.advanceToNextQuestion(gameRoom.id, currentPlayer.id);
+                  
+                  // Then start next round with the updated index
+                  const nextQuestion = allQuestions[nextQuestionIndex];
+                  await GameRoundService.createRound(
+                    gameRoom.id,
+                    updatedIndex + 1,
+                    nextQuestion
+                  );
+                  
+                  toast({
+                    title: "New round started!",
+                    description: "Get ready for the next question."
+                  });
+                }
+              } catch (error) {
+                console.error('Error creating new round:', error);
+                toast({
+                  title: "Error",
+                  description: "Failed to create new round",
+                  variant: "destructive"
                 });
-              } else {
-                // Start next round
-                await startNewRound({ ...gameRoom, currentQuestionIndex: nextQuestionIndex }, allQuestions);
               }
             }}
           />

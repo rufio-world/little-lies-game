@@ -148,6 +148,47 @@ export class GameService {
     }
   }
 
+  static async advanceToNextQuestion(roomId: string, hostPlayerId: string): Promise<number> {
+    // Verify the requester is the host
+    const { data: hostData, error: hostError } = await supabase
+      .from('players')
+      .select('is_host, room_id')
+      .eq('id', hostPlayerId)
+      .eq('room_id', roomId)
+      .single();
+
+    if (hostError || !hostData?.is_host) {
+      throw new Error('Only the host can advance questions');
+    }
+
+    // Get current index and increment it
+    const { data: roomData, error: fetchError } = await supabase
+      .from('game_rooms')
+      .select('current_question_index')
+      .eq('id', roomId)
+      .single();
+
+    if (fetchError || !roomData) {
+      throw new Error('Failed to fetch game room');
+    }
+
+    const nextIndex = roomData.current_question_index + 1;
+
+    // Update the current question index
+    const { error } = await supabase
+      .from('game_rooms')
+      .update({ 
+        current_question_index: nextIndex
+      })
+      .eq('id', roomId);
+
+    if (error) {
+      throw new Error(`Failed to advance question: ${error.message}`);
+    }
+
+    return nextIndex;
+  }
+
   static async kickPlayer(playerId: string, hostPlayerId: string): Promise<void> {
     // Verify the requester is the host
     const { data: hostData, error: hostError } = await supabase
