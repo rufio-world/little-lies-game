@@ -58,7 +58,15 @@ export function useGameRound(roomId: string, playerId: string): UseGameRoundRetu
 
   // Reset answers and votes when round changes
   useEffect(() => {
-    if (!currentRound) return;
+    if (!currentRound) {
+      setAnswers([]);
+      setVotes([]);
+      return;
+    }
+
+    // Immediately clear old data to prevent race conditions
+    setAnswers([]);
+    setVotes([]);
 
     const loadRoundData = async () => {
       try {
