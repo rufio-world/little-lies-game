@@ -42,6 +42,9 @@ export function useGameRound(roomId: string, playerId: string): UseGameRoundRetu
           ]);
           setAnswers(roundAnswers);
           setVotes(roundVotes);
+        } else {
+          setAnswers([]);
+          setVotes([]);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load round data');
@@ -52,6 +55,26 @@ export function useGameRound(roomId: string, playerId: string): UseGameRoundRetu
 
     loadRoundData();
   }, [roomId]);
+
+  // Reset answers and votes when round changes
+  useEffect(() => {
+    if (!currentRound) return;
+
+    const loadRoundData = async () => {
+      try {
+        const [roundAnswers, roundVotes] = await Promise.all([
+          GameRoundService.getRoundAnswers(currentRound.id),
+          GameRoundService.getRoundVotes(currentRound.id)
+        ]);
+        setAnswers(roundAnswers);
+        setVotes(roundVotes);
+      } catch (err) {
+        console.error('Error loading round data:', err);
+      }
+    };
+
+    loadRoundData();
+  }, [currentRound?.id]);
 
   // Set up real-time subscriptions
   useEffect(() => {
