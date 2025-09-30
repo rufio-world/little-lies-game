@@ -39,6 +39,7 @@ export function useGameRoom(gameCode: string) {
 
     let roomChannel: any;
     let playersChannel: any;
+    let mounted = true;
 
     const setupRealtimeSubscription = async () => {
       try {
@@ -59,6 +60,8 @@ export function useGameRoom(gameCode: string) {
         }
 
         console.log('✅ Room data loaded:', roomData);
+        
+        if (!mounted) return;
 
         // Fetch initial players data
         const { data: playersData, error: playersError } = await supabase
@@ -74,6 +77,8 @@ export function useGameRoom(gameCode: string) {
         }
 
         console.log('✅ Players data loaded:', playersData);
+        
+        if (!mounted) return;
 
         const appPlayers: Player[] = playersData.map((p: DatabasePlayer) => ({
           id: p.id,
@@ -117,21 +122,31 @@ export function useGameRoom(gameCode: string) {
             (payload) => {
               console.log('🔄 Game room updated:', payload);
               const updatedRoom = payload.new as DatabaseGameRoom;
-              setGameRoom(prev => prev ? {
-                ...prev,
-                name: updatedRoom.name,
-                gameState: updatedRoom.game_state as any,
-                currentQuestionIndex: updatedRoom.current_question_index,
-                selectedPacks: updatedRoom.selected_packs || [],
-                maxQuestions: updatedRoom.max_questions
-              } : null);
+              if (!mounted) return;
               
-              // Also update players state to trigger gameRoom update
+              setGameRoom(prev => {
+                if (!prev) return null;
+                const updated = {
+                  ...prev,
+                  name: updatedRoom.name,
+                  gameState: updatedRoom.game_state as any,
+                  currentQuestionIndex: updatedRoom.current_question_index,
+                  selectedPacks: updatedRoom.selected_packs || [],
+                  maxQuestions: updatedRoom.max_questions
+                };
+                console.log('🎮 Game state changed to:', updated.gameState);
+                return updated;
+              });
+              
+              // Force re-render
               setPlayers(prevPlayers => [...prevPlayers]);
             }
           )
           .subscribe((status) => {
             console.log('🔗 Game room subscription status:', status);
+            if (status === 'SUBSCRIBED') {
+              console.log('✅ Successfully subscribed to game room updates');
+            }
           });
 
         // Subscribe to players changes
@@ -214,6 +229,8 @@ export function useGameRoom(gameCode: string) {
 
     // Cleanup subscriptions on unmount
     return () => {
+      console.log('🧹 Cleaning up game room subscriptions');
+      mounted = false;
       if (roomChannel) {
         supabase.removeChannel(roomChannel);
       }

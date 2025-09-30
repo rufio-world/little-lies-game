@@ -42,7 +42,10 @@ export default function WaitingRoom() {
 
   // Listen for game state changes and redirect when game starts
   useEffect(() => {
+    console.log('🎮 WaitingRoom - Game state:', gameRoom?.gameState, 'Current player:', currentPlayer?.name);
+    
     if (gameRoom && gameRoom.gameState !== 'waiting' && currentPlayer) {
+      console.log('🚀 Game started! Redirecting...');
       toast({
         title: "Game started!",
         description: "Redirecting to game..."
@@ -55,7 +58,7 @@ export default function WaitingRoom() {
             currentPlayer: currentPlayer
           } 
         });
-      }, 1000);
+      }, 500);
     }
   }, [gameRoom?.gameState, currentPlayer, navigate, toast]);
 
@@ -84,22 +87,24 @@ export default function WaitingRoom() {
     }
 
     try {
+      console.log('🎮 Host starting game...');
       await GameService.startGame(gameRoom.id, currentPlayer.id);
+      console.log('✅ Game start command sent');
       
       toast({
         title: "Starting game...",
-        description: "Redirecting to game..."
+        description: "Loading first question..."
       });
       
-      // Navigate to game
+      // Host navigates immediately, other players will follow via real-time
       setTimeout(() => {
         navigate('/game-round', { 
           state: { 
-            gameRoom,
+            gameRoom: { ...gameRoom, gameState: 'question-display' },
             currentPlayer: currentPlayer
           } 
         });
-      }, 1500);
+      }, 1000);
     } catch (error) {
       console.error('Error starting game:', error);
       toast({
