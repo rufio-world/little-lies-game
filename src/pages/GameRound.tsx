@@ -213,6 +213,9 @@ export default function GameRound() {
                   // Update the question index in the database first
                   const updatedIndex = await GameService.advanceToNextQuestion(gameRoom.id, currentPlayer.id);
                   
+                  // Update local gameRoom state
+                  setGameRoom(prev => prev ? { ...prev, currentQuestionIndex: updatedIndex } : null);
+                  
                   // Then start next round with the updated index
                   const nextQuestion = allQuestions[nextQuestionIndex];
                   await GameRoundService.createRound(

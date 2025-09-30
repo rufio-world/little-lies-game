@@ -61,12 +61,16 @@ export function useGameRound(roomId: string, playerId: string): UseGameRoundRetu
     if (!currentRound) {
       setAnswers([]);
       setVotes([]);
+      setAllAnswersSubmitted(false);
+      setAllVotesSubmitted(false);
       return;
     }
 
-    // Immediately clear old data to prevent race conditions
+    // Immediately clear old data and reset completion flags to prevent race conditions
     setAnswers([]);
     setVotes([]);
+    setAllAnswersSubmitted(false);
+    setAllVotesSubmitted(false);
 
     const loadRoundData = async () => {
       try {
