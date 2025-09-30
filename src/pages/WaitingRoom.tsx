@@ -8,7 +8,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useToast } from "@/hooks/use-toast";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { storage } from "@/lib/storage";
-import { Player } from "@/lib/gameState";
+import { Player, GameLogic } from "@/lib/gameState";
 import { useGameRoom } from "@/hooks/useGameRoom";
 import { GameService } from "@/services/gameService";
 import { Copy, Crown, Users, Play, AlertTriangle, X } from "lucide-react";
@@ -88,15 +88,41 @@ export default function WaitingRoom() {
 
     try {
       console.log('🎮 Host starting game...');
+      
+      // Import the question packs dynamically
+      const { default: popCultureEn } = await import('@/data/popCulture.json');
+      const { default: popCultureEs } = await import('@/data/popCultureEs.json');
+      
+      // Load questions
+      const questionPacks: any[] = [];
+      if (gameRoom.selectedPacks.includes('pop_culture')) {
+        questionPacks.push(popCultureEn);
+        questionPacks.push(popCultureEs);
+      }
+      
+      const allQuestions = questionPacks.flatMap((pack: any) => pack.questions);
+      const shuffledQuestions = GameLogic.shuffleArray(allQuestions);
+      const firstQuestion = shuffledQuestions[0];
+      
+      if (!firstQuestion) {
+        throw new Error('No questions available');
+      }
+      
+      // Start the game and create the first round
       await GameService.startGame(gameRoom.id, currentPlayer.id);
-      console.log('✅ Game start command sent');
+      
+      // Import GameRoundService dynamically
+      const { GameRoundService } = await import('@/services/gameRoundService');
+      await GameRoundService.createRound(gameRoom.id, 1, firstQuestion);
+      
+      console.log('✅ Game started and first round created');
       
       toast({
         title: "Starting game...",
         description: "Loading first question..."
       });
       
-      // Host navigates immediately, other players will follow via real-time
+      // Host navigates immediately
       setTimeout(() => {
         navigate('/game-round', { 
           state: { 

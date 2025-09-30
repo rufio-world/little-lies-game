@@ -45,11 +45,6 @@ export default function GameRound() {
     // Set all questions for the game
     const questions = questionPacks.flatMap(pack => pack.questions);
     setAllQuestions(GameLogic.shuffleArray(questions));
-
-    // Start first round if this is the host and no round exists
-    if (room.gameState === 'waiting' && player?.isHost) {
-      startNewRound(room, questions);
-    }
   }, [location.state, navigate]);
 
   const {
