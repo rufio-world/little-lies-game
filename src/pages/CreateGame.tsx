@@ -22,6 +22,7 @@ export default function CreateGame() {
   const [gameCode, setGameCode] = useState(GameLogic.generateGameCode());
   const [selectedPacks, setSelectedPacks] = useState<string[]>(["pop_culture"]);
   const [maxQuestions, setMaxQuestions] = useState<number>(10);
+  const [language, setLanguage] = useState<'en' | 'es'>('en');
 
   const ownedPacks = storage.getOwnedPacks();
   
@@ -86,6 +87,7 @@ export default function CreateGame() {
         name: gameName,
         selectedPacks,
         maxQuestions,
+        language,
         hostPlayer: {
           name: profile.name,
           avatar: profile.avatar,
@@ -194,6 +196,23 @@ export default function CreateGame() {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Language Selection */}
+            <div className="space-y-2">
+              <Label>{t('createGame.language')}</Label>
+              <Select 
+                value={language} 
+                onValueChange={(value: 'en' | 'es') => setLanguage(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="es">Español</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Number of Questions */}

@@ -22,6 +22,7 @@ export type Database = {
           game_state: string | null
           host_id: string
           id: string
+          language: string
           max_questions: number | null
           name: string
           selected_packs: string[] | null
@@ -34,6 +35,7 @@ export type Database = {
           game_state?: string | null
           host_id: string
           id?: string
+          language?: string
           max_questions?: number | null
           name: string
           selected_packs?: string[] | null
@@ -46,6 +48,7 @@ export type Database = {
           game_state?: string | null
           host_id?: string
           id?: string
+          language?: string
           max_questions?: number | null
           name?: string
           selected_packs?: string[] | null

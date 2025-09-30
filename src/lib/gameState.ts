@@ -54,6 +54,7 @@ export interface GameRoom {
   selectedPacks: string[];
   maxQuestions: number;
   currentQuestionIndex: number;
+  language: 'en' | 'es';
   currentRound?: GameRound;
   gameState: GameState;
   rounds: GameRound[];
@@ -153,6 +154,7 @@ export const createMockGameRoom = (): GameRoom => ({
   selectedPacks: ['pop_culture'],
   maxQuestions: 5,
   currentQuestionIndex: 0,
+  language: 'en',
   gameState: 'waiting',
   rounds: [],
   createdAt: Date.now()

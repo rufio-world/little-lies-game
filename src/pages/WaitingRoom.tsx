@@ -89,15 +89,16 @@ export default function WaitingRoom() {
     try {
       console.log('🎮 Host starting game...');
       
-      // Import the question packs dynamically
-      const { default: popCultureEn } = await import('@/data/popCulture.json');
-      const { default: popCultureEs } = await import('@/data/popCultureEs.json');
-      
-      // Load questions
+      // Import the question pack based on selected language
       const questionPacks: any[] = [];
       if (gameRoom.selectedPacks.includes('pop_culture')) {
-        questionPacks.push(popCultureEn);
-        questionPacks.push(popCultureEs);
+        if (gameRoom.language === 'es') {
+          const { default: popCultureEs } = await import('@/data/popCultureEs.json');
+          questionPacks.push(popCultureEs);
+        } else {
+          const { default: popCultureEn } = await import('@/data/popCulture.json');
+          questionPacks.push(popCultureEn);
+        }
       }
       
       const allQuestions = questionPacks.flatMap((pack: any) => pack.questions);

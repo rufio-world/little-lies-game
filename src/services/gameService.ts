@@ -5,6 +5,7 @@ export interface CreateGameParams {
   name: string;
   selectedPacks: string[];
   maxQuestions: number;
+  language: 'en' | 'es';
   hostPlayer: {
     name: string;
     avatar: string;
@@ -37,6 +38,7 @@ export class GameService {
         host_id: hostPlayerId,
         selected_packs: params.selectedPacks,
         max_questions: params.maxQuestions,
+        language: params.language,
         game_state: 'waiting'
       })
       .select()

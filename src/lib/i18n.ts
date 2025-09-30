@@ -31,6 +31,7 @@ export const translations = {
       gameCode: "Game Code",
       generate: "Generate Code",
       selectPacks: "Select Question Packs",
+      language: "Language",
       numberOfQuestions: "Number of Questions",
       createRoom: "Create Room",
       back: "Back"
@@ -157,6 +158,7 @@ export const translations = {
       gameCode: "Código de Partida",
       generate: "Generar Código",
       selectPacks: "Seleccionar Paquetes de Preguntas",
+      language: "Idioma",
       numberOfQuestions: "Número de Preguntas",
       createRoom: "Crear Sala",
       back: "Volver"

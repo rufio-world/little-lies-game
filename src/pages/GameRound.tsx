@@ -36,11 +36,14 @@ export default function GameRound() {
     setGameRoom(room);
     setCurrentPlayer(player);
 
-    // Load question packs based on selected packs
+    // Load question pack based on selected language
     const questionPacks: QuestionPack[] = [];
     if (room.selectedPacks.includes('pop_culture')) {
-      questionPacks.push(popCultureEn as QuestionPack);
-      questionPacks.push(popCultureEs as QuestionPack);
+      if (room.language === 'es') {
+        questionPacks.push(popCultureEs as QuestionPack);
+      } else {
+        questionPacks.push(popCultureEn as QuestionPack);
+      }
     }
 
     // Set all questions for the game
