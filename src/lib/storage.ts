@@ -1,3 +1,5 @@
+import { supabase } from "@/integrations/supabase/client";
+
 export interface PlayerProfile {
   name: string;
   avatar: string;
@@ -24,6 +26,32 @@ const STORAGE_KEYS = {
 } as const;
 
 class StorageManager {
+  // Get player profile - checks auth first, then falls back to local storage
+  async getPlayerProfile(): Promise<PlayerProfile> {
+    // Check if user is authenticated
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (session?.user) {
+      // Fetch profile from Supabase
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('username, avatar')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      
+      if (profile && !error) {
+        return {
+          name: profile.username || 'Player',
+          avatar: profile.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${session.user.id}`,
+          isGuest: false
+        };
+      }
+    }
+    
+    // Fall back to local storage (guest profile)
+    return this.getLocalPlayerProfile();
+  }
+
   // Language
   getLanguage(): 'en' | 'es' {
     return localStorage.getItem(STORAGE_KEYS.LANGUAGE) as 'en' | 'es' || 'en';
@@ -33,8 +61,8 @@ class StorageManager {
     localStorage.setItem(STORAGE_KEYS.LANGUAGE, language);
   }
 
-  // Player Profile
-  getPlayerProfile(): PlayerProfile {
+  // Player Profile (local storage only)
+  getLocalPlayerProfile(): PlayerProfile {
     const saved = localStorage.getItem(STORAGE_KEYS.PLAYER_PROFILE);
     if (saved) {
       try {

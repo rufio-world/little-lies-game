@@ -39,7 +39,7 @@ export default function JoinGame() {
     setIsJoining(true);
     
     try {
-      const profile = storage.getPlayerProfile();
+      const profile = await storage.getPlayerProfile();
       const { roomId, playerId } = await GameService.joinGame({
         gameCode: gameCode.toUpperCase(),
         player: {

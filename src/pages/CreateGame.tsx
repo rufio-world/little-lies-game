@@ -82,7 +82,7 @@ export default function CreateGame() {
     }
 
     try {
-      const profile = storage.getPlayerProfile();
+      const profile = await storage.getPlayerProfile();
       const { gameCode: createdCode, roomId, playerId } = await GameService.createGame({
         name: gameName,
         selectedPacks,

@@ -43,7 +43,7 @@ export default function Settings() {
   const { toast } = useToast();
   const { user } = useAuth();
   
-  const [profile, setProfile] = useState<PlayerProfile>(storage.getPlayerProfile());
+  const [profile, setProfile] = useState<PlayerProfile>(storage.getLocalPlayerProfile());
   const [isGuestMode, setIsGuestMode] = useState(profile.isGuest);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -58,9 +58,13 @@ export default function Settings() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const currentProfile = storage.getPlayerProfile();
-    setProfile(currentProfile);
-    setIsGuestMode(currentProfile.isGuest);
+    const loadProfile = async () => {
+      const currentProfile = await storage.getPlayerProfile();
+      setProfile(currentProfile);
+      setIsGuestMode(currentProfile.isGuest);
+    };
+    
+    loadProfile();
 
     // If user is authenticated, fetch their profile
     if (user) {
