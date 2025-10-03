@@ -33,8 +33,22 @@ export default function GameRound() {
     const room = location.state.gameRoom as GameRoom;
     const player = location.state.currentPlayer;
     
+    // Validate that the player belongs to this room
+    const playerInRoom = room.players.find(p => p.id === player.id);
+    
+    if (!playerInRoom) {
+      console.error('Player not found in room!', { playerId: player.id, roomId: room.id });
+      toast({
+        title: "Error",
+        description: "You are not part of this game room",
+        variant: "destructive"
+      });
+      navigate('/');
+      return;
+    }
+    
     setGameRoom(room);
-    setCurrentPlayer(player);
+    setCurrentPlayer(playerInRoom);
 
     // Load question pack based on selected language
     const questionPacks: QuestionPack[] = [];
