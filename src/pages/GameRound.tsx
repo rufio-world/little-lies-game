@@ -82,13 +82,23 @@ export default function GameRound() {
 
     const advancePhase = async () => {
       try {
-        if (currentRound.phase === 'answer-submission' && allAnswersSubmitted) {
-          await GameRoundService.updateRoundPhase(currentRound.id, 'voting');
-        } else if (currentRound.phase === 'voting' && allVotesSubmitted) {
-          // Calculate scores and advance to results
-          const scores = await GameRoundService.calculateRoundScores(currentRound.id);
-          await GameRoundService.updatePlayerScores(gameRoom.id, scores);
-          await GameRoundService.updateRoundPhase(currentRound.id, 'results');
+        // Double-check completion by querying the actual database state
+        // to prevent race conditions with stale flags
+        if (currentRound.phase === 'answer-submission') {
+          const actuallyComplete = await GameRoundService.checkAllAnswersSubmitted(currentRound.id, gameRoom.id);
+          if (actuallyComplete && allAnswersSubmitted) {
+            console.log('✅ All answers submitted, advancing to voting');
+            await GameRoundService.updateRoundPhase(currentRound.id, 'voting');
+          }
+        } else if (currentRound.phase === 'voting') {
+          const actuallyComplete = await GameRoundService.checkAllVotesSubmitted(currentRound.id, gameRoom.id);
+          if (actuallyComplete && allVotesSubmitted) {
+            console.log('✅ All votes submitted, advancing to results');
+            // Calculate scores and advance to results
+            const scores = await GameRoundService.calculateRoundScores(currentRound.id);
+            await GameRoundService.updatePlayerScores(gameRoom.id, scores);
+            await GameRoundService.updateRoundPhase(currentRound.id, 'results');
+          }
         }
       } catch (error) {
         console.error('Error advancing phase:', error);
