@@ -245,11 +245,11 @@ export function useGameRoom(gameCode: string) {
 
   // Update game room with current players whenever players change
   useEffect(() => {
-    if (gameRoom && players) {
-      console.log('🔄 Updating gameRoom with players:', players);
-      setGameRoom(prev => prev ? { ...prev, players } : null);
-    }
-  }, [players, gameRoom?.id]); // Only depend on players and room id to avoid infinite loops
+    setGameRoom(prev => {
+      if (!prev) return null;
+      return { ...prev, players };
+    });
+  }, [players]);
 
   return {
     gameRoom,

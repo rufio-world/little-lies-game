@@ -9,6 +9,7 @@ import { VotingPhase } from "@/components/game/VotingPhase";
 import { ScoringResults } from "@/components/game/ScoringResults";
 import { FinalResults } from "@/components/game/FinalResults";
 import { useGameRound } from "@/hooks/useGameRound";
+import { useGameRoom } from "@/hooks/useGameRoom";
 import { GameRoundService } from "@/services/gameRoundService";
 import { GameService } from "@/services/gameService";
 import popCultureEn from "@/data/popCulture.json";
@@ -20,9 +21,12 @@ export default function GameRound() {
   const { t } = useTranslation();
   const { toast } = useToast();
 
-  const [gameRoom, setGameRoom] = useState<GameRoom | null>(null);
+  const [gameCode, setGameCode] = useState<string>('');
   const [allQuestions, setAllQuestions] = useState<Question[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState<any>(null);
+
+  // Get real-time game room updates including player scores
+  const { gameRoom: liveGameRoom, loading: roomLoading } = useGameRoom(gameCode);
 
   useEffect(() => {
     if (!location.state?.gameRoom) {
@@ -47,7 +51,7 @@ export default function GameRound() {
       return;
     }
     
-    setGameRoom(room);
+    setGameCode(room.code);
     setCurrentPlayer(playerInRoom);
 
     // Load question pack based on selected language
@@ -64,6 +68,9 @@ export default function GameRound() {
     const questions = questionPacks.flatMap(pack => pack.questions);
     setAllQuestions(GameLogic.shuffleArray(questions));
   }, [location.state, navigate]);
+
+  // Use live game room from hook, which includes real-time player score updates
+  const gameRoom = liveGameRoom;
 
   const {
     currentRound,
@@ -96,7 +103,9 @@ export default function GameRound() {
             console.log('✅ All votes submitted, advancing to results');
             // Calculate scores and advance to results
             const scores = await GameRoundService.calculateRoundScores(currentRound.id);
+            console.log('💯 Calculated scores:', scores);
             await GameRoundService.updatePlayerScores(gameRoom.id, scores);
+            console.log('💾 Scores updated in database');
             await GameRoundService.updateRoundPhase(currentRound.id, 'results');
           }
         }
@@ -114,7 +123,7 @@ export default function GameRound() {
     return allQuestions.find(q => q.id === currentRound.question_id);
   };
 
-  if (!gameRoom || !allQuestions.length || !currentPlayer || roundLoading) {
+  if (!gameRoom || !allQuestions.length || !currentPlayer || roundLoading || roomLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
         <div className="text-center">
@@ -236,9 +245,6 @@ export default function GameRound() {
                 } else {
                   // Update the question index in the database first
                   const updatedIndex = await GameService.advanceToNextQuestion(gameRoom.id, currentPlayer.id);
-                  
-                  // Update local gameRoom state
-                  setGameRoom(prev => prev ? { ...prev, currentQuestionIndex: updatedIndex } : null);
                   
                   // Then start next round with the updated index
                   const nextQuestion = allQuestions[nextQuestionIndex];
