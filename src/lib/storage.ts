@@ -81,7 +81,7 @@ class StorageManager {
   }
 
   createGuestProfile(): PlayerProfile {
-    const guestNames = ['Player', 'Gamer', 'Trivia Master', 'Quiz Ninja', 'Brain'];
+    const guestNames = ['Big Brain', 'Smart Pants', 'Gamer', 'Trivia Master', 'Quiz Ninja', 'I know it all'];
     const randomName = guestNames[Math.floor(Math.random() * guestNames.length)];
     const randomId = Math.random().toString(36).substring(2, 8).toUpperCase();
     
