@@ -201,13 +201,26 @@ export class GameRoundService {
   // Update player scores with proper SQL
   static async updatePlayerScores(roomId: string, scoreUpdates: Record<string, number>): Promise<void> {
     const updates = Object.entries(scoreUpdates).map(async ([playerId, scoreIncrease]) => {
-      const { error } = await supabase
+      // First, fetch the current score
+      const { data: player, error: fetchError } = await supabase
         .from('players')
-        .update({ score: scoreIncrease }) // This will be handled by a stored procedure later
+        .select('score')
+        .eq('id', playerId)
+        .eq('room_id', roomId)
+        .single();
+      
+      if (fetchError) throw fetchError;
+      
+      // Then increment the score
+      const newScore = (player?.score || 0) + scoreIncrease;
+      
+      const { error: updateError } = await supabase
+        .from('players')
+        .update({ score: newScore })
         .eq('id', playerId)
         .eq('room_id', roomId);
       
-      if (error) throw error;
+      if (updateError) throw updateError;
     });
 
     await Promise.all(updates);
