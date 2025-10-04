@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GameRoom } from "@/lib/gameState";
 import { Trophy, Crown, Medal, Star, RotateCcw, Home } from "lucide-react";
+import { PlayerAvatar } from "@/components/PlayerAvatar";
 
 interface FinalResultsProps {
   gameRoom: GameRoom;
@@ -55,8 +56,11 @@ export function FinalResults({ gameRoom, onPlayAgain, onReturnToMenu }: FinalRes
         <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 p-6 text-center">
           <Crown className="h-12 w-12 mx-auto text-white mb-3" />
           <h2 className="text-2xl font-bold text-white mb-2">🎉 Winner! 🎉</h2>
-          <p className="text-xl text-white font-semibold">{winner.name}</p>
-          <p className="text-white/90">with {winner.score} points</p>
+          <div className="flex flex-col items-center gap-3 mt-4">
+            <PlayerAvatar avatar={winner.avatar} name={winner.name} size="lg" />
+            <p className="text-xl text-white font-semibold">{winner.name}</p>
+            <p className="text-white/90">with {winner.score} points</p>
+          </div>
         </div>
       </Card>
 
@@ -89,6 +93,7 @@ export function FinalResults({ gameRoom, onPlayAgain, onReturnToMenu }: FinalRes
                           #{rank}
                         </span>
                       </div>
+                      <PlayerAvatar avatar={player.avatar} name={player.name} size="md" />
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-lg font-semibold">{player.name}</span>
@@ -96,7 +101,7 @@ export function FinalResults({ gameRoom, onPlayAgain, onReturnToMenu }: FinalRes
                           {player.isHost && <Badge variant="outline">Host</Badge>}
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          Played {gameRoom.rounds.length} questions
+                          {player.score} {player.score === 1 ? 'point' : 'points'}
                         </p>
                       </div>
                     </div>
