@@ -145,7 +145,7 @@ export const createMockGameRoom = (): GameRoom => ({
     {
       id: 'player-1',
       name: 'Alice',
-      avatar: 'https://api.dicebear.com/7.x/adventurer/svg?seed=alice',
+      avatar: 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=alice',
       score: 0,
       isHost: true,
       isGuest: false

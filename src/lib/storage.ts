@@ -42,7 +42,7 @@ class StorageManager {
       if (profile && !error) {
         return {
           name: profile.username || 'Player',
-          avatar: profile.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${session.user.id}`,
+          avatar: profile.avatar || `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${session.user.id}`,
           isGuest: false
         };
       }
@@ -87,7 +87,7 @@ class StorageManager {
     
     return {
       name: `${randomName}_${randomId}`,
-      avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${randomId}`,
+      avatar: `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${randomId}`,
       isGuest: true,
       guestId: randomId
     };
