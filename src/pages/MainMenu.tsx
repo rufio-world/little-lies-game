@@ -102,7 +102,7 @@ export default function MainMenu() {
           <img 
             src={logo} 
             alt="Little Lies Logo" 
-            className="w-48 h-48 mx-auto mb-6"
+            className="w-50 h-50 mx-auto mb-6"
           />
           <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
             {t('mainMenu.title')}
