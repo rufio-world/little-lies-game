@@ -3,6 +3,7 @@ export const translations = {
     // Main Menu
     mainMenu: {
       title: "Little Lies",
+      subtitle: "The ultimate bluff and trivia game",
       newGame: "New Game",
       joinGame: "Join Game", 
       settings: "Settings",
@@ -130,6 +131,7 @@ export const translations = {
     // Main Menu
     mainMenu: {
       title: "Pequeñas Mentiras",
+      subtitle: "Un juego de preguntas y engaños",
       newGame: "Nueva Partida",
       joinGame: "Unirse a Partida",
       settings: "Configuración",

@@ -5,6 +5,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { Gamepad2, Users, Settings, Store, Trophy, LogOut, LogIn, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import logo from "@/assets/logo.png";
 
 export default function MainMenu() {
   const { t } = useTranslation();
@@ -98,11 +99,16 @@ export default function MainMenu() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center p-6">
         <div className="text-center mb-8">
+          <img 
+            src={logo} 
+            alt="Little Lies Logo" 
+            className="w-32 h-32 mx-auto mb-6"
+          />
           <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
             {t('mainMenu.title')}
           </h1>
           <p className="text-muted-foreground text-lg">
-            The ultimate bluff and trivia game
+            {t('mainMenu.subtitle')}
           </p>
         </div>
 
