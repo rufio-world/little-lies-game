@@ -445,4 +445,13 @@
     },
     {
       "id": "pc_0129",
-      "question": "¿Cuál fue el título que un ejecutivo propuso para 'Regreso al Futuro' y
+      "question": "¿Cuál fue el título que un ejecutivo propuso para 'Regreso al Futuro' y que casi se usa?",
+      "correct_answer": "Spaceman from Pluto"
+    },
+    {
+      "id": "pc_0130",
+      "question": "¿Qué animal de gran tamaño no puede saltar?",
+      "correct_answer": "El elefante"
+    }
+  ]
+}
