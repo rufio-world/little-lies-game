@@ -29,9 +29,10 @@ export function ScoringResults({
   const currentPlayerVote = votes.find(v => v.player_id === currentPlayer.id);
   const currentPlayerAnswer = answers.find(a => a.player_id === currentPlayer.id);
 
-  // Play positive sound if player voted correctly
+  // Play sound based on voting result
   useEffect(() => {
     if (currentPlayerVote?.voted_for_correct) {
+      // Positive sound - rising tones
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
@@ -49,6 +50,25 @@ export function ScoringResults({
       
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.5);
+    } else if (currentPlayerVote && !currentPlayerVote.voted_for_correct) {
+      // Negative sound - descending tones
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(392.00, audioContext.currentTime); // G4
+      oscillator.frequency.setValueAtTime(329.63, audioContext.currentTime + 0.15); // E4
+      oscillator.frequency.setValueAtTime(261.63, audioContext.currentTime + 0.3); // C4
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.6);
     }
   }, [currentPlayerVote]);
   
