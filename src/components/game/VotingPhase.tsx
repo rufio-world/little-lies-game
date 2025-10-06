@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -73,8 +73,10 @@ export function VotingPhase({
     }
   ];
 
-  // Shuffle the voting options
-  const shuffledOptions = [...votingOptions].sort(() => Math.random() - 0.5);
+  // Shuffle the voting options only once when answers change
+  const shuffledOptions = useMemo(() => {
+    return [...votingOptions].sort(() => Math.random() - 0.5);
+  }, [answers.length, round.id]);
 
   return (
     <div className="max-w-2xl mx-auto">
