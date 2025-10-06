@@ -10,7 +10,7 @@
     },
     {
       "id": "pc_0002",
-      "question": "What is the highest-grossing film of all time?",
+      "question": "What is the highest-grossing movie of all time?",
       "correct_answer": "Avatar (2009)"
     },
     {
@@ -30,12 +30,12 @@
     },
     {
       "id": "pc_0006",
-      "question": "What is the most-watched YouTube video of all time?",
+      "question": "What is the most-viewed video on YouTube of all time?",
       "correct_answer": "Baby Shark Dance"
     },
     {
       "id": "pc_0007",
-      "question": "Which movie won the first Academy Award for Best Picture?",
+      "question": "Which film won the first Academy Award for Best Picture?",
       "correct_answer": "Wings (1927)"
     },
     {
@@ -50,208 +50,408 @@
     },
     {
       "id": "pc_0010",
-      "question": "What was the first Marvel Cinematic Universe movie?",
+      "question": "What was the first film in the Marvel Cinematic Universe?",
       "correct_answer": "Iron Man (2008)"
     },
     {
-      "id": "pc_0011",
-      "question": "Which social media platform was launched first?",
-      "correct_answer": "Facebook"
+      "id": "pc_0051",
+      "question": "Which country hosts a World Air Guitar Championship?",
+      "correct_answer": "Finland"
     },
     {
-      "id": "pc_0012",
-      "question": "What is the longest-running animated TV show?",
-      "correct_answer": "The Simpsons"
+      "id": "pc_0052",
+      "question": "Which product is banned for sale in Singapore?",
+      "correct_answer": "Chewing gum"
     },
     {
-      "id": "pc_0013",
-      "question": "Who composed the music for Star Wars?",
-      "correct_answer": "John Williams"
+      "id": "pc_0053",
+      "question": "Which Disney character lost a shoe on the stairs?",
+      "correct_answer": "Cinderella"
     },
     {
-      "id": "pc_0014",
-      "question": "What was the first iPhone released?",
-      "correct_answer": "2007"
+      "id": "pc_0054",
+      "question": "What object is chased down a hill at Cooper’s Hill Festival in England?",
+      "correct_answer": "A cheese"
     },
     {
-      "id": "pc_0015",
-      "question": "Which band released the album 'Abbey Road'?",
-      "correct_answer": "The Beatles"
+      "id": "pc_0055",
+      "question": "What is Japan’s national sport?",
+      "correct_answer": "Sumo"
     },
     {
-      "id": "pc_0016",
-      "question": "What is the most popular streaming service worldwide?",
-      "correct_answer": "Netflix"
+      "id": "pc_0056",
+      "question": "What fruit did Carmen Miranda famously wear on her head?",
+      "correct_answer": "Bananas"
     },
     {
-      "id": "pc_0017",
-      "question": "Who directed the movie 'Jaws'?",
-      "correct_answer": "Steven Spielberg"
+      "id": "pc_0057",
+      "question": "Which popular brand first dressed Santa Claus in red?",
+      "correct_answer": "Coca-Cola"
     },
     {
-      "id": "pc_0018",
-      "question": "What is the most-followed Instagram account?",
-      "correct_answer": "Cristiano Ronaldo"
+      "id": "pc_0058",
+      "question": "Which animal was once tried and executed in France in the 15th century?",
+      "correct_answer": "A pig"
     },
     {
-      "id": "pc_0019",
-      "question": "Which video game features the character Master Chief?",
-      "correct_answer": "Halo"
+      "id": "pc_0059",
+      "question": "What instrument does Lisa Simpson play?",
+      "correct_answer": "Saxophone"
     },
     {
-      "id": "pc_0020",
-      "question": "What was the first Pixar movie?",
-      "correct_answer": "Toy Story"
+      "id": "pc_0060",
+      "question": "In which city is the Museum of Ice Cream located?",
+      "correct_answer": "New York City"
     },
     {
-      "id": "pc_0021",
-      "question": "Who created the TV show 'Friends'?",
-      "correct_answer": "David Crane and Marta Kauffman"
+      "id": "pc_0061",
+      "question": "Which company created the character Sonic?",
+      "correct_answer": "SEGA"
     },
     {
-      "id": "pc_0022",
-      "question": "What is the best-selling video game of all time?",
-      "correct_answer": "Minecraft"
+      "id": "pc_0062",
+      "question": "In which country was karaoke invented?",
+      "correct_answer": "Japan"
     },
     {
-      "id": "pc_0023",
-      "question": "Which actor played James Bond the most times?",
-      "correct_answer": "Roger Moore"
+      "id": "pc_0063",
+      "question": "Which artist wore a dress made of meat at an awards show?",
+      "correct_answer": "Lady Gaga"
     },
     {
-      "id": "pc_0024",
-      "question": "What was the first reality TV show?",
-      "correct_answer": "The Real World"
+      "id": "pc_0064",
+      "question": "Which popular movie features a green ogre as the main character?",
+      "correct_answer": "Shrek"
     },
     {
-      "id": "pc_0025",
-      "question": "Who created the comic book character Superman?",
-      "correct_answer": "Jerry Siegel and Joe Shuster"
+      "id": "pc_0065",
+      "question": "What is the name of Mickey Mouse’s dog?",
+      "correct_answer": "Pluto"
     },
     {
-      "id": "pc_0026",
-      "question": "Who played Jack in the movie 'Titanic'?",
-      "correct_answer": "Leonardo DiCaprio"
+      "id": "pc_0066",
+      "question": "Which popular social network was inspired by instant photography?",
+      "correct_answer": "Instagram"
     },
     {
-      "id": "pc_0027",
-      "question": "Which video game franchise features characters like Mario and Luigi?",
-      "correct_answer": "Super Mario"
+      "id": "pc_0067",
+      "question": "Which character lives in a pineapple under the sea?",
+      "correct_answer": "SpongeBob SquarePants"
     },
     {
-      "id": "pc_0028",
-      "question": "Who is known as the 'King of Pop'?",
-      "correct_answer": "Michael Jackson"
+      "id": "pc_0068",
+      "question": "Which video game features a storm that shrinks the playing area?",
+      "correct_answer": "Fortnite"
     },
     {
-      "id": "pc_0029",
-      "question": "What TV series features the Iron Throne?",
-      "correct_answer": "Game of Thrones"
+      "id": "pc_0069",
+      "question": "What is the official mascot of Android?",
+      "correct_answer": "A green robot called Bugdroid"
     },
     {
-      "id": "pc_0030",
-      "question": "Which singer is famous for the hit song 'Like a Virgin'?",
-      "correct_answer": "Madonna"
+      "id": "pc_0070",
+      "question": "Which singer launched a perfume called 'Heat'?",
+      "correct_answer": "Beyoncé"
     },
     {
-      "id": "pc_0031",
-      "question": "What year did the Berlin Wall fall?",
-      "correct_answer": "1989"
+      "id": "pc_0071",
+      "question": "What is the theme of the annual festival held in Avon, Ohio?",
+      "correct_answer": "Duct tape"
     },
     {
-      "id": "pc_0032",
-      "question": "Who played the character Forrest Gump?",
-      "correct_answer": "Tom Hanks"
+      "id": "pc_0072",
+      "question": "Which country hosts an annual nap competition?",
+      "correct_answer": "Spain"
     },
     {
-      "id": "pc_0033",
-      "question": "Which company created the PlayStation console?",
-      "correct_answer": "Sony"
+      "id": "pc_0073",
+      "question": "What animal appeared in Twitter’s logo?",
+      "correct_answer": "A bird"
     },
     {
-      "id": "pc_0034",
-      "question": "What is the most popular podcast in the world?",
-      "correct_answer": "The Joe Rogan Experience"
+      "id": "pc_0074",
+      "question": "What invention was created by accident while trying to make a stronger glue?",
+      "correct_answer": "Post-it"
     },
     {
-      "id": "pc_0035",
-      "question": "Which band was Freddie Mercury the lead singer of?",
-      "correct_answer": "Queen"
+      "id": "pc_0075",
+      "question": "Which actor said the famous line 'Sayonara, baby'?",
+      "correct_answer": "Arnold Schwarzenegger"
     },
     {
-      "id": "pc_0036",
-      "question": "Which TV series is about a chemistry teacher turned drug dealer?",
-      "correct_answer": "Breaking Bad"
+      "id": "pc_0076",
+      "question": "What food fell from the sky in the 2009 animated movie?",
+      "correct_answer": "Food"
     },
     {
-      "id": "pc_0037",
-      "question": "Who played Wolverine in the X-Men movies?",
-      "correct_answer": "Hugh Jackman"
+      "id": "pc_0077",
+      "question": "What color are Papa Smurf’s pants?",
+      "correct_answer": "Red"
     },
     {
-      "id": "pc_0038",
-      "question": "What company created the streaming service Disney+?",
-      "correct_answer": "The Walt Disney Company"
+      "id": "pc_0078",
+      "question": "Which singer went on stage wearing a giant lobster on her head?",
+      "correct_answer": "Lady Gaga"
     },
     {
-      "id": "pc_0039",
-      "question": "Which pop star is known as the 'Material Girl'?",
-      "correct_answer": "Madonna"
+      "id": "pc_0079",
+      "question": "Which city has a cathedral made of human bones?",
+      "correct_answer": "Kutná Hora (Czech Republic)"
     },
     {
-      "id": "pc_0040",
-      "question": "What is the name of the fictional wizarding school in Harry Potter?",
-      "correct_answer": "Hogwarts"
+      "id": "pc_0080",
+      "question": "Which company launched the first phone with a built-in camera?",
+      "correct_answer": "Sharp"
     },
     {
-      "id": "pc_0041",
-      "question": "Who directed 'Pulp Fiction'?",
-      "correct_answer": "Quentin Tarantino"
+      "id": "pc_0081",
+      "question": "Which country invented the sandwich?",
+      "correct_answer": "United Kingdom"
     },
     {
-      "id": "pc_0042",
-      "question": "Which superhero is known as the 'Caped Crusader'?",
-      "correct_answer": "Batman"
+      "id": "pc_0082",
+      "question": "Which fruit is banned in some Asian hotels because of its smell?",
+      "correct_answer": "Durian"
     },
     {
-      "id": "pc_0043",
-      "question": "Who sang the hit 'Rolling in the Deep'?",
-      "correct_answer": "Adele"
+      "id": "pc_0083",
+      "question": "What object do world Monopoly champions use to decide the order of play?",
+      "correct_answer": "A golden die"
     },
     {
-      "id": "pc_0044",
-      "question": "Which sitcom features the characters Sheldon, Leonard, and Penny?",
-      "correct_answer": "The Big Bang Theory"
+      "id": "pc_0084",
+      "question": "Which country has a green sand beach?",
+      "correct_answer": "Hawaii (United States)"
     },
     {
-      "id": "pc_0045",
-      "question": "What video game character is known for collecting rings?",
-      "correct_answer": "Sonic the Hedgehog"
+      "id": "pc_0085",
+      "question": "Which movie made the shark named Bruce famous?",
+      "correct_answer": "Finding Nemo"
     },
     {
-      "id": "pc_0046",
-      "question": "Which actor voiced Woody in 'Toy Story'?",
-      "correct_answer": "Tom Hanks"
+      "id": "pc_0086",
+      "question": "Which country holds a mobile phone throwing competition?",
+      "correct_answer": "Finland"
     },
     {
-      "id": "pc_0047",
-      "question": "What is the name of the fictional continent in 'Game of Thrones'?",
-      "correct_answer": "Westeros"
+      "id": "pc_0087",
+      "question": "Which vegetable has been used as a musical instrument in Vienna?",
+      "correct_answer": "Carrots"
     },
     {
-      "id": "pc_0048",
-      "question": "Who wrote 'The Lord of the Rings'?",
-      "correct_answer": "J.R.R. Tolkien"
+      "id": "pc_0088",
+      "question": "Which singer jokingly claimed to have kissed an alien?",
+      "correct_answer": "Katy Perry"
     },
     {
-      "id": "pc_0049",
-      "question": "Which rapper is known for the album 'The Marshall Mathers LP'?",
-      "correct_answer": "Eminem"
+      "id": "pc_0089",
+      "question": "Which U.S. city has a museum dedicated exclusively to toilets?",
+      "correct_answer": "San Antonio, Texas"
     },
     {
-      "id": "pc_0050",
-      "question": "What is the longest-running primetime live-action TV show in the US?",
-      "correct_answer": "Law & Order: Special Victims Unit"
+      "id": "pc_0090",
+      "question": "Which drink was originally created as a headache medicine?",
+      "correct_answer": "Coca-Cola"
+    },
+    {
+      "id": "pc_0091",
+      "question": "Which country has a law that forbids owning just one guinea pig because they get lonely?",
+      "correct_answer": "Switzerland"
+    },
+    {
+      "id": "pc_0092",
+      "question": "Which food was used by the U.S. Army to develop adhesives during World War II?",
+      "correct_answer": "Peanuts"
+    },
+    {
+      "id": "pc_0093",
+      "question": "Which city hosts a marathon where participants run dressed as Santa Claus?",
+      "correct_answer": "Liverpool"
+    },
+    {
+      "id": "pc_0094",
+      "question": "Which animal can sleep for up to three years?",
+      "correct_answer": "The snail"
+    },
+    {
+      "id": "pc_0095",
+      "question": "Which country has vending machines that sell live crabs?",
+      "correct_answer": "China"
+    },
+    {
+      "id": "pc_0096",
+      "question": "Which invention was created by accident while trying to make stronger paint?",
+      "correct_answer": "The microwave"
+    },
+    {
+      "id": "pc_0097",
+      "question": "Which singer was supposedly hired by the Norwegian government to scare fish?",
+      "correct_answer": "Björk (urban legend)"
+    },
+    {
+      "id": "pc_0098",
+      "question": "Which country holds an annual massive pillow fight?",
+      "correct_answer": "The Netherlands"
+    },
+    {
+      "id": "pc_0099",
+      "question": "What Greek word literally means 'fear of working'?",
+      "correct_answer": "Ergophobia"
+    },
+    {
+      "id": "pc_0100",
+      "question": "Which company sold a 'block of air' supposedly from Kanye West for $60?",
+      "correct_answer": "eBay"
+    },
+    {
+      "id": "pc_0101",
+      "question": "Which country has an island inhabited almost entirely by rabbits?",
+      "correct_answer": "Japan (Ōkunoshima)"
+    },
+    {
+      "id": "pc_0102",
+      "question": "Which actor owns a lake in Canada named 'Keanu Lake'?",
+      "correct_answer": "Keanu Reeves"
+    },
+    {
+      "id": "pc_0103",
+      "question": "Which country has a museum dedicated to the oldest bread in the world?",
+      "correct_answer": "Egypt"
+    },
+    {
+      "id": "pc_0104",
+      "question": "Which city hosts a parade where thousands of people dress as zombies?",
+      "correct_answer": "Toronto"
+    },
+    {
+      "id": "pc_0105",
+      "question": "Which animal is legally considered property of the British monarch if found in the Thames?",
+      "correct_answer": "The swan"
+    },
+    {
+      "id": "pc_0106",
+      "question": "What object was accidentally launched into space and cataloged as 'space debris number 43137'?",
+      "correct_answer": "A spatula"
+    },
+    {
+      "id": "pc_0107",
+      "question": "Which country has a festival where people throw giant tomatoes at each other?",
+      "correct_answer": "Spain (La Tomatina)"
+    },
+    {
+      "id": "pc_0108",
+      "question": "Which modern invention was inspired by a 1940s comic strip called Dick Tracy?",
+      "correct_answer": "The smartwatch"
+    },
+    {
+      "id": "pc_0109",
+      "question": "Which artist taped a banana to a wall and sold it for $120,000?",
+      "correct_answer": "Maurizio Cattelan"
+    },
+    {
+      "id": "pc_0110",
+      "question": "Which country hosts an official wife-carrying competition?",
+      "correct_answer": "Finland"
+    },
+    {
+      "id": "pc_0111",
+      "question": "Which invention was inspired by burrs that stuck to a dog's fur during a walk?",
+      "correct_answer": "Velcro"
+    },
+    {
+      "id": "pc_0112",
+      "question": "What is the name of the Japanese island famous for being inhabited mostly by cats?",
+      "correct_answer": "Aoshima"
+    },
+    {
+      "id": "pc_0113",
+      "question": "Which ice sport uses brooms and sliding stones to reach a target circle?",
+      "correct_answer": "Curling"
+    },
+    {
+      "id": "pc_0114",
+      "question": "In which country is there a contest to freeze hairstyles in outdoor hot springs?",
+      "correct_answer": "Canada"
+    },
+    {
+      "id": "pc_0115",
+      "question": "What food has a museum in Ikeda (Osaka) where you can design your own cup?",
+      "correct_answer": "Instant ramen (Cup Noodles)"
+    },
+    {
+      "id": "pc_0116",
+      "question": "What is the fear of extremely long words called?",
+      "correct_answer": "Hippopotomonstrosesquipedaliophobia"
+    },
+    {
+      "id": "pc_0117",
+      "question": "In which country were turnips carved for Halloween before pumpkins became popular?",
+      "correct_answer": "Ireland"
+    },
+    {
+      "id": "pc_0118",
+      "question": "What is the real-world sport inspired by Quidditch from Harry Potter now called?",
+      "correct_answer": "Quadball (formerly Quidditch)"
+    },
+    {
+      "id": "pc_0119",
+      "question": "Which Japanese fruit can sell for thousands of dollars per pair due to its perfection?",
+      "correct_answer": "Yubari melon"
+    },
+    {
+      "id": "pc_0120",
+      "question": "What is the world’s shortest commercial flight, lasting just over one minute?",
+      "correct_answer": "Westray–Papa Westray (Scotland)"
+    },
+    {
+      "id": "pc_0121",
+      "question": "What object drops every New Year’s Eve in Times Square, New York City?",
+      "correct_answer": "A crystal ball"
+    },
+    {
+      "id": "pc_0122",
+      "question": "What colour M&M was discontinued in 1976 due to dye concerns and later brought back?",
+      "correct_answer": "Red"
+    },
+    {
+      "id": "pc_0123",
+      "question": "Which living creatures were sent into space in 1947 before humans?",
+      "correct_answer": "Fruit flies"
+    },
+    {
+      "id": "pc_0124",
+      "question": "Which bird is capable of flying backwards?",
+      "correct_answer": "The hummingbird"
+    },
+    {
+      "id": "pc_0125",
+      "question": "What is the U.S. competition called where people catapult pumpkins?",
+      "correct_answer": "Punkin Chunkin"
+    },
+    {
+      "id": "pc_0126",
+      "question": "What Spanish tradition involves a man jumping over babies to 'ward off evil'?",
+      "correct_answer": "El Colacho (Castrillo de Murcia)"
+    },
+    {
+      "id": "pc_0127",
+      "question": "In which city is the Museum of Broken Relationships located?",
+      "correct_answer": "Zagreb (Croatia)"
+    },
+    {
+      "id": "pc_0128",
+      "question": "Which movie made the volleyball named Wilson famous?",
+      "correct_answer": "Cast Away"
+    },
+    {
+      "id": "pc_0129",
+      "question": "What title did an executive almost give to 'Back to the Future'?",
+      "correct_answer": "Spaceman from Pluto"
+    },
+    {
+      "id": "pc_0130",
+      "question": "Which large animal is physically unable to jump?",
+      "correct_answer": "The elephant"
     }
   ]
 }
