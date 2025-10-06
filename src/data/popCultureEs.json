@@ -11,7 +11,7 @@
     {
       "id": "pc_0002",
       "question": "¿Cuál es la película más taquillera de todos los tiempos?",
-      "correct_answer": "Avatar (2009)"
+      "correct_answer": "Avatar"
     },
     {
       "id": "pc_0003",
@@ -51,7 +51,7 @@
     {
       "id": "pc_0010",
       "question": "¿Cuál fue la primera película del Universo Cinematográfico de Marvel?",
-      "correct_answer": "Iron Man (2008)"
+      "correct_answer": "Iron Man"
     },
     {
       "id": "pc_0051",
@@ -196,7 +196,7 @@
     {
       "id": "pc_0079",
       "question": "¿Qué ciudad tiene una catedral hecha de huesos humanos?",
-      "correct_answer": "Kutná Hora (República Checa)"
+      "correct_answer": "Kutná Hora en la República Checa"
     },
     {
       "id": "pc_0080",
@@ -220,8 +220,8 @@
     },
     {
       "id": "pc_0084",
-      "question": "¿Qué país tiene una playa con arena verde?",
-      "correct_answer": "Hawái (Estados Unidos)"
+      "question": "¿En que lugar hay una playa con arena verde?",
+      "correct_answer": "Hawái, Estados Unidos"
     },
     {
       "id": "pc_0085",
@@ -286,7 +286,7 @@
     {
       "id": "pc_0097",
       "question": "¿Qué cantante fue contratado por el gobierno de Noruega para asustar a los peces?",
-      "correct_answer": "Björk (rumor popular)"
+      "correct_answer": "Björk"
     },
     {
       "id": "pc_0098",
@@ -305,8 +305,8 @@
     },
     {
       "id": "pc_0101",
-      "question": "¿Qué país tiene una isla habitada casi exclusivamente por conejos?",
-      "correct_answer": "Japón (Ōkunoshima)"
+      "question": "¿Qué isla está habitada casi exclusivamente por conejos?",
+      "correct_answer": "Ōkunoshima en Japón"
     },
     {
       "id": "pc_0102",
@@ -335,8 +335,8 @@
     },
     {
       "id": "pc_0107",
-      "question": "¿Qué país tiene un festival donde lanzan tomates gigantes entre sí?",
-      "correct_answer": "España (La Tomatina)"
+      "question": "¿En qué festival se lanzan tomates gigantes entre sí?",
+      "correct_answer": "La Tomatina"
     },
     {
       "id": "pc_0108",
@@ -376,7 +376,7 @@
     {
       "id": "pc_0115",
       "question": "¿Qué comida tiene un museo en Ikeda (Osaka) donde puedes diseñar tu propio vaso?",
-      "correct_answer": "Ramen instantáneo (Cup Noodles)"
+      "correct_answer": "Ramen instantáneo"
     },
     {
       "id": "pc_0116",
@@ -391,7 +391,7 @@
     {
       "id": "pc_0118",
       "question": "¿Cómo se llama hoy la versión real del deporte inspirado en el quidditch de Harry Potter?",
-      "correct_answer": "Quadball (antes Quidditch)"
+      "correct_answer": "Quadball"
     },
     {
       "id": "pc_0119",
@@ -401,7 +401,7 @@
     {
       "id": "pc_0120",
       "question": "¿Cuál es el vuelo comercial más corto del mundo, que dura poco más de un minuto?",
-      "correct_answer": "Westray–Papa Westray (Escocia)"
+      "correct_answer": "Westray–Papa Westray"
     },
     {
       "id": "pc_0121",
@@ -431,12 +431,12 @@
     {
       "id": "pc_0126",
       "question": "¿Cómo se llama la tradición española en la que un hombre salta sobre bebés para 'ahuyentar el mal'?",
-      "correct_answer": "El Colacho (Castrillo de Murcia)"
+      "correct_answer": "El Colacho"
     },
     {
       "id": "pc_0127",
       "question": "¿En qué ciudad está el Museo de las Relaciones Rotas, dedicado a recuerdos de amores perdidos?",
-      "correct_answer": "Zagreb (Croacia)"
+      "correct_answer": "Zagreb"
     },
     {
       "id": "pc_0128",
@@ -446,7 +446,7 @@
     {
       "id": "pc_0129",
       "question": "¿Cuál fue el título que un ejecutivo propuso para 'Regreso al Futuro' y que casi se usa?",
-      "correct_answer": "Spaceman from Pluto"
+      "correct_answer": "Astronauta de Plutón"
     },
     {
       "id": "pc_0130",
