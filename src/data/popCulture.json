@@ -11,7 +11,7 @@
     {
       "id": "pc_0002",
       "question": "What is the highest-grossing movie of all time?",
-      "correct_answer": "Avatar (2009)"
+      "correct_answer": "Avatar"
     },
     {
       "id": "pc_0003",
@@ -51,7 +51,7 @@
     {
       "id": "pc_0010",
       "question": "What was the first film in the Marvel Cinematic Universe?",
-      "correct_answer": "Iron Man (2008)"
+      "correct_answer": "Iron Man"
     },
     {
       "id": "pc_0051",
@@ -175,7 +175,7 @@
     },
     {
       "id": "pc_0075",
-      "question": "Which actor said the famous line 'Sayonara, baby'?",
+      "question": "Which actor said the famous line 'Hasta la vista, baby'?",
       "correct_answer": "Arnold Schwarzenegger"
     },
     {
@@ -185,7 +185,7 @@
     },
     {
       "id": "pc_0077",
-      "question": "What color are Papa Smurf’s pants?",
+      "question": "What colour are Papa Smurf’s pants?",
       "correct_answer": "Red"
     },
     {
@@ -196,7 +196,7 @@
     {
       "id": "pc_0079",
       "question": "Which city has a cathedral made of human bones?",
-      "correct_answer": "Kutná Hora (Czech Republic)"
+      "correct_answer": "Kutná Hora in the Czech Republic"
     },
     {
       "id": "pc_0080",
@@ -220,8 +220,8 @@
     },
     {
       "id": "pc_0084",
-      "question": "Which country has a green sand beach?",
-      "correct_answer": "Hawaii (United States)"
+      "question": "Where can you find a green sand beach?",
+      "correct_answer": "Hawaii"
     },
     {
       "id": "pc_0085",
@@ -286,7 +286,7 @@
     {
       "id": "pc_0097",
       "question": "Which singer was supposedly hired by the Norwegian government to scare fish?",
-      "correct_answer": "Björk (urban legend)"
+      "correct_answer": "Björk"
     },
     {
       "id": "pc_0098",
@@ -305,8 +305,8 @@
     },
     {
       "id": "pc_0101",
-      "question": "Which country has an island inhabited almost entirely by rabbits?",
-      "correct_answer": "Japan (Ōkunoshima)"
+      "question": "What island is inhabited almost entirely by rabbits?",
+      "correct_answer": "Ōkunoshima in Japan"
     },
     {
       "id": "pc_0102",
@@ -330,13 +330,13 @@
     },
     {
       "id": "pc_0106",
-      "question": "What object was accidentally launched into space and cataloged as 'space debris number 43137'?",
+      "question": "What object was accidentally launched into space and catalogued as 'space debris number 43137'?",
       "correct_answer": "A spatula"
     },
     {
       "id": "pc_0107",
-      "question": "Which country has a festival where people throw giant tomatoes at each other?",
-      "correct_answer": "Spain (La Tomatina)"
+      "question": "What is the name of the festival where people throw giant tomatoes at each other?",
+      "correct_answer": "La Tomatina"
     },
     {
       "id": "pc_0108",
@@ -376,7 +376,7 @@
     {
       "id": "pc_0115",
       "question": "What food has a museum in Ikeda (Osaka) where you can design your own cup?",
-      "correct_answer": "Instant ramen (Cup Noodles)"
+      "correct_answer": "Instant ramen"
     },
     {
       "id": "pc_0116",
@@ -391,7 +391,7 @@
     {
       "id": "pc_0118",
       "question": "What is the real-world sport inspired by Quidditch from Harry Potter now called?",
-      "correct_answer": "Quadball (formerly Quidditch)"
+      "correct_answer": "Quadball"
     },
     {
       "id": "pc_0119",
@@ -401,7 +401,7 @@
     {
       "id": "pc_0120",
       "question": "What is the world’s shortest commercial flight, lasting just over one minute?",
-      "correct_answer": "Westray–Papa Westray (Scotland)"
+      "correct_answer": "Westray–Papa Westray"
     },
     {
       "id": "pc_0121",
@@ -431,12 +431,12 @@
     {
       "id": "pc_0126",
       "question": "What Spanish tradition involves a man jumping over babies to 'ward off evil'?",
-      "correct_answer": "El Colacho (Castrillo de Murcia)"
+      "correct_answer": "El Colacho"
     },
     {
       "id": "pc_0127",
       "question": "In which city is the Museum of Broken Relationships located?",
-      "correct_answer": "Zagreb (Croatia)"
+      "correct_answer": "Zagreb"
     },
     {
       "id": "pc_0128",
