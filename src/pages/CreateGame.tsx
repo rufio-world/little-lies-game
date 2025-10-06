@@ -146,17 +146,6 @@ export default function CreateGame() {
               />
             </div>
 
-            {/* Game Code */}
-            <div className="space-y-2">
-              <Label>{t("createGame.gameCode")}</Label>
-              <div className="flex gap-2">
-                <Input value={gameCode} readOnly className="font-mono text-lg text-center bg-muted" />
-                <Button variant="outline" size="icon" onClick={generateNewCode}>
-                  <RefreshCw className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
             {/* Question Packs */}
             <div className="space-y-3">
               <Label>{t("createGame.selectPacks")}</Label>
