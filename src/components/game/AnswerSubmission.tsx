@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { GameRoom, Question } from "@/lib/gameState";
 import { GameRound, PlayerAnswer } from "@/services/gameRoundService";
 import { Clock, Users, Trophy, Lightbulb } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface AnswerSubmissionProps {
   question: Question;
@@ -30,6 +31,7 @@ export function AnswerSubmission({
   const [answer, setAnswer] = useState("");
   const [timeLeft, setTimeLeft] = useState(60);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
   
   useEffect(() => {
     if (timeLeft > 0 && !hasSubmitted) {
@@ -44,9 +46,25 @@ export function AnswerSubmission({
   const handleSubmit = async () => {
     if (hasSubmitted || isSubmitting) return;
     
+    const trimmedAnswer = answer.trim();
+    
+    // Check if answer is identical to the correct answer (case-insensitive)
+    if (trimmedAnswer.toLowerCase() === round.correct_answer.toLowerCase()) {
+      const errorMessage = gameRoom.language === 'es' 
+        ? "Alguien ya ha enviado esa respuesta. Envía una distinta"
+        : "That answer was submitted already. Type a different one";
+      
+      toast({
+        title: gameRoom.language === 'es' ? "Respuesta duplicada" : "Duplicate Answer",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
     try {
-      const finalAnswer = answer.trim() || "No answer provided";
+      const finalAnswer = trimmedAnswer || "No answer provided";
       await onSubmitAnswer(finalAnswer);
     } catch (error) {
       console.error('Error submitting answer:', error);
