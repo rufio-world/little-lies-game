@@ -19,6 +19,7 @@ export default function CreateGame() {
   const { toast } = useToast();
 
   const [gameName, setGameName] = useState("My Little Lies Game");
+  const [gameCode, setGameCode] = useState(GameLogic.generateGameCode());
   const [selectedPacks, setSelectedPacks] = useState<string[]>(["pop_culture"]);
   const [maxQuestions, setMaxQuestions] = useState<number>(10);
   const [language, setLanguage] = useState<"en" | "es">("en");
@@ -39,6 +40,10 @@ export default function CreateGame() {
     { value: 15, label: "15" },
     { value: -1, label: "∞" },
   ];
+
+  const generateNewCode = () => {
+    setGameCode(GameLogic.generateGameCode());
+  };
 
   const togglePack = (packId: string) => {
     if (!ownedPacks.includes(packId)) {
