@@ -355,6 +355,106 @@
       "id": "pc_0110",
       "question": "¿Qué país tiene una competencia oficial de cargar a la esposa a cuestas?",
       "correct_answer": "Finlandia"
-  }
-  ]
-}
+    },
+      {
+      "id": "pc_0111",
+      "question": "¿Qué invento se inspiró en los cardos que se pegaban al pelaje de un perro durante un paseo por el campo?",
+      "correct_answer": "Velcro"
+    },
+    {
+      "id": "pc_0112",
+      "question": "¿Cómo se llama la isla japonesa famosa por estar habitada principalmente por gatos?",
+      "correct_answer": "Aoshima"
+    },
+    {
+      "id": "pc_0113",
+      "question": "¿Qué deporte sobre hielo usa escobas y piedras deslizantes para acercarse a un círculo?",
+      "correct_answer": "Curling"
+    },
+    {
+      "id": "pc_0114",
+      "question": "¿En qué país se celebra un concurso de congelar peinados en aguas termales al aire libre?",
+      "correct_answer": "Canadá"
+    },
+    {
+      "id": "pc_0115",
+      "question": "¿Qué comida tiene un museo en Ikeda (Osaka) donde puedes diseñar tu propio vaso?",
+      "correct_answer": "Ramen instantáneo (Cup Noodles)"
+    },
+    {
+      "id": "pc_0116",
+      "question": "¿Cómo se llama el miedo a las palabras extremadamente largas?",
+      "correct_answer": "Hippopotomonstrosesquipedaliofobia"
+    },
+    {
+      "id": "pc_0117",
+      "question": "¿En qué país se tallaban nabos para Halloween antes de popularizarse las calabazas?",
+      "correct_answer": "Irlanda"
+    },
+    {
+      "id": "pc_0118",
+      "question": "¿Cómo se llama hoy la versión real del deporte inspirado en el quidditch de Harry Potter?",
+      "correct_answer": "Quadball (antes Quidditch)"
+    },
+    {
+      "id": "pc_0119",
+      "question": "¿Qué fruta japonesa puede subastarse por miles de dólares el par debido a su perfección?",
+      "correct_answer": "Melón Yubari"
+    },
+    {
+      "id": "pc_0120",
+      "question": "¿Cuál es el vuelo comercial más corto del mundo, que dura poco más de un minuto?",
+      "correct_answer": "Westray–Papa Westray (Escocia)"
+    },
+    {
+      "id": "pc_0121",
+      "question": "¿Qué objeto cae cada Nochevieja en Times Square, Nueva York?",
+      "correct_answer": "Una bola de cristal"
+    },
+    {
+      "id": "pc_0122",
+      "question": "¿Qué color de M&M fue retirado en 1976 por una controversia con colorantes y volvió años después?",
+      "correct_answer": "Rojo"
+    },
+    {
+      "id": "pc_0123",
+      "question": "¿Qué seres vivos enviaron al espacio en 1947 antes que a los humanos?",
+      "correct_answer": "Moscas de la fruta"
+    },
+    {
+      "id": "pc_0124",
+      "question": "¿Qué ave es capaz de volar hacia atrás?",
+      "correct_answer": "El colibrí"
+    },
+    {
+      "id": "pc_0125",
+      "question": "¿Cómo se llama en Estados Unidos la competición de lanzar calabazas con catapultas?",
+      "correct_answer": "Punkin Chunkin"
+    },
+    {
+      "id": "pc_0126",
+      "question": "¿Cómo se llama la tradición española en la que un hombre salta sobre bebés para 'ahuyentar el mal'?",
+      "correct_answer": "El Colacho (Castrillo de Murcia)"
+    },
+    {
+      "id": "pc_0127",
+      "question": "¿En qué ciudad está el Museo de las Relaciones Rotas, dedicado a recuerdos de amores perdidos?",
+      "correct_answer": "Zagreb (Croacia)"
+    },
+    {
+      "id": "pc_0128",
+      "question": "¿Qué película popularizó al balón de voleibol llamado Wilson?",
+      "correct_answer": "Náufrago"
+    },
+    {
+      "id": "pc_0129",
+      "question": "¿Cuál fue el título que un ejecutivo propuso para 'Regreso al Futuro' y que casi se usa?",
+      "correct_answer": "Spaceman from Pluto"
+    },
+    {
+      "id": "pc_0130",
+      "question": "¿Qué animal de gran tamaño no puede saltar?",
+      "correct_answer": "El elefante"
+    }
+]
+
