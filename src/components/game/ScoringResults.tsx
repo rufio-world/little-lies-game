@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { GameRoom, Question } from "@/lib/gameState";
 import { GameRound, PlayerAnswer, PlayerVote } from "@/services/gameRoundService";
 import { Trophy, Users, CheckCircle, XCircle, Target, Zap, Star } from "lucide-react";
+import { useEffect } from "react";
 
 interface ScoringResultsProps {
   question: Question;
@@ -27,6 +28,29 @@ export function ScoringResults({
   // Calculate current player's vote and results
   const currentPlayerVote = votes.find(v => v.player_id === currentPlayer.id);
   const currentPlayerAnswer = answers.find(a => a.player_id === currentPlayer.id);
+
+  // Play positive sound if player voted correctly
+  useEffect(() => {
+    if (currentPlayerVote?.voted_for_correct) {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+      oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+      oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.5);
+    }
+  }, [currentPlayerVote]);
   
   // Calculate scores for this round
   const roundScores: Record<string, number> = {};
