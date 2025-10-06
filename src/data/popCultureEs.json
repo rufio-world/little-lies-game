@@ -53,7 +53,6 @@
       "question": "¿Cuál fue la primera película del Universo Cinematográfico de Marvel?",
       "correct_answer": "Iron Man (2008)"
     },
-
     {
       "id": "pc_0051",
       "question": "¿Qué país celebra un campeonato mundial de air guitar (guitarra invisible)?",
@@ -154,13 +153,11 @@
       "question": "¿Qué cantante lanzó un perfume llamado 'Heat'?",
       "correct_answer": "Beyoncé"
     },
-
     {
       "id": "pc_0071",
       "question": "¿Cuál es el tema del festival que se celebra cada año en Avon, Ohio?",
       "correct_answer": "Cinta americana"
     },
-
     {
       "id": "pc_0072",
       "question": "¿Qué país organiza un concurso anual de dormir la siesta?",
@@ -188,7 +185,7 @@
     },
     {
       "id": "pc_0077",
-      "question": "¿De que color son los pantalones de Papá Pitufo?",
+      "question": "¿De qué color son los pantalones de Papá Pitufo?",
       "correct_answer": "Rojos"
     },
     {
@@ -244,7 +241,7 @@
     {
       "id": "pc_0088",
       "question": "¿Qué cantante afirmó (en broma) haber besado a un marciano?",
-      "correct_answer": "Katy Perry "
+      "correct_answer": "Katy Perry"
     },
     {
       "id": "pc_0089",
@@ -257,9 +254,9 @@
       "correct_answer": "Coca-Cola"
     },
     {
-    "id": "pc_0091",
-    "question": "¿Qué país tiene una ley que prohíbe tener un solo conejillo de indias porque se sienten solos?",
-    "correct_answer": "Suiza"
+      "id": "pc_0091",
+      "question": "¿Qué país tiene una ley que prohíbe tener un solo conejillo de indias porque se sienten solos?",
+      "correct_answer": "Suiza"
     },
     {
       "id": "pc_0092",
@@ -356,7 +353,7 @@
       "question": "¿Qué país tiene una competencia oficial de cargar a la esposa a cuestas?",
       "correct_answer": "Finlandia"
     },
-      {
+    {
       "id": "pc_0111",
       "question": "¿Qué invento se inspiró en los cardos que se pegaban al pelaje de un perro durante un paseo por el campo?",
       "correct_answer": "Velcro"
@@ -448,13 +445,4 @@
     },
     {
       "id": "pc_0129",
-      "question": "¿Cuál fue el título que un ejecutivo propuso para 'Regreso al Futuro' y que casi se usa?",
-      "correct_answer": "Spaceman from Pluto"
-    },
-    {
-      "id": "pc_0130",
-      "question": "¿Qué animal de gran tamaño no puede saltar?",
-      "correct_answer": "El elefante"
-    }
-]
-
+      "question": "¿Cuál fue el título que un ejecutivo propuso para 'Regreso al Futuro' y
