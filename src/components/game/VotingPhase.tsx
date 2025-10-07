@@ -57,10 +57,10 @@ export function VotingPhase({
 
   const progress = ((45 - timeLeft) / 45) * 100;
   
-  // Create voting options: player answers + correct answer
+  // Create voting options: all player answers + correct answer
   const votingOptions = [
-    // Player submitted answers (excluding current player's own answer)
-    ...answers.filter(answer => answer.player_id !== currentPlayer.id).map(answer => ({
+    // All player submitted answers (including current player's own answer)
+    ...answers.map(answer => ({
       id: answer.id,
       text: answer.answer_text,
       isCorrect: false
