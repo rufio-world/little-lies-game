@@ -277,8 +277,15 @@ export default function GameRound() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-4 pb-20">
       {renderGamePhase()}
+      
+      {/* Room code footer */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border py-3 px-4">
+        <p className="text-center text-sm text-muted-foreground">
+          Room Code: <span className="font-mono font-bold text-foreground">{gameCode}</span>
+        </p>
+      </div>
     </div>
   );
 }

@@ -29,12 +29,19 @@ export default function FinalResultsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-4 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-4 pb-20 flex items-center justify-center">
       <FinalResults 
         gameRoom={gameRoom}
         onPlayAgain={handlePlayAgain}
         onReturnToMenu={handleReturnToMenu}
       />
+      
+      {/* Room code footer */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border py-3 px-4">
+        <p className="text-center text-sm text-muted-foreground">
+          Room Code: <span className="font-mono font-bold text-foreground">{gameRoom.code}</span>
+        </p>
+      </div>
     </div>
   );
 }
