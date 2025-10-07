@@ -93,9 +93,14 @@ export default function GameRound() {
     if (!currentRound?.id) return;
 
     const fetchReadiness = async () => {
-      const data = await GameRoundService.getRoundReadiness(currentRound.id);
-      setReadiness(data);
-      setIsCurrentPlayerReady(data.some(r => r.player_id === currentPlayer?.id && r.is_ready));
+      try {
+        const data = await GameRoundService.getRoundReadiness(currentRound.id);
+        setReadiness(data);
+        setIsCurrentPlayerReady(data.some(r => r.player_id === currentPlayer?.id && r.is_ready));
+      } catch (error) {
+        console.error('Error fetching readiness:', error);
+        setReadiness([]);
+      }
     };
 
     fetchReadiness();
