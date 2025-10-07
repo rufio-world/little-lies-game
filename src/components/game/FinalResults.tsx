@@ -1,9 +1,11 @@
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GameRoom } from "@/lib/gameState";
 import { Trophy, Crown, Medal, Star, RotateCcw, Home } from "lucide-react";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import confetti from "canvas-confetti";
 
 interface FinalResultsProps {
   gameRoom: GameRoom;
@@ -15,6 +17,40 @@ export function FinalResults({ gameRoom, onPlayAgain, onReturnToMenu }: FinalRes
   // Sort players by final score
   const sortedPlayers = [...gameRoom.players].sort((a, b) => b.score - a.score);
   const winner = sortedPlayers[0];
+  
+  // Play victory music and confetti on mount
+  useEffect(() => {
+    // Play victory music
+    const audio = new Audio('/victory-fanfare.mp3');
+    audio.volume = 0.5;
+    audio.play().catch(err => console.log('Audio play failed:', err));
+    
+    // Trigger confetti
+    const duration = 3000;
+    const end = Date.now() + duration;
+    
+    const frame = () => {
+      confetti({
+        particleCount: 2,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#FFD700', '#FFA500', '#FF6347']
+      });
+      confetti({
+        particleCount: 2,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#FFD700', '#FFA500', '#FF6347']
+      });
+      
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+    frame();
+  }, []);
   
   const getRankIcon = (rank: number) => {
     switch (rank) {
