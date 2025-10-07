@@ -30,6 +30,14 @@ export interface PlayerVote {
   voted_at: string;
 }
 
+export interface RoundReadiness {
+  id: string;
+  round_id: string;
+  player_id: string;
+  is_ready: boolean;
+  marked_ready_at: string;
+}
+
 export class GameRoundService {
   // Create a new game round
   static async createRound(
@@ -224,5 +232,46 @@ export class GameRoundService {
     });
 
     await Promise.all(updates);
+  }
+
+  // Mark player as ready for next round
+  static async markPlayerReady(roundId: string, playerId: string): Promise<RoundReadiness> {
+    const { data, error } = await supabase
+      .from('round_readiness')
+      .upsert([{
+        round_id: roundId,
+        player_id: playerId,
+        is_ready: true
+      }], {
+        onConflict: 'round_id,player_id'
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data as RoundReadiness;
+  }
+
+  // Get readiness status for a round
+  static async getRoundReadiness(roundId: string): Promise<RoundReadiness[]> {
+    const { data, error } = await supabase
+      .from('round_readiness')
+      .select('*')
+      .eq('round_id', roundId);
+
+    if (error) throw error;
+    return data as RoundReadiness[];
+  }
+
+  // Check if all players are ready
+  static async checkAllPlayersReady(roundId: string, roomId: string): Promise<boolean> {
+    const [readinessResult, playersResult] = await Promise.all([
+      supabase.from('round_readiness').select('player_id').eq('round_id', roundId).eq('is_ready', true),
+      supabase.from('players').select('id').eq('room_id', roomId)
+    ]);
+
+    if (readinessResult.error || playersResult.error) return false;
+
+    return readinessResult.data.length === playersResult.data.length;
   }
 }

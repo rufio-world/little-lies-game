@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GameRoom, Question } from "@/lib/gameState";
-import { GameRound, PlayerAnswer, PlayerVote } from "@/services/gameRoundService";
+import { GameRound, PlayerAnswer, PlayerVote, RoundReadiness } from "@/services/gameRoundService";
 import { Trophy, Users, CheckCircle, XCircle, Target, Zap, Star } from "lucide-react";
 import { useEffect } from "react";
 
@@ -13,7 +13,9 @@ interface ScoringResultsProps {
   round: GameRound;
   answers: PlayerAnswer[];
   votes: PlayerVote[];
-  onContinue: () => void;
+  readiness: RoundReadiness[];
+  isCurrentPlayerReady: boolean;
+  onMarkReady: () => void;
 }
 
 export function ScoringResults({ 
@@ -22,8 +24,10 @@ export function ScoringResults({
   currentPlayer, 
   round, 
   answers, 
-  votes, 
-  onContinue 
+  votes,
+  readiness,
+  isCurrentPlayerReady,
+  onMarkReady
 }: ScoringResultsProps) {
   // Calculate current player's vote and results
   const currentPlayerVote = votes.find(v => v.player_id === currentPlayer.id);
@@ -317,21 +321,60 @@ export function ScoringResults({
         </CardContent>
       </Card>
 
-      {/* Continue Button */}
-      <Card>
-        <CardContent className="pt-6">
+      {/* Player Readiness Status */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Player Readiness</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 mb-4">
+            {gameRoom.players.map(player => {
+              const playerReadiness = readiness.find(r => r.player_id === player.id);
+              const isReady = playerReadiness?.is_ready || false;
+              
+              return (
+                <div key={player.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src={player.avatar} 
+                      alt={player.name}
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <span className="font-medium">{player.name}</span>
+                    {player.id === currentPlayer.id && (
+                      <Badge variant="secondary" className="text-xs">You</Badge>
+                    )}
+                  </div>
+                  <div>
+                    {isReady ? (
+                      <Badge variant="default" className="bg-green-600">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Ready
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary">
+                        Waiting...
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          
           <Button 
-            onClick={onContinue} 
+            onClick={onMarkReady} 
             className="w-full" 
             size="lg"
-            disabled={!currentPlayer.isHost}
+            disabled={isCurrentPlayerReady}
           >
-            {currentPlayer.isHost ? (
-              round.round_number >= gameRoom.maxQuestions ? 
-                "View Final Results" : 
-                "Continue to Next Round"
+            {isCurrentPlayerReady ? (
+              <>
+                <CheckCircle className="mr-2 h-5 w-5" />
+                You're Ready! Waiting for others...
+              </>
             ) : (
-              "Waiting for host to continue..."
+              "I'm Ready for Next Round"
             )}
           </Button>
         </CardContent>

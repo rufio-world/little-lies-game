@@ -277,6 +277,30 @@ export type Database = {
         }
         Relationships: []
       }
+      round_readiness: {
+        Row: {
+          id: string
+          is_ready: boolean
+          marked_ready_at: string | null
+          player_id: string
+          round_id: string
+        }
+        Insert: {
+          id?: string
+          is_ready?: boolean
+          marked_ready_at?: string | null
+          player_id: string
+          round_id: string
+        }
+        Update: {
+          id?: string
+          is_ready?: boolean
+          marked_ready_at?: string | null
+          player_id?: string
+          round_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -12,6 +12,7 @@ import { useGameRound } from "@/hooks/useGameRound";
 import { useGameRoom } from "@/hooks/useGameRoom";
 import { GameRoundService } from "@/services/gameRoundService";
 import { GameService } from "@/services/gameService";
+import { supabase } from "@/integrations/supabase/client";
 import popCultureEn from "@/data/popCulture.json";
 import popCultureEs from "@/data/popCultureEs.json";
 
@@ -83,6 +84,43 @@ export default function GameRound() {
     allVotesSubmitted
   } = useGameRound(gameRoom?.id || '', currentPlayer?.id || '');
 
+  const [readiness, setReadiness] = useState<any[]>([]);
+  const [isCurrentPlayerReady, setIsCurrentPlayerReady] = useState(false);
+  const [allPlayersReady, setAllPlayersReady] = useState(false);
+
+  // Subscribe to readiness updates
+  useEffect(() => {
+    if (!currentRound?.id) return;
+
+    const fetchReadiness = async () => {
+      const data = await GameRoundService.getRoundReadiness(currentRound.id);
+      setReadiness(data);
+      setIsCurrentPlayerReady(data.some(r => r.player_id === currentPlayer?.id && r.is_ready));
+    };
+
+    fetchReadiness();
+
+    const channel = supabase
+      .channel(`round_readiness:${currentRound.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'round_readiness',
+          filter: `round_id=eq.${currentRound.id}`
+        },
+        () => {
+          fetchReadiness();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentRound?.id, currentPlayer?.id]);
+
   // Auto-advance phases based on completion
   useEffect(() => {
     if (!currentRound || !gameRoom || !currentPlayer?.isHost) return;
@@ -108,6 +146,38 @@ export default function GameRound() {
             console.log('💾 Scores updated in database');
             await GameRoundService.updateRoundPhase(currentRound.id, 'results');
           }
+        } else if (currentRound.phase === 'results') {
+          // Check if all players are ready
+          const allReady = await GameRoundService.checkAllPlayersReady(currentRound.id, gameRoom.id);
+          setAllPlayersReady(allReady);
+          
+          if (allReady) {
+            console.log('✅ All players ready, advancing to next round');
+            const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
+            
+            if (nextQuestionIndex >= gameRoom.maxQuestions || nextQuestionIndex >= allQuestions.length) {
+              // Game finished - navigate to final results
+              navigate('/final-results', { 
+                state: { gameRoom, currentPlayer } 
+              });
+            } else {
+              // Update the question index in the database first
+              const updatedIndex = await GameService.advanceToNextQuestion(gameRoom.id, currentPlayer.id);
+              
+              // Then start next round with the updated index
+              const nextQuestion = allQuestions[nextQuestionIndex];
+              await GameRoundService.createRound(
+                gameRoom.id,
+                updatedIndex + 1,
+                nextQuestion
+              );
+              
+              toast({
+                title: "New round started!",
+                description: "Get ready for the next question."
+              });
+            }
+          }
         }
       } catch (error) {
         console.error('Error advancing phase:', error);
@@ -115,7 +185,7 @@ export default function GameRound() {
     };
 
     advancePhase();
-  }, [allAnswersSubmitted, allVotesSubmitted, currentRound, gameRoom, currentPlayer]);
+  }, [allAnswersSubmitted, allVotesSubmitted, currentRound, gameRoom, currentPlayer, readiness, allQuestions, navigate, toast]);
 
 
   const getCurrentQuestion = () => {
@@ -231,39 +301,19 @@ export default function GameRound() {
             round={currentRound}
             answers={answers}
             votes={votes}
-            onContinue={async () => {
-              if (!currentPlayer.isHost) return;
-
+            readiness={readiness}
+            isCurrentPlayerReady={isCurrentPlayerReady}
+            onMarkReady={async () => {
               try {
-                const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
-                
-                if (nextQuestionIndex >= gameRoom.maxQuestions || nextQuestionIndex >= allQuestions.length) {
-                  // Game finished - navigate to final results
-                  navigate('/final-results', { 
-                    state: { gameRoom, currentPlayer } 
-                  });
-                } else {
-                  // Update the question index in the database first
-                  const updatedIndex = await GameService.advanceToNextQuestion(gameRoom.id, currentPlayer.id);
-                  
-                  // Then start next round with the updated index
-                  const nextQuestion = allQuestions[nextQuestionIndex];
-                  await GameRoundService.createRound(
-                    gameRoom.id,
-                    updatedIndex + 1,
-                    nextQuestion
-                  );
-                  
-                  toast({
-                    title: "New round started!",
-                    description: "Get ready for the next question."
-                  });
-                }
+                await GameRoundService.markPlayerReady(currentRound.id, currentPlayer.id);
+                toast({
+                  title: "Ready!",
+                  description: "Waiting for other players..."
+                });
               } catch (error) {
-                console.error('Error creating new round:', error);
                 toast({
                   title: "Error",
-                  description: "Failed to create new round",
+                  description: "Failed to mark as ready",
                   variant: "destructive"
                 });
               }
