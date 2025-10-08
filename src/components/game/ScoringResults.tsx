@@ -371,7 +371,7 @@ export function ScoringResults({
             {isCurrentPlayerReady ? (
               <>
                 <CheckCircle className="mr-2 h-5 w-5" />
-                You're Ready! Waiting for others...
+                Waiting for the other players
               </>
             ) : (
               "I'm Ready for Next Round"
