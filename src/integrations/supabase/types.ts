@@ -196,6 +196,7 @@ export type Database = {
           id: string
           is_guest: boolean | null
           is_host: boolean | null
+          last_active_at: string | null
           name: string
           room_id: string
           score: number | null
@@ -208,6 +209,7 @@ export type Database = {
           id?: string
           is_guest?: boolean | null
           is_host?: boolean | null
+          last_active_at?: string | null
           name: string
           room_id: string
           score?: number | null
@@ -220,6 +222,7 @@ export type Database = {
           id?: string
           is_guest?: boolean | null
           is_host?: boolean | null
+          last_active_at?: string | null
           name?: string
           room_id?: string
           score?: number | null

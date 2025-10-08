@@ -78,6 +78,12 @@ export class GameRoundService {
 
   // Submit player answer
   static async submitAnswer(roundId: string, playerId: string, answerText: string): Promise<PlayerAnswer> {
+    // Update player's last_active_at timestamp
+    await supabase
+      .from('players')
+      .update({ last_active_at: new Date().toISOString() })
+      .eq('id', playerId);
+
     const { data, error } = await supabase
       .from('player_answers')
       .insert([{
@@ -111,6 +117,12 @@ export class GameRoundService {
     votedForAnswerId?: string, 
     votedForCorrect: boolean = false
   ): Promise<PlayerVote> {
+    // Update player's last_active_at timestamp
+    await supabase
+      .from('players')
+      .update({ last_active_at: new Date().toISOString() })
+      .eq('id', playerId);
+
     const { data, error } = await supabase
       .from('player_votes')
       .insert([{
@@ -150,9 +162,13 @@ export class GameRoundService {
 
   // Check if all players have submitted answers
   static async checkAllAnswersSubmitted(roundId: string, roomId: string): Promise<boolean> {
+    // Get active players (connected or disconnected less than 1 minute ago)
+    const oneMinuteAgo = new Date(Date.now() - 60000).toISOString();
+    
     const [answersResult, playersResult] = await Promise.all([
       supabase.from('player_answers').select('player_id').eq('round_id', roundId),
       supabase.from('players').select('id').eq('room_id', roomId)
+        .or(`connected.eq.true,last_active_at.gte.${oneMinuteAgo}`)
     ]);
 
     if (answersResult.error || playersResult.error) return false;
@@ -162,9 +178,13 @@ export class GameRoundService {
 
   // Check if all players have voted
   static async checkAllVotesSubmitted(roundId: string, roomId: string): Promise<boolean> {
+    // Get active players (connected or disconnected less than 1 minute ago)
+    const oneMinuteAgo = new Date(Date.now() - 60000).toISOString();
+    
     const [votesResult, playersResult] = await Promise.all([
       supabase.from('player_votes').select('player_id').eq('round_id', roundId),
       supabase.from('players').select('id').eq('room_id', roomId)
+        .or(`connected.eq.true,last_active_at.gte.${oneMinuteAgo}`)
     ]);
 
     if (votesResult.error || playersResult.error) return false;
@@ -236,6 +256,12 @@ export class GameRoundService {
 
   // Mark player as ready for next round
   static async markPlayerReady(roundId: string, playerId: string): Promise<RoundReadiness> {
+    // Update player's last_active_at timestamp
+    await supabase
+      .from('players')
+      .update({ last_active_at: new Date().toISOString() })
+      .eq('id', playerId);
+
     const { data, error } = await supabase
       .from('round_readiness')
       .upsert([{
@@ -265,9 +291,13 @@ export class GameRoundService {
 
   // Check if all players are ready
   static async checkAllPlayersReady(roundId: string, roomId: string): Promise<boolean> {
+    // Get active players (connected or disconnected less than 1 minute ago)
+    const oneMinuteAgo = new Date(Date.now() - 60000).toISOString();
+    
     const [readinessResult, playersResult] = await Promise.all([
       supabase.from('round_readiness').select('player_id').eq('round_id', roundId).eq('is_ready', true),
       supabase.from('players').select('id').eq('room_id', roomId)
+        .or(`connected.eq.true,last_active_at.gte.${oneMinuteAgo}`)
     ]);
 
     if (readinessResult.error || playersResult.error) return false;
