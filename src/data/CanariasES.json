@@ -1,0 +1,157 @@
+{
+  "name": "Islas Canarias",
+  "language": "es",
+  "theme": "canarias",
+  "questions": [
+    {
+      "id": "ca_0001",
+      "question": "¿Con qué otro nombre se conoce a La Palma?",
+      "correct_answer": "La Isla Bonita"
+    },
+    {
+      "id": "ca_0002",
+      "question": "¿En qué isla se encuentra el pico más alto de España?",
+      "correct_answer": "Tenerife"
+    },
+    {
+      "id": "ca_0003",
+      "question": "Qué nombre daban los aborigenes de las islas a su deidad suprema_",
+      "correct_answer": "Acorán"
+    },
+    {
+      "id": "ca_0004",
+      "question": "¿Qué isla tiene dunas de arena que parecen sacadas del Sáhara?",
+      "correct_answer": "Gran Canaria"
+    },
+    {
+      "id": "ca_0005",
+      "question": "¿Qué bebida se dice que 'cura todos los males' después de una fiesta en Canarias?",
+      "correct_answer": "El ron miel"
+    },
+    {
+      "id": "ca_0006",
+      "question": "¿Qué volcán entró en erupción en 2021 durante más de 80 días?",
+      "correct_answer": "El volcán de Cumbre Vieja (La Palma)"
+    },
+    {
+      "id": "ca_0007",
+      "question": "¿Cómo llaman los canarios a los peninsulares?",
+      "correct_answer": "Godos"
+    },
+    {
+      "id": "ca_0008",
+      "question": "¿Qué especie de animal gigante vivía en las islas y ya está extinta?",
+      "correct_answer": "Las ratas gigantes de Gran Canaria y Tenerife"
+    },
+    {
+      "id": "ca_0009",
+      "question": "¿Qué isla se conoce por tener un silbo declarado Patrimonio Inmaterial de la Humanidad?",
+      "correct_answer": "La Gomera"
+    },
+    {
+      "id": "ca_0010",
+      "question": "¿Cuál es la capital más al este del archipiélago?",
+      "correct_answer": "Arrecife (Lanzarote)"
+    },
+    {
+      "id": "ca_0011",
+      "question": "¿Qué isla fue conocida por los romanos como 'la isla de los perros'?",
+      "correct_answer": "Gran Canaria"
+    },
+    {
+      "id": "ca_0012",
+      "question": "¿Qué artista lanzaroteño transformó su isla en una obra de arte al aire libre?",
+      "correct_answer": "César Manrique"
+    },
+    {
+      "id": "ca_0013",
+      "question": "¿Qué palabra canaria significa 'ir despacio, sin prisa'?",
+      "correct_answer": "Tranquilito / sin calufa"
+    },
+    {
+      "id": "ca_0014",
+      "question": "¿En qué isla se rodaron escenas de 'Star Wars: Solo' y 'Wonder Woman 1984'?",
+      "correct_answer": "Fuerteventura"
+    },
+    {
+      "id": "ca_0015",
+      "question": "¿Cómo se llama el alimento que los guanches molían con piedras y sigue siendo básico en la cocina canaria?",
+      "correct_answer": "El gofio"
+    },
+    {
+      "id": "ca_0016",
+      "question": "¿Qué palabra usan los canarios para decir 'mucho' o 'bastante'?",
+      "correct_answer": "Un jacho / un fisco / un montón"
+    },
+    {
+      "id": "ca_0017",
+      "question": "¿Qué isla es la más joven geológicamente del archipiélago?",
+      "correct_answer": "El Hierro"
+    },
+    {
+      "id": "ca_0018",
+      "question": "¿Qué palabra usan los canarios para referirse a un susto?",
+      "correct_answer": "Un jilorio (aunque también significa hambre)"
+    },
+    {
+      "id": "ca_0019",
+      "question": "¿Qué ciudad canaria tiene un carnaval declarado Fiesta de Interés Turístico Internacional?",
+      "correct_answer": "Santa Cruz de Tenerife"
+    },
+    {
+      "id": "ca_0020",
+      "question": "¿Qué fruta tropical es símbolo de Canarias y aparece en su escudo?",
+      "correct_answer": "El plátano"
+    },
+    {
+      "id": "ca_0021",
+      "question": "¿Qué animal aparece en el escudo de Canarias?",
+      "correct_answer": "Perros"
+    },
+    {
+      "id": "ca_0022",
+      "question": "¿Qué archipiélago africano es el más cercano a Canarias?",
+      "correct_answer": "Cabo Verde"
+    },
+    {
+      "id": "ca_0023",
+      "question": "¿Qué isla tiene un árbol legendario llamado el Drago Milenario?",
+      "correct_answer": "Tenerife"
+    },
+    {
+      "id": "ca_0024",
+      "question": "¿Qué palabra canaria significa 'persona muy habladora'?",
+      "correct_answer": "Cháchara / cháchalero"
+    },
+    {
+      "id": "ca_0025",
+      "question": "¿Qué isla alberga el Observatorio del Roque de los Muchachos?",
+      "correct_answer": "La Palma"
+    },
+    {
+      "id": "ca_0026",
+      "question": "¿Qué cantante canario es conocido por su tema 'Colgado de ti' y su melena rizada?",
+      "correct_answer": "Pedro Guerra"
+    },
+    {
+      "id": "ca_0027",
+      "question": "¿Qué expresion canaria se usa para decir que algo es exageradamente bueno?",
+      "correct_answer": "Está de fisco / Está de escándalo"
+    },
+    {
+      "id": "ca_0028",
+      "question": "¿Qué isla es famosa por sus vinos volcánicos y su paisaje lunar?",
+      "correct_answer": "Lanzarote"
+    },
+    {
+      "id": "ca_0029",
+      "question": "¿Qué nombre daban los antiguos guanches al Teide?",
+      "correct_answer": "Echeyde"
+    },
+    {
+      "id": "ca_0030",
+      "question": "¿Qué palabra canaria significa 'persona muy simpática o bromista'?",
+      "correct_answer": "Chacho / chachona"
+    }
+  ]
+}
