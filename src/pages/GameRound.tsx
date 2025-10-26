@@ -23,7 +23,7 @@ export default function GameRound() {
   const { toast } = useToast();
 
   const [gameCode, setGameCode] = useState<string>('');
-  const [allQuestions, setAllQuestions] = useState<Question[]>([]);
+  const [questionMap, setQuestionMap] = useState<Map<string, Question>>(new Map());
   const [currentPlayer, setCurrentPlayer] = useState<any>(null);
 
   // Get real-time game room updates including player scores
@@ -55,7 +55,7 @@ export default function GameRound() {
     setGameCode(room.code);
     setCurrentPlayer(playerInRoom);
 
-    // Load question pack based on selected language
+    // Load question pack based on selected language to create a question map
     const questionPacks: QuestionPack[] = [];
     if (room.selectedPacks.includes('pop_culture')) {
       if (room.language === 'es') {
@@ -65,10 +65,11 @@ export default function GameRound() {
       }
     }
 
-    // Set all questions for the game - shuffle and limit to maxQuestions
+    // Create a map of question ID -> question for quick lookup
     const questions = questionPacks.flatMap(pack => pack.questions);
-    const shuffledQuestions = GameLogic.shuffleArray(questions).slice(0, room.maxQuestions);
-    setAllQuestions(shuffledQuestions);
+    const qMap = new Map<string, Question>();
+    questions.forEach(q => qMap.set(q.id, q));
+    setQuestionMap(qMap);
   }, [location.state, navigate]);
 
   // Use live game room from hook, which includes real-time player score updates
@@ -161,7 +162,7 @@ export default function GameRound() {
             console.log('✅ All players ready, advancing to next round');
             const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
             
-            if (nextQuestionIndex >= gameRoom.maxQuestions || nextQuestionIndex >= allQuestions.length) {
+            if (nextQuestionIndex >= gameRoom.maxQuestions) {
               // Game finished - navigate to final results
               navigate('/final-results', { 
                 state: { gameRoom, currentPlayer } 
@@ -170,8 +171,19 @@ export default function GameRound() {
               // Update the question index in the database first
               const updatedIndex = await GameService.advanceToNextQuestion(gameRoom.id, currentPlayer.id);
               
-              // Then start next round with the updated index
-              const nextQuestion = allQuestions[nextQuestionIndex];
+              // Get the next question ID from the stored sequence
+              const nextQuestionId = gameRoom.questionIds?.[nextQuestionIndex];
+              if (!nextQuestionId) {
+                console.error('No question ID found at index', nextQuestionIndex);
+                throw new Error('Question sequence error');
+              }
+              
+              const nextQuestion = questionMap.get(nextQuestionId);
+              if (!nextQuestion) {
+                console.error('Question not found in map:', nextQuestionId);
+                throw new Error('Question not found');
+              }
+              
               await GameRoundService.createRound(
                 gameRoom.id,
                 updatedIndex + 1,
@@ -191,11 +203,11 @@ export default function GameRound() {
     };
 
     advancePhase();
-  }, [allAnswersSubmitted, allVotesSubmitted, currentRound, gameRoom, currentPlayer, readiness, allQuestions, navigate, toast]);
+  }, [allAnswersSubmitted, allVotesSubmitted, currentRound, gameRoom, currentPlayer, readiness, questionMap, navigate, toast]);
 
   // Navigate all players to final results when game ends (ALL PLAYERS)
   useEffect(() => {
-    if (!currentRound || !gameRoom || !currentPlayer || !allQuestions.length) return;
+    if (!currentRound || !gameRoom || !currentPlayer || !questionMap.size) return;
 
     const checkGameEnd = async () => {
       if (currentRound.phase === 'results') {
@@ -204,7 +216,7 @@ export default function GameRound() {
         if (allReady) {
           const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
           
-          if (nextQuestionIndex >= gameRoom.maxQuestions || nextQuestionIndex >= allQuestions.length) {
+          if (nextQuestionIndex >= gameRoom.maxQuestions) {
             // Game finished - navigate to final results
             navigate('/final-results', { 
               state: { gameRoom, currentPlayer } 
@@ -215,15 +227,15 @@ export default function GameRound() {
     };
 
     checkGameEnd();
-  }, [currentRound, gameRoom, currentPlayer, allQuestions, navigate]);
+  }, [currentRound, gameRoom, currentPlayer, questionMap, navigate]);
 
 
   const getCurrentQuestion = () => {
-    if (!allQuestions.length || !gameRoom || !currentRound) return null;
-    return allQuestions.find(q => q.id === currentRound.question_id);
+    if (!questionMap.size || !gameRoom || !currentRound) return null;
+    return questionMap.get(currentRound.question_id);
   };
 
-  if (!gameRoom || !allQuestions.length || !currentPlayer || roundLoading || roomLoading) {
+  if (!gameRoom || !questionMap.size || !currentPlayer || roundLoading || roomLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
         <div className="text-center">

@@ -25,6 +25,7 @@ export type Database = {
           language: string
           max_questions: number | null
           name: string
+          question_ids: string[] | null
           selected_packs: string[] | null
           updated_at: string | null
         }
@@ -38,6 +39,7 @@ export type Database = {
           language?: string
           max_questions?: number | null
           name: string
+          question_ids?: string[] | null
           selected_packs?: string[] | null
           updated_at?: string | null
         }
@@ -51,6 +53,7 @@ export type Database = {
           language?: string
           max_questions?: number | null
           name?: string
+          question_ids?: string[] | null
           selected_packs?: string[] | null
           updated_at?: string | null
         }
@@ -309,10 +312,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_player_room_id: {
-        Args: { player_id: string }
-        Returns: string
-      }
+      get_player_room_id: { Args: { player_id: string }; Returns: string }
       is_room_participant: {
         Args: { player_id: string; room_id: string }
         Returns: boolean

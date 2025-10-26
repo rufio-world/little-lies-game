@@ -109,8 +109,11 @@ export default function WaitingRoom() {
         throw new Error('No questions available');
       }
       
-      // Start the game and create the first round
-      await GameService.startGame(gameRoom.id, currentPlayer.id);
+      // Extract and store question IDs in the database for consistent game flow
+      const questionIds = shuffledQuestions.map((q: any) => q.id);
+      
+      // Start the game and store the question sequence
+      await GameService.startGame(gameRoom.id, currentPlayer.id, questionIds);
       
       // Import GameRoundService dynamically
       const { GameRoundService } = await import('@/services/gameRoundService');

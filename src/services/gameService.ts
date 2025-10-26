@@ -127,7 +127,7 @@ export class GameService {
     }
   }
 
-  static async startGame(roomId: string, hostPlayerId: string): Promise<void> {
+  static async startGame(roomId: string, hostPlayerId: string, questionIds: string[]): Promise<void> {
     // Verify the requester is the host before starting the game
     const { data: hostData, error: hostError } = await supabase
       .from('players')
@@ -142,7 +142,10 @@ export class GameService {
 
     const { error } = await supabase
       .from('game_rooms')
-      .update({ game_state: 'question-display' })
+      .update({ 
+        game_state: 'question-display',
+        question_ids: questionIds
+      })
       .eq('id', roomId);
 
     if (error) {

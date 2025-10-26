@@ -55,6 +55,7 @@ export interface GameRoom {
   maxQuestions: number;
   currentQuestionIndex: number;
   language: 'en' | 'es';
+  questionIds?: string[]; // Ordered list of question IDs for the game
   currentRound?: GameRound;
   gameState: GameState;
   rounds: GameRound[];

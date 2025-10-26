@@ -12,6 +12,7 @@ interface DatabaseGameRoom {
   current_question_index: number;
   language: string;
   game_state: string;
+  question_ids: string[];
   created_at: string;
   updated_at: string;
 }
@@ -101,6 +102,7 @@ export function useGameRoom(gameCode: string) {
           maxQuestions: roomData.max_questions,
           currentQuestionIndex: roomData.current_question_index,
           language: (roomData.language || 'en') as 'en' | 'es',
+          questionIds: roomData.question_ids || [],
           gameState: roomData.game_state as any,
           rounds: [],
           createdAt: new Date(roomData.created_at).getTime()
@@ -135,7 +137,8 @@ export function useGameRoom(gameCode: string) {
                   currentQuestionIndex: updatedRoom.current_question_index,
                   selectedPacks: updatedRoom.selected_packs || [],
                   maxQuestions: updatedRoom.max_questions,
-                  language: (updatedRoom.language || 'en') as 'en' | 'es'
+                  language: (updatedRoom.language || 'en') as 'en' | 'es',
+                  questionIds: updatedRoom.question_ids || []
                 };
                 console.log('🎮 Game state changed to:', updated.gameState);
                 return updated;
