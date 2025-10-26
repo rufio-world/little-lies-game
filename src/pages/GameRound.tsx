@@ -65,9 +65,10 @@ export default function GameRound() {
       }
     }
 
-    // Set all questions for the game
+    // Set all questions for the game - shuffle and limit to maxQuestions
     const questions = questionPacks.flatMap(pack => pack.questions);
-    setAllQuestions(GameLogic.shuffleArray(questions));
+    const shuffledQuestions = GameLogic.shuffleArray(questions).slice(0, room.maxQuestions);
+    setAllQuestions(shuffledQuestions);
   }, [location.state, navigate]);
 
   // Use live game room from hook, which includes real-time player score updates

@@ -102,7 +102,7 @@ export default function WaitingRoom() {
       }
       
       const allQuestions = questionPacks.flatMap((pack: any) => pack.questions);
-      const shuffledQuestions = GameLogic.shuffleArray(allQuestions);
+      const shuffledQuestions = GameLogic.shuffleArray(allQuestions).slice(0, gameRoom.maxQuestions);
       const firstQuestion = shuffledQuestions[0];
       
       if (!firstQuestion) {
