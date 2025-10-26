@@ -89,7 +89,7 @@ export function VotingPhase({
             {gameRoom.players.length} players
           </div>
           <div className="flex items-center gap-1">
-            <Trophy className="h-4 w-4" />
+<Trophy className="h-4 w-4" />
             Question {gameRoom.currentQuestionIndex + 1} of {gameRoom.maxQuestions}
           </div>
         </div>

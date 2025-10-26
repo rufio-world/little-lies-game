@@ -126,7 +126,7 @@ export function ScoringResults({
           </div>
           <div className="flex items-center gap-1">
             <Trophy className="h-4 w-4" />
-            Round {round.round_number} Results
+            Question {gameRoom.currentQuestionIndex + 1} Results
           </div>
         </div>
       </div>
@@ -306,7 +306,7 @@ export function ScoringResults({
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Round {round.round_number} of {gameRoom.maxQuestions}
+                        Question {gameRoom.currentQuestionIndex + 1} of {gameRoom.maxQuestions}
                       </p>
                     </div>
                   </div>
