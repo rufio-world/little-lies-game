@@ -126,7 +126,7 @@ export default function GameRound() {
     };
   }, [currentRound?.id, currentPlayer?.id]);
 
-  // Auto-advance phases based on completion
+  // Auto-advance phases based on completion (HOST ONLY)
   useEffect(() => {
     if (!currentRound || !gameRoom || !currentPlayer?.isHost) return;
 
@@ -191,6 +191,30 @@ export default function GameRound() {
 
     advancePhase();
   }, [allAnswersSubmitted, allVotesSubmitted, currentRound, gameRoom, currentPlayer, readiness, allQuestions, navigate, toast]);
+
+  // Navigate all players to final results when game ends (ALL PLAYERS)
+  useEffect(() => {
+    if (!currentRound || !gameRoom || !currentPlayer || !allQuestions.length) return;
+
+    const checkGameEnd = async () => {
+      if (currentRound.phase === 'results') {
+        const allReady = await GameRoundService.checkAllPlayersReady(currentRound.id, gameRoom.id);
+        
+        if (allReady) {
+          const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
+          
+          if (nextQuestionIndex >= gameRoom.maxQuestions || nextQuestionIndex >= allQuestions.length) {
+            // Game finished - navigate to final results
+            navigate('/final-results', { 
+              state: { gameRoom, currentPlayer } 
+            });
+          }
+        }
+      }
+    };
+
+    checkGameEnd();
+  }, [currentRound, gameRoom, currentPlayer, allQuestions, navigate]);
 
 
   const getCurrentQuestion = () => {
