@@ -8,6 +8,7 @@ import { GameRoom, Question } from "@/lib/gameState";
 import { GameRound, PlayerAnswer } from "@/services/gameRoundService";
 import { Clock, Users, Trophy, Lightbulb } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface AnswerSubmissionProps {
   question: Question;
@@ -28,6 +29,7 @@ export function AnswerSubmission({
   allSubmitted, 
   onSubmitAnswer 
 }: AnswerSubmissionProps) {
+  const { t } = useTranslation();
   const [answer, setAnswer] = useState("");
   const [timeLeft, setTimeLeft] = useState(60);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -80,14 +82,14 @@ export function AnswerSubmission({
       {/* Header */}
       <div className="text-center mb-4 md:mb-6">
         <h1 className="text-xl md:text-2xl font-bold mb-2">{gameRoom.name}</h1>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Users className="h-3 w-3 md:h-4 md:w-4" />
-            {gameRoom.players.length} players
+            {gameRoom.players.length} {t('game.players').toLowerCase()}
           </div>
           <div className="flex items-center gap-1">
             <Trophy className="h-3 w-3 md:h-4 md:w-4" />
-            Question {gameRoom.currentQuestionIndex + 1} of {gameRoom.maxQuestions}
+            {t('game.question')} {gameRoom.currentQuestionIndex + 1} {t('common.of')} {gameRoom.maxQuestions}
           </div>
         </div>
       </div>
@@ -99,7 +101,7 @@ export function AnswerSubmission({
             <Clock className="h-4 w-4 md:h-5 md:w-5 text-primary" />
             <div className="flex-1">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-xs md:text-sm font-medium">Time to Submit Answer</span>
+                <span className="text-xs md:text-sm font-medium">{t('game.timeToSubmit')}</span>
                 <Badge variant={timeLeft <= 15 ? "destructive" : "secondary"} className="text-xs">
                   {timeLeft}s
                 </Badge>
@@ -123,11 +125,10 @@ export function AnswerSubmission({
                   <Lightbulb className="h-4 w-4 md:h-5 md:w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                   <div>
                     <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-1 text-sm md:text-base">
-                      Strategy Tip
+                      {t('game.strategyTip')}
                     </h3>
                     <p className="text-xs md:text-sm text-blue-700 dark:text-blue-300">
-                      Create an answer that sounds plausible but isn't too obvious. 
-                      Think about what other players might expect the real answer to be!
+                      {t('game.strategyText')}
                     </p>
                   </div>
                 </div>
@@ -137,7 +138,7 @@ export function AnswerSubmission({
                 <Textarea
                   value={answer}
                   onChange={(e) => setAnswer(e.target.value)}
-                  placeholder="Type your fake answer here... Make it convincing!"
+                  placeholder={t('game.typeFakeAnswer')}
                   className="h-32 resize-none"
                   disabled={hasSubmitted || isSubmitting}
                 />
@@ -147,7 +148,7 @@ export function AnswerSubmission({
                   className="w-full"
                   size="lg"
                 >
-                  {isSubmitting ? "Submitting..." : "Submit Your Answer"}
+                  {isSubmitting ? t('common.loading') : t('game.submitYourAnswer')}
                 </Button>
               </div>
             </>
@@ -155,16 +156,16 @@ export function AnswerSubmission({
             <div className="text-center space-y-4">
               <div className="bg-green-50 dark:bg-green-950/30 p-6 rounded-lg border border-green-200 dark:border-green-800">
                 <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-2">
-                  {hasSubmitted ? "Answer Submitted! ✓" : "All Answers In!"}
+                  {hasSubmitted ? `${t('game.answer')} ${t('game.submitted')}! ✓` : t('game.allAnswersRevealed')}
                 </h3>
                 <p className="text-green-700 dark:text-green-300">
-                  {allSubmitted ? "Moving to voting phase..." : "Waiting for other players to submit their answers..."}
+                  {allSubmitted ? t('game.voting') : t('game.waiting')}
                 </p>
               </div>
               
               {hasSubmitted && answer && (
                 <div className="bg-muted p-4 rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-2">Your answer:</p>
+                  <p className="text-sm text-muted-foreground mb-2">{t('game.yourAnswer')}:</p>
                   <p className="font-medium">{answer}</p>
                 </div>
               )}
@@ -176,7 +177,7 @@ export function AnswerSubmission({
       {/* Players Status */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base md:text-lg">Players</CardTitle>
+          <CardTitle className="text-base md:text-lg">{t('game.players')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-2">
@@ -189,11 +190,11 @@ export function AnswerSubmission({
                   <div className="w-3 h-3 rounded-full bg-primary"></div>
                   <span className="font-medium">{player.name}</span>
                   {player.id === currentPlayer.id && (
-                    <Badge variant="secondary" className="text-xs">You</Badge>
+                    <Badge variant="secondary" className="text-xs">{t('game.you')}</Badge>
                   )}
                 </div>
                 <Badge variant={hasSubmitted && player.id === currentPlayer.id ? "default" : "secondary"}>
-                  {hasSubmitted && player.id === currentPlayer.id ? "Submitted" : "Writing..."}
+                  {hasSubmitted && player.id === currentPlayer.id ? t('game.submitted') : t('game.writing')}
                 </Badge>
               </div>
             ))}

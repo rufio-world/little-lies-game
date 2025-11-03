@@ -5,6 +5,7 @@ import { GameRoom, Question } from "@/lib/gameState";
 import { GameRound, PlayerAnswer, PlayerVote, RoundReadiness } from "@/services/gameRoundService";
 import { Trophy, Users, CheckCircle, XCircle, Target, Zap, Star } from "lucide-react";
 import { useEffect } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ScoringResultsProps {
   question: Question;
@@ -29,6 +30,7 @@ export function ScoringResults({
   isCurrentPlayerReady,
   onMarkReady
 }: ScoringResultsProps) {
+  const { t } = useTranslation();
   // Calculate current player's vote and results
   const currentPlayerVote = votes.find(v => v.player_id === currentPlayer.id);
   const currentPlayerAnswer = answers.find(a => a.player_id === currentPlayer.id);
@@ -119,14 +121,14 @@ export function ScoringResults({
       {/* Header */}
       <div className="text-center mb-4 md:mb-6">
         <h1 className="text-xl md:text-2xl font-bold mb-2">{gameRoom.name}</h1>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Users className="h-3 w-3 md:h-4 md:w-4" />
-            {gameRoom.players.length} players
+            {gameRoom.players.length} {t('game.players').toLowerCase()}
           </div>
           <div className="flex items-center gap-1">
             <Trophy className="h-3 w-3 md:h-4 md:w-4" />
-            Question {gameRoom.currentQuestionIndex + 1} Results
+            {t('game.question')} {gameRoom.currentQuestionIndex + 1} {t('game.results')}
           </div>
         </div>
       </div>
@@ -136,12 +138,12 @@ export function ScoringResults({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base md:text-lg">
             <Target className="h-4 w-4 md:h-5 md:w-5" />
-            Your Results This Round
+            {t('game.yourResults')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-4 bg-primary/5 rounded-lg border">
-            <span className="font-medium">Points Earned:</span>
+            <span className="font-medium">{t('game.pointsEarned')}</span>
             <Badge variant="default" className="text-lg px-3 py-1">
               +{roundScores[currentPlayer.id] || 0}
             </Badge>
@@ -157,14 +159,14 @@ export function ScoringResults({
               )}
               <div className="flex-1">
                 <p className="font-medium">
-                  {currentPlayerVote?.voted_for_correct ? "Correct Vote! ✓" : "Incorrect Vote"}
+                  {currentPlayerVote?.voted_for_correct ? t('game.correctVote') : t('game.incorrectVote')}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {currentPlayerVote?.voted_for_correct 
-                    ? "You correctly identified the real answer!" 
+                    ? t('game.correctlyIdentified')
                     : trickerPlayer 
-                      ? `You were tricked by ${trickerPlayer.name}'s fake answer`
-                      : "You didn't vote for the correct answer"
+                      ? `${t('game.youWereTricked')} ${trickerPlayer.name}${t('game.fakeAnswer')}`
+                      : t('game.didNotVoteCorrect')
                   }
                 </p>
               </div>
@@ -176,10 +178,10 @@ export function ScoringResults({
                 <Zap className="h-5 w-5 text-green-600 mt-0.5" />
                 <div className="flex-1">
                   <p className="font-medium text-green-900 dark:text-green-100">
-                    Great Deception! 🎭
+                    {t('game.youTricked')}
                   </p>
                   <p className="text-sm text-green-700 dark:text-green-300">
-                    You tricked {playersVotedForMe.length} player{playersVotedForMe.length > 1 ? 's' : ''}: {" "}
+                    {playersVotedForMe.length} {t('game.fooledPlayers')}{playersVotedForMe.length > 1 ? 's' : ''}: {" "}
                     {playersVotedForMe.map(vote => 
                       gameRoom.players.find(p => p.id === vote.player_id)?.name
                     ).join(', ')}
@@ -192,10 +194,10 @@ export function ScoringResults({
               <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
                 <div className="flex items-center gap-3 mb-2">
                   <Star className="h-5 w-5 text-blue-600" />
-                  <h3 className="font-semibold text-blue-900 dark:text-blue-100">Round Summary</h3>
+                  <h3 className="font-semibold text-blue-900 dark:text-blue-100">{t('game.roundSummary')}</h3>
                 </div>
                 <p className="text-sm text-blue-700 dark:text-blue-300">
-                  No one was fooled by your answer this round, but you can still earn points by voting correctly!
+                  {t('game.noOneFooled')}
                 </p>
               </div>
             )}
@@ -206,7 +208,7 @@ export function ScoringResults({
       {/* All Answers Revealed */}
       <Card className="mb-4 md:mb-6">
         <CardHeader>
-          <CardTitle className="text-base md:text-lg">All Answers Revealed</CardTitle>
+          <CardTitle className="text-base md:text-lg">{t('game.allAnswersRevealed')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2 md:space-y-3">
@@ -216,12 +218,12 @@ export function ScoringResults({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <CheckCircle className="h-3 w-3 md:h-4 md:w-4 text-green-600 flex-shrink-0" />
-                    <span className="font-medium text-green-900 dark:text-green-100 text-xs md:text-sm">Correct Answer</span>
+                    <span className="font-medium text-green-900 dark:text-green-100 text-xs md:text-sm">{t('game.correctAnswer')}</span>
                   </div>
                   <p className="text-green-800 dark:text-green-200 text-xs md:text-base break-words">{round.correct_answer}</p>
                 </div>
                 <Badge variant="secondary" className="bg-green-100 dark:bg-green-900 text-xs flex-shrink-0">
-                  {votes.filter(v => v.voted_for_correct).length} votes
+                  {votes.filter(v => v.voted_for_correct).length} {t('game.votes')}
                 </Badge>
               </div>
             </div>
@@ -237,15 +239,15 @@ export function ScoringResults({
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <div className="w-3 h-3 rounded-full bg-primary"></div>
-                        <span className="font-medium">{author?.name}'s Answer</span>
+                        <span className="font-medium">{author?.name}{t('game.answer')}</span>
                         {answer.player_id === currentPlayer.id && (
-                          <Badge variant="outline" className="text-xs">You</Badge>
+                          <Badge variant="outline" className="text-xs">{t('game.you')}</Badge>
                         )}
                       </div>
                       <p className="text-foreground">{answer.answer_text}</p>
                     </div>
                     <Badge variant="secondary">
-                      {answerVotes.length} vote{answerVotes.length !== 1 ? 's' : ''}
+                      {answerVotes.length} {t('game.votes').toLowerCase()}
                     </Badge>
                   </div>
                 </div>
@@ -260,7 +262,7 @@ export function ScoringResults({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base md:text-lg">
             <Trophy className="h-4 w-4 md:h-5 md:w-5" />
-            Current Scoreboard
+            {t('game.currentScoreboard')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -299,20 +301,20 @@ export function ScoringResults({
                       <div className="flex items-center gap-1 md:gap-2 flex-wrap">
                         <span className="font-semibold text-sm md:text-base truncate">{player.name}</span>
                         {isCurrentPlayer && (
-                          <Badge variant="secondary" className="text-xs">You</Badge>
+                          <Badge variant="secondary" className="text-xs">{t('game.you')}</Badge>
                         )}
                         {player.isHost && (
-                          <Badge variant="outline" className="text-xs">Host</Badge>
+                          <Badge variant="outline" className="text-xs">{t('game.host')}</Badge>
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Question {gameRoom.currentQuestionIndex + 1} of {gameRoom.maxQuestions}
+                        {t('game.question')} {gameRoom.currentQuestionIndex + 1} {t('common.of')} {gameRoom.maxQuestions}
                       </p>
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0">
                     <div className="text-lg md:text-xl font-bold text-primary">{player.score}</div>
-                    <p className="text-xs text-muted-foreground">points</p>
+                    <p className="text-xs text-muted-foreground">{t('game.points')}</p>
                   </div>
                 </div>
               );
@@ -324,7 +326,7 @@ export function ScoringResults({
       {/* Player Readiness Status */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Player Readiness</CardTitle>
+          <CardTitle>{t('game.playerReadiness')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2 mb-4">
@@ -342,18 +344,18 @@ export function ScoringResults({
                     />
                     <span className="font-medium">{player.name}</span>
                     {player.id === currentPlayer.id && (
-                      <Badge variant="secondary" className="text-xs">You</Badge>
+                      <Badge variant="secondary" className="text-xs">{t('game.you')}</Badge>
                     )}
                   </div>
                   <div>
                     {isReady ? (
                       <Badge variant="default" className="bg-green-600">
                         <CheckCircle className="h-3 w-3 mr-1" />
-                        Ready
+                        {t('game.ready')}
                       </Badge>
                     ) : (
                       <Badge variant="secondary">
-                        Waiting...
+                        {t('game.waiting')}
                       </Badge>
                     )}
                   </div>
@@ -371,10 +373,10 @@ export function ScoringResults({
             {isCurrentPlayerReady ? (
               <>
                 <CheckCircle className="mr-2 h-5 w-5" />
-                Waiting for the other players
+                {t('game.waitingOthers')}
               </>
             ) : (
-              "I'm Ready for Next Round"
+              t('game.readyNextRound')
             )}
           </Button>
         </CardContent>
