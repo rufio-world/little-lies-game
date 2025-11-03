@@ -115,27 +115,27 @@ export function ScoringResults({
     gameRoom.players.find(p => p.id === trickedByAnswer.player_id) : null;
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto px-2">
       {/* Header */}
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold mb-2">{gameRoom.name}</h1>
-        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+      <div className="text-center mb-4 md:mb-6">
+        <h1 className="text-xl md:text-2xl font-bold mb-2">{gameRoom.name}</h1>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
-            <Users className="h-4 w-4" />
+            <Users className="h-3 w-3 md:h-4 md:w-4" />
             {gameRoom.players.length} players
           </div>
           <div className="flex items-center gap-1">
-            <Trophy className="h-4 w-4" />
+            <Trophy className="h-3 w-3 md:h-4 md:w-4" />
             Question {gameRoom.currentQuestionIndex + 1} Results
           </div>
         </div>
       </div>
 
       {/* Your Results */}
-      <Card className="mb-6">
+      <Card className="mb-4 md:mb-6">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+            <Target className="h-4 w-4 md:h-5 md:w-5" />
             Your Results This Round
           </CardTitle>
         </CardHeader>
@@ -204,23 +204,23 @@ export function ScoringResults({
       </Card>
 
       {/* All Answers Revealed */}
-      <Card className="mb-6">
+      <Card className="mb-4 md:mb-6">
         <CardHeader>
-          <CardTitle>All Answers Revealed</CardTitle>
+          <CardTitle className="text-base md:text-lg">All Answers Revealed</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+          <div className="space-y-2 md:space-y-3">
             {/* Show correct answer first */}
-            <div className="p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border-2 border-green-200 dark:border-green-800">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
+            <div className="p-3 md:p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border-2 border-green-200 dark:border-green-800">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="font-medium text-green-900 dark:text-green-100">Correct Answer</span>
+                    <CheckCircle className="h-3 w-3 md:h-4 md:w-4 text-green-600 flex-shrink-0" />
+                    <span className="font-medium text-green-900 dark:text-green-100 text-xs md:text-sm">Correct Answer</span>
                   </div>
-                  <p className="text-green-800 dark:text-green-200">{round.correct_answer}</p>
+                  <p className="text-green-800 dark:text-green-200 text-xs md:text-base break-words">{round.correct_answer}</p>
                 </div>
-                <Badge variant="secondary" className="bg-green-100 dark:bg-green-900">
+                <Badge variant="secondary" className="bg-green-100 dark:bg-green-900 text-xs flex-shrink-0">
                   {votes.filter(v => v.voted_for_correct).length} votes
                 </Badge>
               </div>
@@ -256,15 +256,15 @@ export function ScoringResults({
       </Card>
 
       {/* Current Standings */}
-      <Card className="mb-6">
+      <Card className="mb-4 md:mb-6">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Trophy className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+            <Trophy className="h-4 w-4 md:h-5 md:w-5" />
             Current Scoreboard
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+          <div className="space-y-2 md:space-y-3">
             {[...gameRoom.players].sort((a, b) => b.score - a.score).map((player, index) => {
               const isCurrentPlayer = player.id === currentPlayer.id;
               const rank = index + 1;
@@ -273,15 +273,15 @@ export function ScoringResults({
               return (
                 <div 
                   key={player.id}
-                  className={`flex items-center justify-between p-4 rounded-lg border ${
+                  className={`flex items-center justify-between p-3 md:p-4 rounded-lg border ${
                     isCurrentPlayer 
                       ? 'bg-primary/10 border-primary/20 ring-2 ring-primary/10' 
                       : 'bg-muted/50 border-border'
                   }`}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
+                  <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-base md:text-lg font-bold flex-shrink-0 ${
                         rank === 1 ? 'bg-yellow-100 dark:bg-yellow-900/30' :
                         rank === 2 ? 'bg-gray-100 dark:bg-gray-900/30' :
                         rank === 3 ? 'bg-orange-100 dark:bg-orange-900/30' :
@@ -292,12 +292,12 @@ export function ScoringResults({
                       <img 
                         src={player.avatar} 
                         alt={player.name}
-                        className="w-8 h-8 rounded-full"
+                        className="w-7 h-7 md:w-8 md:h-8 rounded-full flex-shrink-0"
                       />
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold">{player.name}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1 md:gap-2 flex-wrap">
+                        <span className="font-semibold text-sm md:text-base truncate">{player.name}</span>
                         {isCurrentPlayer && (
                           <Badge variant="secondary" className="text-xs">You</Badge>
                         )}
@@ -310,8 +310,8 @@ export function ScoringResults({
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-xl font-bold text-primary">{player.score}</div>
+                  <div className="text-right flex-shrink-0">
+                    <div className="text-lg md:text-xl font-bold text-primary">{player.score}</div>
                     <p className="text-xs text-muted-foreground">points</p>
                   </div>
                 </div>

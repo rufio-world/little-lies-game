@@ -120,21 +120,21 @@ export default function CreateGame() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-3 md:p-4">
       <div className="max-w-md mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
           <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
-          <h1 className="text-2xl font-bold">{t("createGame.title")}</h1>
+          <h1 className="text-xl md:text-2xl font-bold">{t("createGame.title")}</h1>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>{t("createGame.title")}</CardTitle>
+            <CardTitle className="text-lg md:text-xl">{t("createGame.title")}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4 md:space-y-6">
             {/* Game Name */}
             <div className="space-y-2">
               <Label htmlFor="game-name">{t("createGame.gameName")}</Label>

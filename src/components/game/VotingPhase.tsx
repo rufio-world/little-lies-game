@@ -79,31 +79,31 @@ export function VotingPhase({
   }, [answers.length, round.id]);
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto px-2">
       {/* Header */}
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold mb-2">{gameRoom.name}</h1>
-        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+      <div className="text-center mb-4 md:mb-6">
+        <h1 className="text-xl md:text-2xl font-bold mb-2">{gameRoom.name}</h1>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
-            <Users className="h-4 w-4" />
+            <Users className="h-3 w-3 md:h-4 md:w-4" />
             {gameRoom.players.length} players
           </div>
           <div className="flex items-center gap-1">
-<Trophy className="h-4 w-4" />
+<Trophy className="h-3 w-3 md:h-4 md:w-4" />
             Question {gameRoom.currentQuestionIndex + 1} of {gameRoom.maxQuestions}
           </div>
         </div>
       </div>
 
       {/* Timer */}
-      <Card className="mb-6">
-        <CardContent className="pt-6">
-          <div className="flex items-center gap-4">
-            <Clock className="h-5 w-5 text-primary" />
+      <Card className="mb-4 md:mb-6">
+        <CardContent className="pt-4 md:pt-6">
+          <div className="flex items-center gap-3 md:gap-4">
+            <Clock className="h-4 w-4 md:h-5 md:w-5 text-primary" />
             <div className="flex-1">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium">Time to Vote</span>
-                <Badge variant={timeLeft <= 10 ? "destructive" : "secondary"}>
+                <span className="text-xs md:text-sm font-medium">Time to Vote</span>
+                <Badge variant={timeLeft <= 10 ? "destructive" : "secondary"} className="text-xs">
                   {timeLeft}s
                 </Badge>
               </div>
@@ -116,19 +116,19 @@ export function VotingPhase({
       {!hasVoted && !allVoted ? (
         <>
           {/* Question */}
-          <Card className="mb-6">
+          <Card className="mb-4 md:mb-6">
             <CardHeader>
-              <CardTitle className="text-center">
-                <Vote className="h-5 w-5 inline-block mr-2" />
+              <CardTitle className="text-center text-sm md:text-base">
+                <Vote className="h-4 w-4 md:h-5 md:w-5 inline-block mr-2" />
                 Which is the correct answer?
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center mb-4">
-                <h2 className="text-xl font-semibold text-primary mb-2">
+                <h2 className="text-base md:text-xl font-semibold text-primary mb-2">
                   {question.question}
                 </h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs md:text-sm text-muted-foreground">
                   Choose the answer you think is correct. You'll earn points for guessing right!
                 </p>
               </div>
@@ -136,8 +136,8 @@ export function VotingPhase({
           </Card>
 
           {/* Answer Options */}
-          <Card className="mb-6">
-            <CardContent className="pt-6">
+          <Card className="mb-4 md:mb-6">
+            <CardContent className="pt-4 md:pt-6">
               <div className="space-y-3">
                 {shuffledOptions.map((option, index) => (
                   <Button

@@ -117,26 +117,26 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-3 md:p-4">
       <div className="max-w-md mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
           <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-xl md:text-2xl font-bold">
             {isLogin ? "Sign In" : "Sign Up"}
           </h1>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>
+            <CardTitle className="text-base md:text-lg">
               {isLogin ? "Welcome Back!" : "Create Account"}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
               {!isLogin && (
                 <div className="space-y-2">
                   <Label htmlFor="username">Username</Label>

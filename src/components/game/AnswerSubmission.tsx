@@ -76,31 +76,31 @@ export function AnswerSubmission({
   const progress = ((60 - timeLeft) / 60) * 100;
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto px-2">
       {/* Header */}
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold mb-2">{gameRoom.name}</h1>
-        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+      <div className="text-center mb-4 md:mb-6">
+        <h1 className="text-xl md:text-2xl font-bold mb-2">{gameRoom.name}</h1>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
-            <Users className="h-4 w-4" />
+            <Users className="h-3 w-3 md:h-4 md:w-4" />
             {gameRoom.players.length} players
           </div>
           <div className="flex items-center gap-1">
-            <Trophy className="h-4 w-4" />
+            <Trophy className="h-3 w-3 md:h-4 md:w-4" />
             Question {gameRoom.currentQuestionIndex + 1} of {gameRoom.maxQuestions}
           </div>
         </div>
       </div>
 
       {/* Timer */}
-      <Card className="mb-6">
-        <CardContent className="pt-6">
-          <div className="flex items-center gap-4">
-            <Clock className="h-5 w-5 text-primary" />
+      <Card className="mb-4 md:mb-6">
+        <CardContent className="pt-4 md:pt-6">
+          <div className="flex items-center gap-3 md:gap-4">
+            <Clock className="h-4 w-4 md:h-5 md:w-5 text-primary" />
             <div className="flex-1">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium">Time to Submit Answer</span>
-                <Badge variant={timeLeft <= 15 ? "destructive" : "secondary"}>
+                <span className="text-xs md:text-sm font-medium">Time to Submit Answer</span>
+                <Badge variant={timeLeft <= 15 ? "destructive" : "secondary"} className="text-xs">
                   {timeLeft}s
                 </Badge>
               </div>
@@ -111,21 +111,21 @@ export function AnswerSubmission({
       </Card>
 
       {/* Question & Answer Form */}
-      <Card className="mb-6">
+      <Card className="mb-4 md:mb-6">
         <CardHeader>
-          <CardTitle className="text-xl">{question.question}</CardTitle>
+          <CardTitle className="text-base md:text-xl">{question.question}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 md:space-y-6">
           {!hasSubmitted && !allSubmitted ? (
             <>
-              <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                <div className="flex items-start gap-3">
-                  <Lightbulb className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+              <div className="bg-blue-50 dark:bg-blue-950/30 p-3 md:p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex items-start gap-2 md:gap-3">
+                  <Lightbulb className="h-4 w-4 md:h-5 md:w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-1">
+                    <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-1 text-sm md:text-base">
                       Strategy Tip
                     </h3>
-                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                    <p className="text-xs md:text-sm text-blue-700 dark:text-blue-300">
                       Create an answer that sounds plausible but isn't too obvious. 
                       Think about what other players might expect the real answer to be!
                     </p>
@@ -176,7 +176,7 @@ export function AnswerSubmission({
       {/* Players Status */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Players</CardTitle>
+          <CardTitle className="text-base md:text-lg">Players</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-2">

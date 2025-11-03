@@ -193,27 +193,27 @@ export default function WaitingRoom() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-3 md:p-4">
       <div className="max-w-md mx-auto">
         {/* Header */}
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold mb-2">{t('waitingRoom.title')}</h1>
+        <div className="text-center mb-4 md:mb-6">
+          <h1 className="text-xl md:text-2xl font-bold mb-2">{t('waitingRoom.title')}</h1>
           <div className="flex items-center justify-center gap-2">
-            <Badge variant="secondary" className="text-lg px-4 py-2 font-mono">
+            <Badge variant="secondary" className="text-base md:text-lg px-3 md:px-4 py-1.5 md:py-2 font-mono">
               {gameRoom.code}
             </Badge>
             <Button variant="ghost" size="icon" onClick={copyGameCode}>
-              <Copy className="h-4 w-4" />
+              <Copy className="h-3 w-3 md:h-4 md:w-4" />
             </Button>
           </div>
         </div>
 
         {/* Game Info */}
-        <Card className="mb-6">
+        <Card className="mb-4 md:mb-6">
           <CardHeader>
-            <CardTitle className="text-lg">{gameRoom.name}</CardTitle>
+            <CardTitle className="text-base md:text-lg">{gameRoom.name}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-2 md:space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Question Packs:</span>
               <span className="font-medium">{gameRoom.selectedPacks.length}</span>
@@ -228,15 +228,15 @@ export default function WaitingRoom() {
         </Card>
 
         {/* Players */}
-        <Card className="mb-6">
+        <Card className="mb-4 md:mb-6">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+              <Users className="h-4 w-4 md:h-5 md:w-5" />
               {t('waitingRoom.players')} ({gameRoom.players.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3">
               {gameRoom.players.map(player => (
                 <div 
                   key={player.id}
@@ -309,7 +309,7 @@ export default function WaitingRoom() {
         </div>
 
         {/* Instructions */}
-        <div className="text-center text-sm text-muted-foreground mt-6 space-y-1">
+        <div className="text-center text-xs md:text-sm text-muted-foreground mt-4 md:mt-6 space-y-1 px-2">
           <p>Share the game code with friends to join</p>
           {currentPlayer.isHost && <p>As the host, you can start the game anytime</p>}
         </div>

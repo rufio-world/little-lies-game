@@ -90,24 +90,24 @@ export default function JoinGame() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-3 md:p-4">
       <div className="max-w-md mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
           <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
-          <h1 className="text-2xl font-bold">{t('joinGame.title')}</h1>
+          <h1 className="text-xl md:text-2xl font-bold">{t('joinGame.title')}</h1>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+              <Users className="h-4 w-4 md:h-5 md:w-5" />
               {t('joinGame.title')}
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4 md:space-y-6">
             {/* Game Code Input */}
             <div className="space-y-2">
               <Label htmlFor="game-code">{t('joinGame.enterCode')}</Label>
@@ -132,7 +132,7 @@ export default function JoinGame() {
                 {Array.from({ length: 5 }).map((_, i) => (
                   <div 
                     key={i}
-                    className={`w-10 h-12 border-2 rounded-md flex items-center justify-center font-mono text-lg font-bold ${
+                    className={`w-8 h-10 sm:w-10 sm:h-12 border-2 rounded-md flex items-center justify-center font-mono text-base sm:text-lg font-bold ${
                       gameCode[i] 
                         ? 'border-primary bg-primary/10 text-primary' 
                         : 'border-muted bg-muted/50 text-muted-foreground'
