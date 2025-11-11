@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, RefreshCw, Play } from "lucide-react";
+import { Globe, MapPin, Zap, Smile, Users as UsersIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { storage } from "@/lib/storage";
 import { GameLogic } from "@/lib/gameState";
 import { GameService } from "@/services/gameService";
@@ -33,6 +35,24 @@ export default function CreateGame() {
     { id: "troll_corner", nameKey: "packs.trollCorner", free: false },
     { id: "grandparents", nameKey: "packs.grandparents", free: false },
   ];
+
+  // Map which packs have localized data available. Keep this conservative and
+  // change if new localized packs are added under src/data/*.json
+  const PACK_LOCALES: Record<string, Array<'en' | 'es'>> = {
+    pop_culture: ['en', 'es'],
+    travel_places: ['en'],
+    impossible: ['en'],
+    troll_corner: ['en'],
+    grandparents: ['en']
+  };
+
+  const PACK_ICONS: Record<string, any> = {
+    pop_culture: Globe,
+    travel_places: MapPin,
+    impossible: Zap,
+    troll_corner: Smile,
+    grandparents: UsersIcon
+  };
 
   const questionOptions = [
     { value: 5, label: "5" },
@@ -191,6 +211,39 @@ export default function CreateGame() {
                   <SelectItem value="es">Español</SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-sm text-muted-foreground mt-1">
+                {t('createGame.cardsLocalePrefix')} {language === 'en' ? 'English' : 'Español'}
+              </p>
+
+              {selectedPacks.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedPacks.map((id, idx) => {
+                    const pack = availablePacks.find((p) => p.id === id);
+                    const name = pack ? t(pack.nameKey) : id;
+                    const locales = PACK_LOCALES[id] || ['en'];
+                    const supports = locales.includes(language);
+                    const Icon = PACK_ICONS[id] || Globe;
+
+                    const badgeClass = supports
+                      ? 'bg-success text-success-foreground border-none'
+                      : 'bg-warning text-warning-foreground border-none';
+
+                    return (
+                      <div
+                        key={id}
+                        className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-muted/40 text-sm opacity-0 animate-fade-in-up"
+                        style={{ animationDelay: `${idx * 70}ms` }}
+                      >
+                        <Icon className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium">{name}</span>
+                        <Badge className={`ml-2 ${badgeClass}`}>
+                          {supports ? (language === 'en' ? 'EN' : 'ES') : 'EN only'}
+                        </Badge>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Number of Questions */}

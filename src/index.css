@@ -122,3 +122,19 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Small entrance animation used for UI chips */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 220ms ease-in-out forwards;
+}

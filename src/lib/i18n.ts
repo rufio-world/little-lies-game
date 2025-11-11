@@ -33,6 +33,8 @@ export const translations = {
       generate: "Generate Code",
       selectPacks: "Select Question Packs",
       language: "Select cards language",
+      cardsLocalePrefix: "Cards locale:",
+  usingPacksPrefix: "Using packs:",
       numberOfQuestions: "Number of Questions",
       createRoom: "Create Room",
       back: "Back"
@@ -210,6 +212,8 @@ export const translations = {
       generate: "Generar Código",
       selectPacks: "Seleccionar Paquetes de Preguntas",
       language: "Idioma de las cartas",
+      cardsLocalePrefix: "Idioma de las cartas:",
+  usingPacksPrefix: "Usando paquetes:",
       numberOfQuestions: "Número de Preguntas",
       createRoom: "Crear Sala",
       back: "Volver"
