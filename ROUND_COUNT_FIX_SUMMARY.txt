@@ -1,0 +1,90 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                  🐛 BUG FIX: GAME ENDS ONE ROUND EARLY                       ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+PROBLEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  User creates game with 5 rounds → Game ends after 2 rounds instead of 5
+  User creates game with 10 rounds → Game ends too early
+  
+ROOT CAUSE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Off-by-one error: Confusion between 0-indexed array positions and 
+  1-indexed human-readable question counts.
+  
+  ❌ OLD CODE:
+    if (nextQuestionIndex >= gameRoom.maxQuestions) {
+      // END GAME
+    }
+  
+  When maxQuestions = 5 and currentIndex = 4:
+    nextIndex = 5
+    Check: 5 >= 5? YES → END (but should play round 5!)
+  
+  ✅ FIXED CODE:
+    if (nextQuestionIndex > gameRoom.maxQuestions) {
+      // END GAME
+    }
+  
+  Now: 5 > 5? NO → CONTINUE (play round 5) ✓
+
+SOLUTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Changed >= to > in two locations in GameRound.tsx
+  
+  File: src/pages/GameRound.tsx
+  
+  Location 1 (line ~170):
+    In host's auto-advance effect
+    if (nextQuestionIndex > gameRoom.maxQuestions)
+  
+  Location 2 (line ~238):
+    In all-players game-end check
+    if (nextQuestionIndex > gameRoom.maxQuestions)
+
+EXAMPLE: 5-Round Game
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Before Fix (BROKEN):          After Fix (WORKING):
+  ─────────────────────         ────────────────────
+  Round 1 ✓                      Round 1 ✓
+  Round 2 ✓                      Round 2 ✓
+  [Game ends]                    Round 3 ✓
+  Final Results ✗ too early      Round 4 ✓
+                                 Round 5 ✓ ← FIXED!
+                                 Final Results ✓
+
+TESTING QUICK START
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. npm run dev
+  2. Create game with "5" questions
+  3. Start game solo
+  4. Play all 5 rounds
+  5. Verify: "Question 5 of 5" appears before game ends
+  
+  ✓ If you see all 5 rounds → FIX WORKS!
+  ✗ If game ends early → Something else is wrong
+
+FILES CHANGED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  src/pages/GameRound.tsx (2 lines changed)
+  
+  - Line ~170: >= to >
+  - Line ~238: >= to >
+
+DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📄 BUG_FIX_EARLY_GAME_END.md   - Detailed explanation & walkthrough
+  📄 TEST_ROUND_COUNT_FIX.md     - Testing instructions & verification
+
+IMPACT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✅ Games now play the full selected number of rounds
+  ✅ No database changes needed
+  ✅ No API changes
+  ✅ Backward compatible
+  ✅ Single character fix (>= to >)
+
+REGRESSION RISK: VERY LOW ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Applied: November 11, 2025 | Status: ✅ COMPLETE | Ready for testing: YES

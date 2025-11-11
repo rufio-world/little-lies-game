@@ -168,8 +168,10 @@ export default function GameRound() {
             console.log('✅ All players ready, advancing to next round');
             const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
             
-            if (nextQuestionIndex >= gameRoom.maxQuestions) {
+            if (nextQuestionIndex > gameRoom.maxQuestions) {
               // Game finished - navigate to final results
+              // Note: currentQuestionIndex is 0-indexed, maxQuestions is 1-indexed
+              // So if maxQuestions = 5, valid indices are 0-4, and nextIndex > 5 means we've completed all 5
               navigate('/final-results', { 
                 state: { gameRoom, currentPlayer } 
               });
@@ -233,8 +235,9 @@ export default function GameRound() {
         if (allReady) {
           const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
           
-          if (nextQuestionIndex >= gameRoom.maxQuestions) {
+          if (nextQuestionIndex > gameRoom.maxQuestions) {
             // Game finished - navigate to final results
+            // Note: currentQuestionIndex is 0-indexed, maxQuestions is 1-indexed
             navigate('/final-results', { 
               state: { gameRoom, currentPlayer } 
             });

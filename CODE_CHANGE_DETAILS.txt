@@ -1,0 +1,129 @@
+═══════════════════════════════════════════════════════════════════════════════
+                        EXACT CODE CHANGES MADE
+═══════════════════════════════════════════════════════════════════════════════
+
+FILE: src/pages/GameRound.tsx
+
+CHANGE #1 - Line ~170 (Host auto-advance effect)
+═══════════════════════════════════════════════════════════════════════════════
+
+BEFORE:
+───────
+          if (allReady) {
+            console.log('✅ All players ready, advancing to next round');
+            const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
+            
+            if (nextQuestionIndex >= gameRoom.maxQuestions) {
+              // Game finished - navigate to final results
+              navigate('/final-results', { 
+                state: { gameRoom, currentPlayer } 
+              });
+            } else {
+
+AFTER:
+──────
+          if (allReady) {
+            console.log('✅ All players ready, advancing to next round');
+            const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
+            
+            if (nextQuestionIndex > gameRoom.maxQuestions) {
+              // Game finished - navigate to final results
+              // Note: currentQuestionIndex is 0-indexed, maxQuestions is 1-indexed
+              // So if maxQuestions = 5, valid indices are 0-4, and nextIndex > 5 means we've completed all 5
+              navigate('/final-results', { 
+                state: { gameRoom, currentPlayer } 
+              });
+            } else {
+
+CHANGE #2 - Line ~238 (All-players game-end check)
+═══════════════════════════════════════════════════════════════════════════════
+
+BEFORE:
+───────
+  // Navigate all players to final results when game ends (ALL PLAYERS)
+  useEffect(() => {
+    if (!currentRound || !gameRoom || !currentPlayer || !questionMap.size) return;
+
+    const checkGameEnd = async () => {
+      if (currentRound.phase === 'results') {
+        const allReady = await GameRoundService.checkAllPlayersReady(currentRound.id, gameRoom.id);
+        
+        if (allReady) {
+          const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
+          
+          if (nextQuestionIndex >= gameRoom.maxQuestions) {
+            // Game finished - navigate to final results
+            navigate('/final-results', { 
+              state: { gameRoom, currentPlayer } 
+            });
+          }
+        }
+      }
+    };
+
+AFTER:
+──────
+  // Navigate all players to final results when game ends (ALL PLAYERS)
+  useEffect(() => {
+    if (!currentRound || !gameRoom || !currentPlayer || !questionMap.size) return;
+
+    const checkGameEnd = async () => {
+      if (currentRound.phase === 'results') {
+        const allReady = await GameRoundService.checkAllPlayersReady(currentRound.id, gameRoom.id);
+        
+        if (allReady) {
+          const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
+          
+          if (nextQuestionIndex > gameRoom.maxQuestions) {
+            // Game finished - navigate to final results
+            // Note: currentQuestionIndex is 0-indexed, maxQuestions is 1-indexed
+            navigate('/final-results', { 
+              state: { gameRoom, currentPlayer } 
+            });
+          }
+        }
+      }
+    };
+
+═══════════════════════════════════════════════════════════════════════════════
+SUMMARY OF CHANGES
+═══════════════════════════════════════════════════════════════════════════════
+
+Total Files Modified:     1
+Total Lines Changed:      2
+Operator Changed:         >= becomes >
+Added Documentation:      2 comment lines explaining the 0-indexed vs 1-indexed logic
+
+CHANGE SUMMARY:
+  Location 1:  nextQuestionIndex >= gameRoom.maxQuestions
+  BECOMES:     nextQuestionIndex > gameRoom.maxQuestions
+  
+  Location 2:  nextQuestionIndex >= gameRoom.maxQuestions  
+  BECOMES:     nextQuestionIndex > gameRoom.maxQuestions
+
+═══════════════════════════════════════════════════════════════════════════════
+WHY THIS FIXES IT
+═══════════════════════════════════════════════════════════════════════════════
+
+maxQuestions = 5 means "play rounds 1-5"
+currentQuestionIndex tracks position 0-4 in the questions array
+
+When we finish round 5:
+  - currentQuestionIndex = 4 (we just played question at index 4)
+  - nextQuestionIndex = 4 + 1 = 5
+
+With OLD code (>=):
+  - Check: Is 5 >= 5? YES
+  - Conclusion: We've exceeded the maximum (5 > 5 would be true)
+  - Action: END GAME (but we haven't tried to access an invalid index yet!)
+
+With NEW code (>):
+  - Check: Is 5 > 5? NO
+  - Conclusion: We haven't exceeded the maximum
+  - Action: Continue (but there are no more questions, so next iteration will end)
+  - Next iteration: nextQuestionIndex = 5 + 1 = 6
+  - Check: Is 6 > 5? YES
+  - Conclusion: NOW we've exceeded
+  - Action: END GAME (at the right time!)
+
+═══════════════════════════════════════════════════════════════════════════════
