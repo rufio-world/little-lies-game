@@ -78,6 +78,29 @@ export class GameRoundService {
 
   // Submit player answer
   static async submitAnswer(roundId: string, playerId: string, answerText: string): Promise<PlayerAnswer> {
+    const trimmedAnswer = answerText.trim();
+    
+    if (!trimmedAnswer) {
+      throw new Error('Answer cannot be empty');
+    }
+
+    // Check for duplicate answers (case-insensitive, exact match)
+    const { data: existingAnswers, error: checkError } = await supabase
+      .from('player_answers')
+      .select('id, player_id, answer_text')
+      .eq('round_id', roundId);
+
+    if (checkError) throw checkError;
+
+    // Check if any existing answer matches this one (case-insensitive)
+    const isDuplicate = existingAnswers?.some(
+      answer => answer.answer_text.toLowerCase() === trimmedAnswer.toLowerCase()
+    );
+
+    if (isDuplicate) {
+      throw new Error('That answer has already been submitted. Please try a different one.');
+    }
+
     // Update player's last_active_at timestamp
     await supabase
       .from('players')
@@ -89,7 +112,7 @@ export class GameRoundService {
       .insert([{
         round_id: roundId,
         player_id: playerId,
-        answer_text: answerText
+        answer_text: trimmedAnswer
       }])
       .select()
       .single();
@@ -193,6 +216,17 @@ export class GameRoundService {
   }
 
   // Calculate round scores
+  /**
+   * SINGLE SOURCE OF TRUTH for scoring logic.
+   * Called during phase advancement (GameRound.tsx) when all votes are submitted.
+   * Do not duplicate this logic elsewhere—always call this method for score calculation.
+   * 
+   * Scoring rules:
+   * - +1 point for voting for the correct answer
+   * - +1 point for each player who votes for your fake answer (tricked them)
+   * 
+   * Results are persisted via updatePlayerScores() after calculation.
+   */
   static async calculateRoundScores(roundId: string): Promise<Record<string, number>> {
     const [votes, answers] = await Promise.all([
       this.getRoundVotes(roundId),
@@ -205,6 +239,7 @@ export class GameRoundService {
     answers.forEach(answer => {
       scores[answer.player_id] = 0;
     });
+
 
     // Award points for correct votes
     votes.forEach(vote => {

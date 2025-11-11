@@ -50,15 +50,12 @@ export function AnswerSubmission({
     
     const trimmedAnswer = answer.trim();
     
-    // Check if answer is identical to the correct answer (case-insensitive)
-    if (trimmedAnswer.toLowerCase() === round.correct_answer.toLowerCase()) {
-      const errorMessage = gameRoom.language === 'es' 
-        ? "Alguien ya ha enviado esa respuesta. Envía una distinta"
-        : "That answer was submitted already. Type a different one";
-      
+    if (!trimmedAnswer) {
       toast({
-        title: gameRoom.language === 'es' ? "Respuesta duplicada" : "Duplicate Answer",
-        description: errorMessage,
+        title: gameRoom.language === 'es' ? "Respuesta vacía" : "Empty Answer",
+        description: gameRoom.language === 'es' 
+          ? "Por favor, ingresa una respuesta" 
+          : "Please enter an answer",
         variant: "destructive",
       });
       return;
@@ -66,10 +63,15 @@ export function AnswerSubmission({
     
     setIsSubmitting(true);
     try {
-      const finalAnswer = trimmedAnswer || "No answer provided";
-      await onSubmitAnswer(finalAnswer);
+      await onSubmitAnswer(trimmedAnswer);
     } catch (error) {
       console.error('Error submitting answer:', error);
+      const errorMsg = error instanceof Error ? error.message : 'Failed to submit answer';
+      toast({
+        title: gameRoom.language === 'es' ? "Error" : "Error",
+        description: errorMsg,
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useToast } from "@/hooks/use-toast";
-import { GameRoom, GameState, QuestionPack, Question, GameLogic } from "@/lib/gameState";
+import { GameRoom, GameState, QuestionPack, Question, GameLogic, Player } from "@/lib/gameState";
 import { QuestionDisplay } from "@/components/game/QuestionDisplay";
 import { AnswerSubmission } from "@/components/game/AnswerSubmission";
 import { VotingPhase } from "@/components/game/VotingPhase";
@@ -24,7 +24,7 @@ export default function GameRound() {
 
   const [gameCode, setGameCode] = useState<string>('');
   const [questionMap, setQuestionMap] = useState<Map<string, Question>>(new Map());
-  const [currentPlayer, setCurrentPlayer] = useState<any>(null);
+  const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
 
   // Get real-time game room updates including player scores
   const { gameRoom: liveGameRoom, loading: roomLoading } = useGameRoom(gameCode);
@@ -131,6 +131,12 @@ export default function GameRound() {
   // Auto-advance phases based on completion (HOST ONLY)
   useEffect(() => {
     if (!currentRound || !gameRoom || !currentPlayer?.isHost) return;
+    
+    // Validate game room state
+    if (!gameRoom.id) {
+      console.error('Game room ID missing');
+      return;
+    }
 
     const advancePhase = async () => {
       try {
@@ -168,20 +174,26 @@ export default function GameRound() {
                 state: { gameRoom, currentPlayer } 
               });
             } else {
+              // Validate question sequence exists
+              if (!gameRoom.questionIds || gameRoom.questionIds.length === 0) {
+                console.error('Question sequence missing');
+                throw new Error('Game question sequence is corrupted');
+              }
+
               // Update the question index in the database first
               const updatedIndex = await GameService.advanceToNextQuestion(gameRoom.id, currentPlayer.id);
               
               // Get the next question ID from the stored sequence
               const nextQuestionId = gameRoom.questionIds?.[nextQuestionIndex];
               if (!nextQuestionId) {
-                console.error('No question ID found at index', nextQuestionIndex);
-                throw new Error('Question sequence error');
+                console.error('No question ID found at index', nextQuestionIndex, 'sequence length:', gameRoom.questionIds.length);
+                throw new Error('Question sequence error: index out of bounds');
               }
               
               const nextQuestion = questionMap.get(nextQuestionId);
               if (!nextQuestion) {
                 console.error('Question not found in map:', nextQuestionId);
-                throw new Error('Question not found');
+                throw new Error('Question not found in loaded data');
               }
               
               await GameRoundService.createRound(
@@ -199,6 +211,11 @@ export default function GameRound() {
         }
       } catch (error) {
         console.error('Error advancing phase:', error);
+        toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "Failed to advance phase",
+          variant: "destructive"
+        });
       }
     };
 

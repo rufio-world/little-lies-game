@@ -82,7 +82,14 @@ export class GameLogic {
     return shuffled;
   }
 
+  /**
+   * DEPRECATED: Use GameRoundService.calculateRoundScores() instead.
+   * This client-side implementation is replaced by the server-side version
+   * to ensure consistent scoring logic across the application.
+   * The server-side version is called during phase advancement in GameRound.tsx.
+   */
   static calculateScores(round: GameRound, players: Player[]): Record<string, number> {
+    console.warn('GameLogic.calculateScores is deprecated. Use GameRoundService.calculateRoundScores() instead.');
     const scores: Record<string, number> = {};
     
     // Initialize scores
