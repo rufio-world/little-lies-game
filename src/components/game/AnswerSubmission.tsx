@@ -137,16 +137,25 @@ export function AnswerSubmission({
               </div>
 
               <div className="space-y-4">
-                <Textarea
-                  value={answer}
-                  onChange={(e) => setAnswer(e.target.value)}
-                  placeholder={t('game.typeFakeAnswer')}
-                  className="h-32 resize-none"
-                  disabled={hasSubmitted || isSubmitting}
-                />
+                <div className="space-y-2">
+                  <Textarea
+                    value={answer}
+                    onChange={(e) => setAnswer(e.target.value.slice(0, 200))}
+                    placeholder={t('game.typeFakeAnswer')}
+                    className="h-32 resize-none"
+                    disabled={hasSubmitted || isSubmitting}
+                    maxLength={200}
+                  />
+                  <div className="flex justify-between items-center text-xs text-muted-foreground">
+                    <span>{answer.length}/200 characters</span>
+                    {answer.length > 180 && (
+                      <Badge variant="outline" className="text-xs">Almost at limit</Badge>
+                    )}
+                  </div>
+                </div>
                 <Button 
                   onClick={handleSubmit}
-                  disabled={!answer.trim() || hasSubmitted || isSubmitting}
+                  disabled={!answer.trim() || hasSubmitted || isSubmitting || answer.length > 200}
                   className="w-full"
                   size="lg"
                 >

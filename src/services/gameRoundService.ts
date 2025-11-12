@@ -84,6 +84,14 @@ export class GameRoundService {
       throw new Error('Answer cannot be empty');
     }
 
+    // Enforce answer length limits (2-200 characters) to prevent DoS and storage bloat
+    if (trimmedAnswer.length < 2) {
+      throw new Error('Answer must be at least 2 characters long');
+    }
+    if (trimmedAnswer.length > 200) {
+      throw new Error('Answer must not exceed 200 characters');
+    }
+
     // Check for duplicate answers (case-insensitive, exact match)
     const { data: existingAnswers, error: checkError } = await supabase
       .from('player_answers')
