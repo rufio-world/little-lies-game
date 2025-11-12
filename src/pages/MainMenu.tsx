@@ -5,7 +5,6 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { Gamepad2, Users, Settings, Store, Trophy, LogOut, LogIn, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import logo from "/Little Lies logo.png";
 
 export default function MainMenu() {
   const { t } = useTranslation();
@@ -100,7 +99,7 @@ export default function MainMenu() {
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-6">
         <div className="text-center mb-6 md:mb-8">
           <img 
-            src={logo} 
+            src="/LITTLE LIES.svg" 
             alt="Little Lies Logo" 
             className="w-32 h-32 sm:w-40 sm:h-40 md:w-50 md:h-50 mx-auto mb-4 md:mb-6"
           />
