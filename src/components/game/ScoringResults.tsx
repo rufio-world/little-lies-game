@@ -213,6 +213,8 @@ export function ScoringResults({
         <CardContent>
           <div className="space-y-2 md:space-y-3">
             {/* Show correct answer first */}
+            {/* SECURITY: Only show correct answer during results phase */}
+            {round?.phase === 'results' && (
             <div className="p-3 md:p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border-2 border-green-200 dark:border-green-800">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex-1 min-w-0">
@@ -220,13 +222,14 @@ export function ScoringResults({
                     <CheckCircle className="h-3 w-3 md:h-4 md:w-4 text-green-600 flex-shrink-0" />
                     <span className="font-medium text-green-900 dark:text-green-100 text-xs md:text-sm">{t('game.correctAnswer')}</span>
                   </div>
-                  <p className="text-green-800 dark:text-green-200 text-xs md:text-base break-words">{round.correct_answer}</p>
+                  <p className="text-green-800 dark:text-green-200 text-xs md:text-base break-words">{round?.correct_answer || '[Hidden]'}</p>
                 </div>
                 <Badge variant="secondary" className="bg-green-100 dark:bg-green-900 text-xs flex-shrink-0">
                   {votes.filter(v => v.voted_for_correct).length} {t('game.votes')}
                 </Badge>
               </div>
             </div>
+            )}
 
             {/* Show player answers */}
             {answers.map(answer => {

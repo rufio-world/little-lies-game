@@ -73,6 +73,14 @@ export class GameRoundService {
       .maybeSingle();
 
     if (error) throw error;
+    if (!data) return null;
+
+    // SECURITY FIX: Hide correct_answer during active gameplay
+    // Only reveal during results phase to prevent cheating via DevTools queries
+    if (data.phase !== 'results') {
+      data.correct_answer = '';
+    }
+
     return data as GameRound | null;
   }
 

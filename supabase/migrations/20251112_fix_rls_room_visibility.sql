@@ -1,3 +1,44 @@
+-- Migration: Restrict direct SELECT on game_rooms and provide secure join-by-code RPC
+-- Date: 2025-11-12
+
+-- NOTE: This migration enables Row Level Security (RLS) for the `game_rooms` table
+-- and creates a SECURITY DEFINER function `get_room_by_code(code text)` which
+-- returns only minimal fields required to complete a join-by-code flow.
+--
+-- The function is SECURITY DEFINER so it can be called by anonymous/unauthenticated
+-- clients (the frontend) without exposing the full table via direct SELECTs.
+
+BEGIN;
+
+-- Create the RPC used by the client to lookup a room by its code.
+CREATE OR REPLACE FUNCTION public.get_room_by_code(p_code text)
+RETURNS TABLE(id uuid, code text, game_state text) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT id, code, game_state
+  FROM public.game_rooms
+  WHERE code = upper(p_code)
+  LIMIT 1;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Ensure function owner is the database owner (so it can bypass RLS in a controlled way).
+ALTER FUNCTION public.get_room_by_code(text) OWNER TO postgres;
+
+-- Enable RLS on game_rooms so that direct SELECTs are constrained.
+ALTER TABLE public.game_rooms ENABLE ROW LEVEL SECURITY;
+
+-- Revoke public SELECT to prevent anonymous direct selects. The RPC above is the supported way
+-- for the client to resolve a room code to an ID. RLS policies can be added later to allow
+-- authenticated players (server-to-server flows) as required.
+REVOKE SELECT ON public.game_rooms FROM public;
+
+COMMIT;
+
+-- IMPORTANT: This migration intentionally does not add complex SELECT policies that depend on
+-- application-specific authentication mapping to players. Instead, it provides a secure RPC
+-- for join-by-code and enables RLS as a baseline. After deploying, consider adding policies
+-- that allow authenticated players (or service roles) to read room rows for participants only.
 -- MIGRATION: Fix Room Code/Data Visibility (HIGH)
 -- Created: November 12, 2025
 -- Purpose: Restrict game_rooms access to participants only; remove game_state=waiting exposure

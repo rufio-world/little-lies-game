@@ -76,14 +76,21 @@ export class GameService {
   }
 
   static async joinGame(params: JoinGameParams): Promise<{ roomId: string; playerId: string }> {
-    // First check if game exists
-    const { data: roomData, error: roomError } = await supabase
-      .from('game_rooms')
-      .select('*')
-      .eq('code', params.gameCode)
-      .single();
+    // Resolve the room via RPC to avoid exposing the full game_rooms table.
+    // The RPC `get_room_by_code` is a SECURITY DEFINER function that returns
+    // minimal fields (id, code, game_state) for the given code.
+  // supabase client rpc typings are narrow in this project; cast to any to call our new RPC
+  const { data: roomRows, error: rpcError } = await (supabase as any).rpc('get_room_by_code', { p_code: params.gameCode });
 
-    if (roomError) {
+    if (rpcError) {
+      console.error('RPC error resolving room by code:', rpcError);
+      throw new Error('Game room not found');
+    }
+
+    // RPC returns a set; take the first row if present
+    const roomData: any = Array.isArray(roomRows) ? roomRows[0] : roomRows;
+
+    if (!roomData || !roomData.id) {
       throw new Error('Game room not found');
     }
 
