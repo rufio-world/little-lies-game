@@ -26,9 +26,15 @@ export class GameService {
   static async createGame(params: CreateGameParams): Promise<{ gameCode: string; roomId: string; playerId: string }> {
     const gameCode = GameLogic.generateGameCode();
     
-    // Generate UUIDs for both room and host player
+    // Get authenticated user ID
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      throw new Error('You must be logged in to create a game');
+    }
+    
+    // Generate room ID, use authenticated user ID as host player ID
     const roomId = crypto.randomUUID();
-    const hostPlayerId = crypto.randomUUID();
+    const hostPlayerId = user.id;
     
     // Create game room with pre-generated ID (no select needed)
     const { error: roomError } = await supabase
