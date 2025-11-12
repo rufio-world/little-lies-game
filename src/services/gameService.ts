@@ -26,13 +26,15 @@ export class GameService {
   static async createGame(params: CreateGameParams): Promise<{ gameCode: string; roomId: string; playerId: string }> {
     const gameCode = GameLogic.generateGameCode();
     
-    // Generate UUID for the host player first
+    // Generate UUIDs for both room and host player
+    const roomId = crypto.randomUUID();
     const hostPlayerId = crypto.randomUUID();
     
-    // Create game room with the host_id - use RPC to avoid RLS issues
-    const { data: insertData, error: roomError } = await supabase
+    // Create game room with pre-generated ID (no select needed)
+    const { error: roomError } = await supabase
       .from('game_rooms')
       .insert({
+        id: roomId,
         code: gameCode,
         name: params.name,
         host_id: hostPlayerId,
@@ -40,15 +42,11 @@ export class GameService {
         max_questions: params.maxQuestions,
         language: params.language,
         game_state: 'waiting'
-      })
-      .select('id')
-      .single();
+      });
 
-    if (roomError || !insertData) {
-      throw new Error(`Failed to create game room: ${roomError?.message || 'Unknown error'}`);
+    if (roomError) {
+      throw new Error(`Failed to create game room: ${roomError.message}`);
     }
-
-    const roomId = insertData.id;
 
     // Create host player with the pre-generated ID
     const { error: playerError } = await supabase
