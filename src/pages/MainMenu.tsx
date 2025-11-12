@@ -99,7 +99,7 @@ export default function MainMenu() {
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-6">
         <div className="text-center mb-6 md:mb-8">
           <img 
-            src="/LITTLE LIES.svg" 
+            src="/little-lies-logo.svg" 
             alt="Little Lies Logo" 
             className="w-48 h-48 sm:w-56 sm:h-56 md:w-72 md:h-72 mx-auto mb-4 md:mb-6"
           />
