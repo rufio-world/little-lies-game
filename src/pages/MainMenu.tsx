@@ -101,7 +101,7 @@ export default function MainMenu() {
           <img 
             src="/LITTLE LIES.svg" 
             alt="Little Lies Logo" 
-            className="w-32 h-32 sm:w-40 sm:h-40 md:w-50 md:h-50 mx-auto mb-4 md:mb-6"
+            className="w-48 h-48 sm:w-56 sm:h-56 md:w-72 md:h-72 mx-auto mb-4 md:mb-6"
           />
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-3 md:mb-4 px-2">
             {t('mainMenu.title')}
