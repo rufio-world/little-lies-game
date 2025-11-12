@@ -29,8 +29,8 @@ export class GameService {
     // Generate UUID for the host player first
     const hostPlayerId = crypto.randomUUID();
     
-    // Create game room with the host_id
-    const { data: roomData, error: roomError } = await supabase
+    // Create game room with the host_id - use RPC to avoid RLS issues
+    const { data: insertData, error: roomError } = await supabase
       .from('game_rooms')
       .insert({
         code: gameCode,
@@ -41,37 +41,37 @@ export class GameService {
         language: params.language,
         game_state: 'waiting'
       })
-      .select()
+      .select('id')
       .single();
 
-    if (roomError) {
-      throw new Error(`Failed to create game room: ${roomError.message}`);
+    if (roomError || !insertData) {
+      throw new Error(`Failed to create game room: ${roomError?.message || 'Unknown error'}`);
     }
 
+    const roomId = insertData.id;
+
     // Create host player with the pre-generated ID
-    const { data: playerData, error: playerError } = await supabase
+    const { error: playerError } = await supabase
       .from('players')
       .insert({
         id: hostPlayerId,
-        room_id: roomData.id,
+        room_id: roomId,
         name: params.hostPlayer.name,
         avatar: params.hostPlayer.avatar,
         is_host: true,
         is_guest: params.hostPlayer.isGuest,
         score: 0,
         connected: true
-      })
-      .select()
-      .single();
+      });
 
     if (playerError) {
       throw new Error(`Failed to create host player: ${playerError.message}`);
     }
 
     return {
-      gameCode: roomData.code,
-      roomId: roomData.id,
-      playerId: playerData.id
+      gameCode,
+      roomId,
+      playerId: hostPlayerId
     };
   }
 
