@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { GameLogic } from '@/lib/gameState';
+import { PLAYER_INACTIVITY_LIMIT_MS } from '@/lib/constants';
 import type { User } from '@supabase/supabase-js';
 
 export interface CreateGameParams {
@@ -23,22 +24,32 @@ export interface JoinGameParams {
   };
 }
 
+type PlayerMembership = {
+  room_id: string;
+  is_host: boolean;
+  connected: boolean | null;
+  last_active_at: string | null;
+};
+
 export class GameService {
   static async createGame(params: CreateGameParams): Promise<{ gameCode: string; roomId: string; playerId: string }> {
     const gameCode = GameLogic.generateGameCode();
     const user = await this.requireAuthenticatedUser('create a game');
 
-    const existingMembership = await this.getExistingPlayerRecord(user.id);
-    if (existingMembership) {
+    let existingMembership = await this.getExistingPlayerRecord(user.id);
+    if (existingMembership && this.isMembershipStale(existingMembership)) {
       const cleaned = await this.tryCleanupExistingMembership(existingMembership, user.id);
-      if (!cleaned) {
-        const roomCode = await this.getRoomCode(existingMembership.room_id);
-        throw new Error(
-          roomCode
-            ? `You are still listed in game ${roomCode}. Please finish or leave it before creating a new one.`
-            : 'Please leave your current game before creating a new one.'
-        );
+      if (cleaned) {
+        existingMembership = null;
       }
+    }
+    if (existingMembership) {
+      const roomCode = await this.getRoomCode(existingMembership.room_id);
+      throw new Error(
+        roomCode
+          ? `You are still listed in game ${roomCode}. Please finish or leave it before creating a new one.`
+          : 'Please leave your current game before creating a new one.'
+      );
     }
     
     // Generate room ID, use authenticated user ID as host player ID
@@ -92,7 +103,13 @@ export class GameService {
   static async joinGame(params: JoinGameParams): Promise<{ roomId: string; playerId: string }> {
     const user = await this.requireAuthenticatedUser('join a game');
     const normalizedCode = params.gameCode.toUpperCase();
-    const existingMembership = await this.getExistingPlayerRecord(user.id);
+    let existingMembership = await this.getExistingPlayerRecord(user.id);
+    if (existingMembership && this.isMembershipStale(existingMembership)) {
+      const cleaned = await this.tryCleanupExistingMembership(existingMembership, user.id);
+      if (cleaned) {
+        existingMembership = null;
+      }
+    }
 
     // Resolve the room via RPC to avoid exposing the full game_rooms table.
     // The RPC `get_room_by_code` is a SECURITY DEFINER function that returns
@@ -279,10 +296,10 @@ export class GameService {
     return user;
   }
 
-  private static async getExistingPlayerRecord(userId: string): Promise<{ room_id: string; is_host: boolean } | null> {
+  private static async getExistingPlayerRecord(userId: string): Promise<PlayerMembership | null> {
     const { data, error } = await supabase
       .from('players')
-      .select('room_id, is_host')
+      .select('room_id, is_host, connected, last_active_at')
       .eq('id', userId)
       .maybeSingle();
 
@@ -294,8 +311,22 @@ export class GameService {
     return data ?? null;
   }
 
+  private static isMembershipStale(membership: PlayerMembership): boolean {
+    if (membership.connected === false) {
+      return true;
+    }
+    if (!membership.last_active_at) {
+      return true;
+    }
+    const lastActive = new Date(membership.last_active_at).getTime();
+    if (!Number.isFinite(lastActive)) {
+      return true;
+    }
+    return Date.now() - lastActive > PLAYER_INACTIVITY_LIMIT_MS;
+  }
+
   private static async tryCleanupExistingMembership(
-    membership: { room_id: string; is_host: boolean },
+    membership: PlayerMembership,
     userId: string
   ): Promise<boolean> {
     if (membership.is_host) {
@@ -336,6 +367,20 @@ export class GameService {
     } catch (error) {
       console.error('Failed to remove player from previous game:', error);
       return false;
+    }
+  }
+
+  static async disconnectInactivePlayers(roomId: string): Promise<void> {
+    const cutoff = new Date(Date.now() - PLAYER_INACTIVITY_LIMIT_MS).toISOString();
+    const { error } = await supabase
+      .from('players')
+      .update({ connected: false })
+      .eq('room_id', roomId)
+      .eq('connected', true)
+      .or(`last_active_at.is.null,last_active_at.lt.${cutoff}`);
+
+    if (error) {
+      console.error('Failed to disconnect inactive players:', error);
     }
   }
 

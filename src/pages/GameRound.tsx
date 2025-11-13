@@ -28,6 +28,7 @@ import {
   AlertDialogAction
 } from "@/components/ui/alert-dialog";
 import { storage } from "@/lib/storage";
+import { PLAYER_INACTIVITY_LIMIT_MS } from "@/lib/constants";
 
 export default function GameRound() {
   const location = useLocation();
@@ -104,6 +105,34 @@ export default function GameRound() {
   const [allPlayersReady, setAllPlayersReady] = useState(false);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
   const [leavingGame, setLeavingGame] = useState(false);
+
+  // Heartbeat to keep the player marked as active while they are in the round screen
+  useEffect(() => {
+    if (!currentPlayer?.id) return;
+
+    let isCancelled = false;
+
+    const touch = async () => {
+      try {
+        await supabase
+          .from('players')
+          .update({ last_active_at: new Date().toISOString(), connected: true })
+          .eq('id', currentPlayer.id);
+      } catch (error) {
+        if (!isCancelled) {
+          console.error('Failed to update player activity heartbeat:', error);
+        }
+      }
+    };
+
+    touch();
+    const interval = setInterval(touch, PLAYER_INACTIVITY_LIMIT_MS / 2);
+
+    return () => {
+      isCancelled = true;
+      clearInterval(interval);
+    };
+  }, [currentPlayer?.id]);
 
   // Subscribe to readiness updates
   useEffect(() => {

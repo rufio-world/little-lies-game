@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { GameRoom, Player } from '@/lib/gameState';
+import { GameService } from '@/services/gameService';
+import { PLAYER_INACTIVITY_LIMIT_MS } from '@/lib/constants';
 
 interface DatabaseGameRoom {
   id: string;
@@ -42,6 +44,7 @@ export function useGameRoom(gameCode: string) {
     let roomChannel: any;
     let playersChannel: any;
     let mounted = true;
+    let inactivityInterval: ReturnType<typeof setInterval> | null = null;
 
     const setupRealtimeSubscription = async () => {
       try {
@@ -111,6 +114,17 @@ export function useGameRoom(gameCode: string) {
         setGameRoom(room);
         setPlayers(appPlayers);
         setLoading(false);
+
+        const runInactivityCleanup = async () => {
+          try {
+            await GameService.disconnectInactivePlayers(roomData.id);
+          } catch (cleanupError) {
+            console.error('Failed to disconnect inactive players:', cleanupError);
+          }
+        };
+
+        await runInactivityCleanup();
+        inactivityInterval = setInterval(runInactivityCleanup, PLAYER_INACTIVITY_LIMIT_MS / 2);
 
         // Subscribe to game room changes
         roomChannel = supabase
@@ -237,6 +251,9 @@ export function useGameRoom(gameCode: string) {
     return () => {
       console.log('🧹 Cleaning up game room subscriptions');
       mounted = false;
+      if (inactivityInterval) {
+        clearInterval(inactivityInterval);
+      }
       if (roomChannel) {
         supabase.removeChannel(roomChannel);
       }
