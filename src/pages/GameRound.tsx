@@ -37,6 +37,7 @@ export default function GameRound() {
   const { toast } = useToast();
 
   const [gameCode, setGameCode] = useState<string>('');
+  const [initialGameRoom, setInitialGameRoom] = useState<GameRoom | null>(null);
   const [questionMap, setQuestionMap] = useState<Map<string, Question>>(new Map());
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
 
@@ -67,6 +68,7 @@ export default function GameRound() {
     }
     
     setGameCode(room.code);
+    setInitialGameRoom(room);
     setCurrentPlayer(playerInRoom);
 
     // Load question pack based on selected language to create a question map
@@ -87,7 +89,7 @@ export default function GameRound() {
   }, [location.state, navigate]);
 
   // Use live game room from hook, which includes real-time player score updates
-  const gameRoom = liveGameRoom;
+  const gameRoom = liveGameRoom ?? initialGameRoom;
 
   const {
     currentRound,
@@ -321,7 +323,9 @@ export default function GameRound() {
     }
   };
 
-  if (!gameRoom || !questionMap.size || !currentPlayer || roundLoading || roomLoading) {
+  const isRoomLoading = roomLoading && !initialGameRoom;
+
+  if (!gameRoom || !questionMap.size || !currentPlayer || roundLoading || isRoomLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
         <div className="text-center">
