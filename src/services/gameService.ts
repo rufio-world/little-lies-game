@@ -1,7 +1,8 @@
 import { supabase } from '@/integrations/supabase/client';
-import { GameLogic } from '@/lib/gameState';
+import { GameLogic, Question } from '@/lib/gameState';
 import { PLAYER_INACTIVITY_LIMIT_MS } from '@/lib/constants';
 import type { User } from '@supabase/supabase-js';
+import { GameRoundService } from '@/services/gameRoundService';
 
 export interface CreateGameParams {
   name: string;
@@ -258,7 +259,12 @@ export class GameService {
     }
   }
 
-  static async startGame(roomId: string, hostPlayerId: string, questionIds: string[]): Promise<void> {
+  static async startGame(
+    roomId: string,
+    hostPlayerId: string,
+    questionIds: string[],
+    firstQuestion: Question
+  ): Promise<void> {
     // Verify the requester is the host before starting the game
     const { data: hostData, error: hostError } = await supabase
       .from('players')
@@ -271,16 +277,43 @@ export class GameService {
       throw new Error('Only the host can start the game');
     }
 
-    const { error } = await supabase
-      .from('game_rooms')
-      .update({ 
-        game_state: 'question-display',
-        question_ids: questionIds
-      })
-      .eq('id', roomId);
+    // Helper used to roll back the room if any part of the flow fails
+    const revertRoomState = async () => {
+      try {
+        await supabase
+          .from('game_rooms')
+          .update({
+            game_state: 'waiting',
+            question_ids: [],
+            current_question_index: 0
+          })
+          .eq('id', roomId);
+      } catch (revertError) {
+        console.error('Failed to revert room state after start failure:', revertError);
+      }
+    };
 
-    if (error) {
-      throw new Error(`Failed to start game: ${error.message}`);
+    try {
+      const { error: updateError } = await supabase
+        .from('game_rooms')
+        .update({ 
+          game_state: 'question-display',
+          question_ids: questionIds,
+          current_question_index: 0
+        })
+        .eq('id', roomId);
+
+      if (updateError) {
+        throw new Error(`Failed to start game: ${updateError.message}`);
+      }
+
+      await GameRoundService.createRound(roomId, 1, firstQuestion);
+    } catch (error) {
+      await revertRoomState();
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Failed to start game');
     }
   }
 

@@ -8,7 +8,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useToast } from "@/hooks/use-toast";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { storage } from "@/lib/storage";
-import { Player, GameLogic } from "@/lib/gameState";
+import { Player, GameLogic, Question } from "@/lib/gameState";
 import { useGameRoom } from "@/hooks/useGameRoom";
 import { GameService } from "@/services/gameService";
 import { Copy, Crown, Users, Play, AlertTriangle, X } from "lucide-react";
@@ -101,7 +101,7 @@ export default function WaitingRoom() {
         }
       }
       
-      const allQuestions = questionPacks.flatMap((pack: any) => pack.questions);
+      const allQuestions: Question[] = questionPacks.flatMap((pack: any) => pack.questions);
       const shuffledQuestions = GameLogic.shuffleArray(allQuestions).slice(0, gameRoom.maxQuestions);
       const firstQuestion = shuffledQuestions[0];
       
@@ -113,11 +113,7 @@ export default function WaitingRoom() {
       const questionIds = shuffledQuestions.map((q: any) => q.id);
       
       // Start the game and store the question sequence
-      await GameService.startGame(gameRoom.id, currentPlayer.id, questionIds);
-      
-      // Import GameRoundService dynamically
-      const { GameRoundService } = await import('@/services/gameRoundService');
-      await GameRoundService.createRound(gameRoom.id, 1, firstQuestion);
+      await GameService.startGame(gameRoom.id, currentPlayer.id, questionIds, firstQuestion);
       
       console.log('✅ Game started and first round created');
       
@@ -130,7 +126,11 @@ export default function WaitingRoom() {
       setTimeout(() => {
         navigate('/game-round', { 
           state: { 
-            gameRoom: { ...gameRoom, gameState: 'question-display' },
+            gameRoom: { 
+              ...gameRoom, 
+              gameState: 'question-display',
+              questionIds
+            },
             currentPlayer: currentPlayer
           } 
         });
