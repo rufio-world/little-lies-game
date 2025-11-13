@@ -12,7 +12,6 @@ import JoinGame from "./pages/JoinGame";
 import WaitingRoom from "./pages/WaitingRoom";
 import GameRound from "./pages/GameRound";
 import FinalResultsPage from "./pages/FinalResultsPage";
-import Store from "./pages/Store";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,7 +32,6 @@ const App = () => (
             <Route path="/waiting-room/:gameCode" element={<WaitingRoom />} />
             <Route path="/game-round" element={<GameRound />} />
             <Route path="/final-results" element={<FinalResultsPage />} />
-            <Route path="/store" element={<Store />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
