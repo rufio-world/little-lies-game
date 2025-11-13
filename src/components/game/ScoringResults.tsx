@@ -161,6 +161,14 @@ export function ScoringResults({
                 </p>
               </div>
             </div>
+            <div className="w-full pt-3 border-t border-orange-300 dark:border-orange-700">
+              <p className="text-sm font-medium text-orange-800 dark:text-orange-200 text-center mb-2">
+                {t('game.correctAnswerWas')}:
+              </p>
+              <p className="text-base md:text-lg font-semibold text-orange-900 dark:text-orange-100 text-center bg-white/50 dark:bg-black/20 rounded-lg p-3">
+                {question.correct_answer}
+              </p>
+            </div>
           </CardContent>
         </Card>
       )}
