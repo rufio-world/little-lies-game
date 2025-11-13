@@ -188,13 +188,73 @@ export class GameService {
   }
 
   static async leaveGame(playerId: string): Promise<void> {
-    const { error } = await supabase
+    const { data: playerRecord, error: fetchError } = await supabase
+      .from('players')
+      .select('room_id, is_host')
+      .eq('id', playerId)
+      .maybeSingle();
+
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      throw new Error(`Failed to look up player: ${fetchError.message}`);
+    }
+
+    if (!playerRecord) {
+      return;
+    }
+
+    const roomId = playerRecord.room_id;
+    const wasHost = playerRecord.is_host;
+
+    const { error: deleteError } = await supabase
       .from('players')
       .delete()
       .eq('id', playerId);
 
-    if (error) {
-      throw new Error(`Failed to leave game: ${error.message}`);
+    if (deleteError) {
+      throw new Error(`Failed to leave game: ${deleteError.message}`);
+    }
+
+    if (wasHost) {
+      const { data: nextHost, error: nextHostError } = await supabase
+        .from('players')
+        .select('id, created_at')
+        .eq('room_id', roomId)
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (nextHostError) {
+        console.error('Failed to find next host:', nextHostError);
+      }
+
+      if (nextHost?.id) {
+        await supabase
+          .from('players')
+          .update({ is_host: true })
+          .eq('id', nextHost.id);
+
+        await supabase
+          .from('game_rooms')
+          .update({ host_id: nextHost.id })
+          .eq('id', roomId);
+      } else {
+        await supabase
+          .from('game_rooms')
+          .update({ game_state: 'game-end' })
+          .eq('id', roomId);
+      }
+    } else {
+      const { count, error: remainingError } = await supabase
+        .from('players')
+        .select('id', { count: 'exact', head: true })
+        .eq('room_id', roomId);
+
+      if (!remainingError && (count ?? 0) === 0) {
+        await supabase
+          .from('game_rooms')
+          .update({ game_state: 'game-end' })
+          .eq('id', roomId);
+      }
     }
   }
 
@@ -381,6 +441,29 @@ export class GameService {
 
     if (error) {
       console.error('Failed to disconnect inactive players:', error);
+      return;
+    }
+
+    const { count, error: activeCountError } = await supabase
+      .from('players')
+      .select('id', { count: 'exact', head: true })
+      .eq('room_id', roomId)
+      .or(`connected.eq.true,last_active_at.gte.${cutoff}`);
+
+    if (activeCountError) {
+      console.error('Failed to count active players:', activeCountError);
+      return;
+    }
+
+    if ((count ?? 0) === 0) {
+      const { error: finishError } = await supabase
+        .from('game_rooms')
+        .update({ game_state: 'game-end' })
+        .eq('id', roomId);
+
+      if (finishError) {
+        console.error('Failed to finish inactive game:', finishError);
+      }
     }
   }
 
@@ -397,5 +480,17 @@ export class GameService {
     }
 
     return data?.code ?? null;
+  }
+
+  static async leaveAnyActiveGame(): Promise<void> {
+    try {
+      const user = await this.requireAuthenticatedUser('sign out');
+      const membership = await this.getExistingPlayerRecord(user.id);
+      if (membership) {
+        await this.leaveGame(user.id);
+      }
+    } catch (error) {
+      console.error('Failed to leave active game before signing out:', error);
+    }
   }
 }

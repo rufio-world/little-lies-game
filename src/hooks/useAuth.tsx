@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { GameService } from "@/services/gameService";
+import { storage } from "@/lib/storage";
 
 interface AuthContextType {
   user: User | null;
@@ -37,7 +39,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await GameService.leaveAnyActiveGame();
+      storage.clearCurrentPlayer();
+    } catch (error) {
+      console.error('Error cleaning up game state during sign out:', error);
+    } finally {
+      await supabase.auth.signOut();
+    }
   };
 
   return (
