@@ -6,6 +6,7 @@ import { GameRound, PlayerAnswer, PlayerVote, RoundReadiness } from "@/services/
 import { Trophy, Users, CheckCircle, XCircle, Target, Zap, Star } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ScoringResultsProps {
   question: Question;
@@ -35,6 +36,13 @@ export function ScoringResults({
   const currentPlayerVote = votes.find(v => v.player_id === currentPlayer.id);
   const currentPlayerAnswer = answers.find(a => a.player_id === currentPlayer.id);
 
+  // Check if current player was tricked
+  const trickedByAnswer = currentPlayerVote?.voted_for_answer_id ? 
+    answers.find(a => a.id === currentPlayerVote.voted_for_answer_id) : null;
+
+  const trickerPlayer = trickedByAnswer ? 
+    gameRoom.players.find(p => p.id === trickedByAnswer.player_id) : null;
+
   // Play sound based on voting result
   useEffect(() => {
     if (currentPlayerVote?.voted_for_correct) {
@@ -56,27 +64,31 @@ export function ScoringResults({
       
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.5);
-    } else if (currentPlayerVote && !currentPlayerVote.voted_for_correct) {
-      // Negative sound - descending tones
+    } else if (currentPlayerVote && !currentPlayerVote.voted_for_correct && trickerPlayer) {
+      // Mischievous laugh sound effect - playful bouncing tones
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+      const times = [0, 0.08, 0.16, 0.28, 0.36, 0.48];
+      const frequencies = [440, 554.37, 440, 554.37, 659.25, 523.25]; // A4, C#5, A4, C#5, E5, C5
       
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(392.00, audioContext.currentTime); // G4
-      oscillator.frequency.setValueAtTime(329.63, audioContext.currentTime + 0.15); // E4
-      oscillator.frequency.setValueAtTime(261.63, audioContext.currentTime + 0.3); // C4
-      
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
-      
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.6);
+      times.forEach((time, index) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.value = frequencies[index];
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime + time);
+        gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + time + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + time + 0.08);
+        
+        oscillator.start(audioContext.currentTime + time);
+        oscillator.stop(audioContext.currentTime + time + 0.08);
+      });
     }
-  }, [currentPlayerVote]);
+  }, [currentPlayerVote, trickerPlayer]);
   
   // Calculate scores for this round
   const roundScores: Record<string, number> = {};
@@ -109,13 +121,6 @@ export function ScoringResults({
     answers.find(a => a.id === v.voted_for_answer_id)?.player_id === currentPlayer.id
   );
 
-  // Check if current player was tricked
-  const trickedByAnswer = currentPlayerVote?.voted_for_answer_id ? 
-    answers.find(a => a.id === currentPlayerVote.voted_for_answer_id) : null;
-
-  const trickerPlayer = trickedByAnswer ? 
-    gameRoom.players.find(p => p.id === trickedByAnswer.player_id) : null;
-
   return (
     <div className="max-w-2xl mx-auto px-2">
       {/* Header */}
@@ -132,6 +137,33 @@ export function ScoringResults({
           </div>
         </div>
       </div>
+
+      {/* You Were Tricked! */}
+      {trickerPlayer && currentPlayerVote && !currentPlayerVote.voted_for_correct && (
+        <Card className="mb-4 md:mb-6 border-2 border-orange-500 bg-orange-50 dark:bg-orange-950/30 animate-scale-in">
+          <CardHeader className="text-center pb-2">
+            <CardTitle className="text-xl md:text-2xl font-bold text-orange-700 dark:text-orange-400">
+              🎭 {t('game.youWereTricked')}!
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-3">
+              <Avatar className="h-20 w-20 md:h-24 md:w-24 border-4 border-orange-500">
+                <AvatarImage src={trickerPlayer.avatar} alt={trickerPlayer.name} />
+                <AvatarFallback className="text-2xl">{trickerPlayer.name[0]}</AvatarFallback>
+              </Avatar>
+              <div className="text-center">
+                <p className="text-lg md:text-xl font-bold text-orange-900 dark:text-orange-100">
+                  {trickerPlayer.name}
+                </p>
+                <p className="text-sm text-orange-700 dark:text-orange-300">
+                  {t('game.trickedYou')}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Your Results */}
       <Card className="mb-4 md:mb-6">
