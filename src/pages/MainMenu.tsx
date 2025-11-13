@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
-import { Gamepad2, Users, Settings, Store, Trophy, LogOut, LogIn, User } from "lucide-react";
+import { Gamepad2, Users, Store, Trophy, LogOut, LogIn, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function MainMenu() {
@@ -23,12 +23,6 @@ export default function MainMenu() {
       icon: Users,
       path: '/join-game',
       primary: true
-    },
-    {
-      key: 'settings',
-      icon: Settings,
-      path: '/settings',
-      primary: false
     },
     {
       key: 'store',
