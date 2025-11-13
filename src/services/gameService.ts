@@ -30,7 +30,15 @@ export class GameService {
 
     const existingMembership = await this.getExistingPlayerRecord(user.id);
     if (existingMembership) {
-      throw new Error('Please leave your current game before creating a new one.');
+      const cleaned = await this.tryCleanupExistingMembership(existingMembership, user.id);
+      if (!cleaned) {
+        const roomCode = await this.getRoomCode(existingMembership.room_id);
+        throw new Error(
+          roomCode
+            ? `You are still listed in game ${roomCode}. Please finish or leave it before creating a new one.`
+            : 'Please leave your current game before creating a new one.'
+        );
+      }
     }
     
     // Generate room ID, use authenticated user ID as host player ID
@@ -125,7 +133,16 @@ export class GameService {
           playerId: user.id
         };
       }
-      throw new Error('Please leave your current game before joining another one.');
+
+      const cleaned = await this.tryCleanupExistingMembership(existingMembership, user.id);
+      if (!cleaned) {
+        const blockingCode = await this.getRoomCode(existingMembership.room_id);
+        throw new Error(
+          blockingCode
+            ? `You are still part of game ${blockingCode}. Please leave it before joining another one.`
+            : 'Please leave your current game before joining another one.'
+        );
+      }
     }
 
     // Add player to the game
@@ -262,10 +279,10 @@ export class GameService {
     return user;
   }
 
-  private static async getExistingPlayerRecord(userId: string): Promise<{ room_id: string } | null> {
+  private static async getExistingPlayerRecord(userId: string): Promise<{ room_id: string; is_host: boolean } | null> {
     const { data, error } = await supabase
       .from('players')
-      .select('room_id')
+      .select('room_id, is_host')
       .eq('id', userId)
       .maybeSingle();
 
@@ -275,5 +292,65 @@ export class GameService {
     }
 
     return data ?? null;
+  }
+
+  private static async tryCleanupExistingMembership(
+    membership: { room_id: string; is_host: boolean },
+    userId: string
+  ): Promise<boolean> {
+    if (membership.is_host) {
+      // Only auto-clean host rooms if no other players remain
+      const { count, error: countError } = await supabase
+        .from('players')
+        .select('id', { count: 'exact', head: true })
+        .eq('room_id', membership.room_id)
+        .neq('id', userId);
+
+      if (countError) {
+        console.error('Unable to count players for cleanup:', countError);
+        return false;
+      }
+
+      if ((count ?? 0) > 0) {
+        // Other players are still in this room; do not delete automatically
+        return false;
+      }
+
+      const { error: roomDeleteError } = await supabase
+        .from('game_rooms')
+        .delete()
+        .eq('id', membership.room_id)
+        .eq('host_id', userId);
+
+      if (roomDeleteError) {
+        console.error('Failed to delete abandoned host room:', roomDeleteError);
+        return false;
+      }
+
+      return true;
+    }
+
+    try {
+      await this.leaveGame(userId);
+      return true;
+    } catch (error) {
+      console.error('Failed to remove player from previous game:', error);
+      return false;
+    }
+  }
+
+  private static async getRoomCode(roomId: string): Promise<string | null> {
+    const { data, error } = await supabase
+      .from('game_rooms')
+      .select('code')
+      .eq('id', roomId)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Failed to fetch room code:', error);
+      return null;
+    }
+
+    return data?.code ?? null;
   }
 }

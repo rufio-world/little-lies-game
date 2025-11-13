@@ -106,6 +106,8 @@ export const translations = {
       host: "Host",
       points: "points",
       playerReadiness: "Player Readiness",
+      leaveGame: "Leave Game",
+      leaveGameConfirm: "Are you sure you want to leave this game? Your progress for this match will be lost.",
       getReady: "Get ready to create a fake answer!",
       goalText: "Your goal is to create a convincing fake answer that will fool other players!",
       howToPlay: "How to play:",
@@ -258,6 +260,8 @@ export const translations = {
       playAgain: "Jugar de Nuevo",
       newPack: "Elegir Nuevo Paquete",
       mainMenu: "Menú Principal",
+      leaveGame: "Salir de la partida",
+      leaveGameConfirm: "¿Seguro que quieres salir de esta partida? Perderás el progreso de esta partida.",
       // Game phases
       timeToSubmit: "Tiempo para Enviar Respuesta",
       timeToVote: "Tiempo para Votar",

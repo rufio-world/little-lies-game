@@ -15,6 +15,19 @@ import { GameService } from "@/services/gameService";
 import { supabase } from "@/integrations/supabase/client";
 import popCultureEn from "@/data/popCulture.json";
 import popCultureEs from "@/data/popCultureEs.json";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction
+} from "@/components/ui/alert-dialog";
+import { storage } from "@/lib/storage";
 
 export default function GameRound() {
   const location = useLocation();
@@ -89,6 +102,8 @@ export default function GameRound() {
   const [readiness, setReadiness] = useState<any[]>([]);
   const [isCurrentPlayerReady, setIsCurrentPlayerReady] = useState(false);
   const [allPlayersReady, setAllPlayersReady] = useState(false);
+  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [leavingGame, setLeavingGame] = useState(false);
 
   // Subscribe to readiness updates
   useEffect(() => {
@@ -254,6 +269,29 @@ export default function GameRound() {
     return questionMap.get(currentRound.question_id);
   };
 
+  const handleLeaveGame = async () => {
+    if (!currentPlayer) return;
+    setLeavingGame(true);
+    try {
+      await GameService.leaveGame(currentPlayer.id);
+      storage.clearCurrentPlayer();
+      toast({
+        title: t('game.leaveGame'),
+        description: t('common.ok')
+      });
+      navigate('/');
+    } catch (error) {
+      toast({
+        title: t('common.error'),
+        description: error instanceof Error ? error.message : t('common.retry'),
+        variant: "destructive"
+      });
+    } finally {
+      setLeavingGame(false);
+      setLeaveDialogOpen(false);
+    }
+  };
+
   if (!gameRoom || !questionMap.size || !currentPlayer || roundLoading || roomLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
@@ -389,6 +427,32 @@ export default function GameRound() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-2 md:p-4 pb-16 md:pb-20">
+      <div className="flex justify-end mb-3 md:mb-4">
+        <AlertDialog open={leaveDialogOpen} onOpenChange={(open) => !leavingGame && setLeaveDialogOpen(open)}>
+          <AlertDialogTrigger asChild>
+            <Button variant="outline" size="sm">
+              {t('game.leaveGame')}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('game.leaveGame')}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('game.leaveGameConfirm')}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={leavingGame}>
+                {t('common.no')}
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={handleLeaveGame} disabled={leavingGame}>
+                {leavingGame ? t('common.loading') : t('common.yes')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+
       {renderGamePhase()}
       
       {/* Room code footer */}
