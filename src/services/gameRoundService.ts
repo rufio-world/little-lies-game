@@ -65,7 +65,7 @@ export class GameRoundService {
   // Get current round for a room
   static async getCurrentRound(roomId: string): Promise<GameRound | null> {
     const { data, error } = await supabase
-      .from('game_rounds')
+      .from('game_rounds_safe')
       .select('*')
       .eq('room_id', roomId)
       .order('round_number', { ascending: false })
@@ -75,13 +75,12 @@ export class GameRoundService {
     if (error) throw error;
     if (!data) return null;
 
-    // SECURITY FIX: Hide correct_answer during active gameplay
-    // Only reveal during results phase to prevent cheating via DevTools queries
-    if (data.phase !== 'results') {
-      data.correct_answer = '';
-    }
+    const sanitized = {
+      ...data,
+      correct_answer: data.correct_answer ?? ''
+    };
 
-    return data as GameRound | null;
+    return sanitized as GameRound | null;
   }
 
   // Submit player answer
@@ -201,34 +200,32 @@ export class GameRoundService {
 
   // Check if all players have submitted answers
   static async checkAllAnswersSubmitted(roundId: string, roomId: string): Promise<boolean> {
-    // Get active players (connected or disconnected less than 1 minute ago)
-    const oneMinuteAgo = new Date(Date.now() - 60000).toISOString();
-    
-    const [answersResult, playersResult] = await Promise.all([
-      supabase.from('player_answers').select('player_id').eq('round_id', roundId),
-      supabase.from('players').select('id').eq('room_id', roomId)
-        .or(`connected.eq.true,last_active_at.gte.${oneMinuteAgo}`)
-    ]);
+    const { data, error } = await supabase.rpc('are_all_answers_submitted', {
+      p_round_id: roundId,
+      p_room_id: roomId
+    });
 
-    if (answersResult.error || playersResult.error) return false;
+    if (error) {
+      console.error('Error checking answer submission state:', error);
+      return false;
+    }
 
-    return answersResult.data.length === playersResult.data.length;
+    return Boolean(data);
   }
 
   // Check if all players have voted
   static async checkAllVotesSubmitted(roundId: string, roomId: string): Promise<boolean> {
-    // Get active players (connected or disconnected less than 1 minute ago)
-    const oneMinuteAgo = new Date(Date.now() - 60000).toISOString();
-    
-    const [votesResult, playersResult] = await Promise.all([
-      supabase.from('player_votes').select('player_id').eq('round_id', roundId),
-      supabase.from('players').select('id').eq('room_id', roomId)
-        .or(`connected.eq.true,last_active_at.gte.${oneMinuteAgo}`)
-    ]);
+    const { data, error } = await supabase.rpc('are_all_votes_submitted', {
+      p_round_id: roundId,
+      p_room_id: roomId
+    });
 
-    if (votesResult.error || playersResult.error) return false;
+    if (error) {
+      console.error('Error checking vote submission state:', error);
+      return false;
+    }
 
-    return votesResult.data.length === playersResult.data.length;
+    return Boolean(data);
   }
 
   // Calculate round scores
@@ -342,17 +339,16 @@ export class GameRoundService {
 
   // Check if all players are ready
   static async checkAllPlayersReady(roundId: string, roomId: string): Promise<boolean> {
-    // Get active players (connected or disconnected less than 1 minute ago)
-    const oneMinuteAgo = new Date(Date.now() - 60000).toISOString();
-    
-    const [readinessResult, playersResult] = await Promise.all([
-      supabase.from('round_readiness').select('player_id').eq('round_id', roundId).eq('is_ready', true),
-      supabase.from('players').select('id').eq('room_id', roomId)
-        .or(`connected.eq.true,last_active_at.gte.${oneMinuteAgo}`)
-    ]);
+    const { data, error } = await supabase.rpc('are_all_players_ready', {
+      p_round_id: roundId,
+      p_room_id: roomId
+    });
 
-    if (readinessResult.error || playersResult.error) return false;
+    if (error) {
+      console.error('Error checking readiness state:', error);
+      return false;
+    }
 
-    return readinessResult.data.length === playersResult.data.length;
+    return Boolean(data);
   }
 }

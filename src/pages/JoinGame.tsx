@@ -9,6 +9,7 @@ import { ArrowLeft, Users } from "lucide-react";
 import { storage } from "@/lib/storage";
 import { GameService } from "@/services/gameService";
 import { useToast } from "@/hooks/use-toast";
+import { GameLogic } from "@/lib/gameState";
 
 export default function JoinGame() {
   const { t } = useTranslation();
@@ -16,6 +17,7 @@ export default function JoinGame() {
   const { toast } = useToast();
   const [gameCode, setGameCode] = useState("");
   const [isJoining, setIsJoining] = useState(false);
+  const requiredLength = GameLogic.GAME_CODE_LENGTH;
 
   const handleJoinGame = async () => {
     if (!gameCode.trim()) {
@@ -27,10 +29,10 @@ export default function JoinGame() {
       return;
     }
 
-    if (gameCode.length !== 5) {
+    if (gameCode.length !== requiredLength) {
       toast({
         title: t('joinGame.invalidCode'),
-        description: "Game code must be 5 characters long",
+        description: `Game code must be ${requiredLength} characters long`,
         variant: "destructive"
       });
       return;
@@ -78,7 +80,7 @@ export default function JoinGame() {
 
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (value.length <= 5) {
+    if (value.length <= requiredLength) {
       setGameCode(value);
     }
   };
@@ -116,20 +118,20 @@ export default function JoinGame() {
                 value={gameCode}
                 onChange={handleCodeChange}
                 onKeyPress={handleKeyPress}
-                placeholder="ABC12"
+                placeholder="ABCD1234"
                 className="font-mono text-lg text-center tracking-widest"
-                maxLength={5}
+                maxLength={requiredLength}
                 autoFocus
               />
               <p className="text-xs text-muted-foreground text-center">
-                Enter the 5-character game code
+                Enter the {requiredLength}-character game code
               </p>
             </div>
 
             {/* Visual Code Display */}
             <div className="flex justify-center">
               <div className="flex gap-1">
-                {Array.from({ length: 5 }).map((_, i) => (
+                {Array.from({ length: requiredLength }).map((_, i) => (
                   <div 
                     key={i}
                     className={`w-8 h-10 sm:w-10 sm:h-12 border-2 rounded-md flex items-center justify-center font-mono text-base sm:text-lg font-bold ${
@@ -151,7 +153,7 @@ export default function JoinGame() {
               </Button>
               <Button 
                 onClick={handleJoinGame} 
-                disabled={gameCode.length !== 5 || isJoining}
+                disabled={gameCode.length !== requiredLength || isJoining}
                 className="flex-1"
               >
                 <Users className="h-4 w-4 mr-2" />

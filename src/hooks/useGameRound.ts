@@ -86,7 +86,7 @@ export function useGameRound(roomId: string, playerId: string): UseGameRoundRetu
     };
 
     loadRoundData();
-  }, [currentRound?.id]);
+  }, [currentRound?.id, currentRound?.phase]);
 
   // Set up real-time subscriptions
   useEffect(() => {

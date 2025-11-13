@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { GameLogic } from '@/lib/gameState';
+import type { User } from '@supabase/supabase-js';
 
 export interface CreateGameParams {
   name: string;
@@ -25,11 +26,11 @@ export interface JoinGameParams {
 export class GameService {
   static async createGame(params: CreateGameParams): Promise<{ gameCode: string; roomId: string; playerId: string }> {
     const gameCode = GameLogic.generateGameCode();
-    
-    // Get authenticated user ID
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      throw new Error('You must be logged in to create a game');
+    const user = await this.requireAuthenticatedUser('create a game');
+
+    const existingMembership = await this.getExistingPlayerRecord(user.id);
+    if (existingMembership) {
+      throw new Error('Please leave your current game before creating a new one.');
     }
     
     // Generate room ID, use authenticated user ID as host player ID
@@ -65,7 +66,8 @@ export class GameService {
         is_host: true,
         is_guest: params.hostPlayer.isGuest,
         score: 0,
-        connected: true
+        connected: true,
+        last_active_at: new Date().toISOString()
       });
 
     if (playerError) {
@@ -80,11 +82,15 @@ export class GameService {
   }
 
   static async joinGame(params: JoinGameParams): Promise<{ roomId: string; playerId: string }> {
+    const user = await this.requireAuthenticatedUser('join a game');
+    const normalizedCode = params.gameCode.toUpperCase();
+    const existingMembership = await this.getExistingPlayerRecord(user.id);
+
     // Resolve the room via RPC to avoid exposing the full game_rooms table.
     // The RPC `get_room_by_code` is a SECURITY DEFINER function that returns
     // minimal fields (id, code, game_state) for the given code.
-  // supabase client rpc typings are narrow in this project; cast to any to call our new RPC
-  const { data: roomRows, error: rpcError } = await (supabase as any).rpc('get_room_by_code', { p_code: params.gameCode });
+    // supabase client rpc typings are narrow in this project; cast to any to call our new RPC
+    const { data: roomRows, error: rpcError } = await (supabase as any).rpc('get_room_by_code', { p_code: normalizedCode });
 
     if (rpcError) {
       console.error('RPC error resolving room by code:', rpcError);
@@ -102,20 +108,40 @@ export class GameService {
       throw new Error('Game has already started');
     }
 
+    if (existingMembership) {
+      if (existingMembership.room_id === roomData.id) {
+        const { error: reconnectError } = await supabase
+          .from('players')
+          .update({ connected: true, last_active_at: new Date().toISOString() })
+          .eq('id', user.id)
+          .eq('room_id', roomData.id);
+
+        if (reconnectError) {
+          console.error('Failed to refresh player connection state:', reconnectError);
+        }
+
+        return {
+          roomId: roomData.id,
+          playerId: user.id
+        };
+      }
+      throw new Error('Please leave your current game before joining another one.');
+    }
+
     // Add player to the game
-    const { data: playerData, error: playerError } = await supabase
+    const { error: playerError } = await supabase
       .from('players')
       .insert({
+        id: user.id,
         room_id: roomData.id,
         name: params.player.name,
         avatar: params.player.avatar,
         is_host: false,
         is_guest: params.player.isGuest,
         score: 0,
-        connected: true
-      })
-      .select()
-      .single();
+        connected: true,
+        last_active_at: new Date().toISOString()
+      });
 
     if (playerError) {
       throw new Error(`Failed to join game: ${playerError.message}`);
@@ -123,7 +149,7 @@ export class GameService {
 
     return {
       roomId: roomData.id,
-      playerId: playerData.id
+      playerId: user.id
     };
   }
 
@@ -226,5 +252,28 @@ export class GameService {
     if (error) {
       throw new Error(`Failed to kick player: ${error.message}`);
     }
+  }
+
+  private static async requireAuthenticatedUser(action: string): Promise<User> {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) {
+      throw new Error(`You must be logged in to ${action}`);
+    }
+    return user;
+  }
+
+  private static async getExistingPlayerRecord(userId: string): Promise<{ room_id: string } | null> {
+    const { data, error } = await supabase
+      .from('players')
+      .select('room_id')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error checking existing player record:', error);
+      throw new Error('Unable to verify existing game participation');
+    }
+
+    return data ?? null;
   }
 }

@@ -64,12 +64,15 @@ export interface GameRoom {
 
 // Game logic utilities
 export class GameLogic {
-  static generateGameCode(): string {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Avoiding confusing chars
+  static readonly GAME_CODE_LENGTH = 8;
+
+  static generateGameCode(length = GameLogic.GAME_CODE_LENGTH): string {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Avoid easy confusion with 0/O/1/I
+    const randomValues = crypto.getRandomValues(new Uint32Array(length));
     let result = '';
-    for (let i = 0; i < 5; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
+    randomValues.forEach(value => {
+      result += chars[value % chars.length];
+    });
     return result;
   }
 

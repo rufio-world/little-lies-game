@@ -309,9 +309,64 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      game_rounds_safe: {
+        Row: {
+          correct_answer: string | null
+          created_at: string
+          id: string
+          phase: string
+          question_id: string
+          question_text: string
+          room_id: string
+          round_number: number
+          updated_at: string
+        }
+        Insert: {
+          correct_answer?: string | null
+          created_at?: string
+          id?: string
+          phase?: string
+          question_id?: string
+          question_text?: string
+          room_id?: string
+          round_number?: number
+          updated_at?: string
+        }
+        Update: {
+          correct_answer?: string | null
+          created_at?: string
+          id?: string
+          phase?: string
+          question_id?: string
+          question_text?: string
+          room_id?: string
+          round_number?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_rounds_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "game_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      are_all_answers_submitted: {
+        Args: { p_round_id: string; p_room_id: string }
+        Returns: boolean
+      }
+      are_all_players_ready: {
+        Args: { p_round_id: string; p_room_id: string }
+        Returns: boolean
+      }
+      are_all_votes_submitted: {
+        Args: { p_round_id: string; p_room_id: string }
+        Returns: boolean
+      }
       get_player_room_id: { Args: { player_id: string }; Returns: string }
       is_room_participant: {
         Args: { player_id: string; room_id: string }

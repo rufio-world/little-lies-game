@@ -152,12 +152,11 @@ export default function GameRound() {
           const actuallyComplete = await GameRoundService.checkAllVotesSubmitted(currentRound.id, gameRoom.id);
           if (actuallyComplete && allVotesSubmitted) {
             console.log('✅ All votes submitted, advancing to results');
-            // Calculate scores and advance to results
+            await GameRoundService.updateRoundPhase(currentRound.id, 'results');
             const scores = await GameRoundService.calculateRoundScores(currentRound.id);
             console.log('💯 Calculated scores:', scores);
             await GameRoundService.updatePlayerScores(gameRoom.id, scores);
             console.log('💾 Scores updated in database');
-            await GameRoundService.updateRoundPhase(currentRound.id, 'results');
           }
         } else if (currentRound.phase === 'results') {
           // Check if all players are ready
