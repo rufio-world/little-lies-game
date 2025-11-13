@@ -46,7 +46,21 @@ export const translations = {
       enterCode: "Enter Game Code",
       join: "Join",
       back: "Back",
-      invalidCode: "Invalid game code"
+      invalidCode: "Invalid game code",
+      lengthError: "Game code must be {{length}} characters long",
+      success: "Joined game! Get ready for the first question.",
+      instructions: {
+        askHost: "Ask the host for the game code",
+        internet: "Make sure you're connected to the internet"
+      },
+      errors: {
+        title: "Unable to join",
+        notFound: "We couldn't find a game with that code. Please double-check it with the host.",
+        alreadyStarted: "That game has already started. Please ask the host for a different code.",
+        alreadyInGame: "You're still part of another game. Leave that game before joining a new one.",
+        authRequired: "You need to sign in before joining a game.",
+        generic: "Something went wrong while joining. Please try again."
+      }
     },
 
     // Waiting Room
@@ -227,7 +241,21 @@ export const translations = {
       enterCode: "Introducir Código de Partida",
       join: "Unirse",
       back: "Volver",
-      invalidCode: "Código de partida inválido"
+      invalidCode: "Código de partida inválido",
+      lengthError: "El código debe tener {{length}} caracteres",
+      success: "¡Te uniste a la partida! Prepárate para la primera pregunta.",
+      instructions: {
+        askHost: "Pídele el código al anfitrión",
+        internet: "Asegúrate de estar conectado a internet"
+      },
+      errors: {
+        title: "No se pudo unir",
+        notFound: "No encontramos una partida con ese código. Verifícalo con el anfitrión.",
+        alreadyStarted: "Esa partida ya comenzó. Pide al anfitrión un código diferente.",
+        alreadyInGame: "Todavía formas parte de otra partida. Debes salir antes de unirte a una nueva.",
+        authRequired: "Debes iniciar sesión antes de unirte a una partida.",
+        generic: "Ocurrió un error al unirte. Inténtalo de nuevo."
+      }
     },
 
     // Waiting Room
@@ -385,7 +413,7 @@ class I18nManager {
     return this.currentLanguage;
   }
 
-  t(key: string): string {
+  t(key: string, params?: Record<string, string | number>): string {
     const keys = key.split('.');
     let value: any = translations[this.currentLanguage];
     
@@ -394,7 +422,18 @@ class I18nManager {
       if (!value) break;
     }
     
-    return value || key;
+    if (typeof value !== 'string') {
+      return typeof value === 'undefined' ? key : value;
+    }
+
+    if (!params) {
+      return value;
+    }
+
+    return Object.entries(params).reduce((acc, [paramKey, paramValue]) => {
+      const regex = new RegExp(`{{\\s*${paramKey}\\s*}}`, 'g');
+      return acc.replace(regex, String(paramValue));
+    }, value);
   }
 }
 

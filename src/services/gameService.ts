@@ -102,7 +102,7 @@ export class GameService {
 
   static async joinGame(params: JoinGameParams): Promise<{ roomId: string; playerId: string }> {
     const user = await this.requireAuthenticatedUser('join a game');
-    const normalizedCode = params.gameCode.toUpperCase();
+    const normalizedCode = params.gameCode.trim().toUpperCase();
     let existingMembership = await this.getExistingPlayerRecord(user.id);
     if (existingMembership && this.isMembershipStale(existingMembership)) {
       const cleaned = await this.tryCleanupExistingMembership(existingMembership, user.id);

@@ -13,8 +13,8 @@ export function useTranslation() {
     return () => window.removeEventListener('languageChanged', handleLanguageChange);
   }, []);
 
-  const t = (key: string): string => {
-    return i18n.t(key);
+  const t = (key: string, params?: Record<string, string | number>): string => {
+    return i18n.t(key, params);
   };
 
   return { t, language: i18n.getLanguage() };

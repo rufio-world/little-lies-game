@@ -19,11 +19,21 @@ export default function JoinGame() {
   const [isJoining, setIsJoining] = useState(false);
   const requiredLength = GameLogic.GAME_CODE_LENGTH;
 
+  const joinErrorKeyFromMessage = (message?: string) => {
+    if (!message) return 'generic';
+    const normalized = message.toLowerCase();
+    if (normalized.includes('game has already started')) return 'alreadyStarted';
+    if (normalized.includes('game room not found')) return 'notFound';
+    if (normalized.includes('leave your current game')) return 'alreadyInGame';
+    if (normalized.includes('must be logged in')) return 'authRequired';
+    return 'generic';
+  };
+
   const handleJoinGame = async () => {
     if (!gameCode.trim()) {
       toast({
         title: t('common.error'),
-        description: "Please enter a game code",
+        description: t('joinGame.enterCode'),
         variant: "destructive"
       });
       return;
@@ -31,8 +41,8 @@ export default function JoinGame() {
 
     if (gameCode.length !== requiredLength) {
       toast({
-        title: t('joinGame.invalidCode'),
-        description: `Game code must be ${requiredLength} characters long`,
+        title: t('common.error'),
+        description: t('joinGame.lengthError', { length: requiredLength }),
         variant: "destructive"
       });
       return;
@@ -59,8 +69,8 @@ export default function JoinGame() {
       });
 
       toast({
-        title: "Joined game!",
-        description: `Successfully joined game ${gameCode.toUpperCase()}`
+        title: t('joinGame.join'),
+        description: t('joinGame.success')
       });
       
       // Navigate to waiting room
@@ -68,9 +78,10 @@ export default function JoinGame() {
       
     } catch (error) {
       console.error('Error joining game:', error);
+      const errorKey = joinErrorKeyFromMessage(error instanceof Error ? error.message : undefined);
       toast({
-        title: t('joinGame.invalidCode'),
-        description: error instanceof Error ? error.message : "Game not found or already started",
+        title: t('joinGame.errors.title'),
+        description: t(`joinGame.errors.${errorKey}`),
         variant: "destructive"
       });
     } finally {
@@ -124,7 +135,7 @@ export default function JoinGame() {
                 autoFocus
               />
               <p className="text-xs text-muted-foreground text-center">
-                Enter the {requiredLength}-character game code
+                {t('joinGame.lengthError', { length: requiredLength })}
               </p>
             </div>
 
@@ -163,8 +174,8 @@ export default function JoinGame() {
 
             {/* Instructions */}
             <div className="text-center text-sm text-muted-foreground space-y-1">
-              <p>Ask the host for the game code</p>
-              <p>Make sure you're connected to the internet</p>
+              <p>{t('joinGame.instructions.askHost')}</p>
+              <p>{t('joinGame.instructions.internet')}</p>
             </div>
           </CardContent>
         </Card>
