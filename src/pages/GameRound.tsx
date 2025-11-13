@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useToast } from "@/hooks/use-toast";
@@ -108,6 +108,8 @@ export default function GameRound() {
   const [isStartingRound, setIsStartingRound] = useState(false);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
   const [leavingGame, setLeavingGame] = useState(false);
+  const [autoStartError, setAutoStartError] = useState<string | null>(null);
+  const autoStartAttempted = useRef(false);
 
   // Heartbeat to keep the player marked as active while they are in the round screen
   useEffect(() => {
@@ -337,57 +339,119 @@ export default function GameRound() {
     );
   }
 
-  const handleStartRound = async () => {
-    if (!currentPlayer?.isHost || isStartingRound || !gameRoom || !questionMap.size) return;
-    
+  const startInitialRound = useCallback(async () => {
+    if (!gameRoom?.questionIds?.length || !questionMap.size) {
+      throw new Error('No questions available');
+    }
+
+    const totalQuestions = gameRoom.questionIds.length;
+    const questionIndex = Math.min(
+      gameRoom.currentQuestionIndex ?? 0,
+      Math.max(totalQuestions - 1, 0)
+    );
+    const targetQuestionId = gameRoom.questionIds[questionIndex];
+    if (!targetQuestionId) {
+      throw new Error('No questions available');
+    }
+
+    const targetQuestion = questionMap.get(targetQuestionId);
+    if (!targetQuestion) {
+      throw new Error('Question not found');
+    }
+
+    const roundNumber = (gameRoom.currentQuestionIndex ?? 0) + 1;
+    await GameRoundService.createRound(gameRoom.id, roundNumber, targetQuestion);
+  }, [gameRoom, questionMap]);
+
+  const handleStartRound = useCallback(async () => {
+    if (!currentPlayer?.isHost || isStartingRound) return;
+
     setIsStartingRound(true);
+    setAutoStartError(null);
     try {
-      // Get the first question from the sequence
-      const firstQuestionId = gameRoom.questionIds?.[0];
-      if (!firstQuestionId) {
-        throw new Error('No questions available');
-      }
-      
-      const firstQuestion = questionMap.get(firstQuestionId);
-      if (!firstQuestion) {
-        throw new Error('Question not found');
-      }
-      
-      await GameRoundService.createRound(gameRoom.id, 1, firstQuestion);
-      
+      await startInitialRound();
       toast({
         title: "Round started!",
         description: "Get ready to play!"
       });
     } catch (error) {
       console.error('Error starting round:', error);
+      const message = error instanceof Error ? error.message : "Failed to start round";
+      setAutoStartError(message);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to start round",
+        description: message,
         variant: "destructive"
       });
     } finally {
       setIsStartingRound(false);
     }
-  };
+  }, [currentPlayer?.isHost, isStartingRound, startInitialRound, toast]);
+
+  useEffect(() => {
+    if (!currentPlayer?.isHost) return;
+    if (currentRound) return;
+    if (!gameRoom?.questionIds?.length) return;
+    if (!questionMap.size) return;
+    if (autoStartAttempted.current) return;
+
+    autoStartAttempted.current = true;
+    setIsStartingRound(true);
+    setAutoStartError(null);
+
+    startInitialRound()
+      .then(() => {
+        setAutoStartError(null);
+      })
+      .catch((error) => {
+        const message = error instanceof Error ? error.message : "Failed to start round";
+        console.error('Auto-start round failed:', error);
+        setAutoStartError(message);
+        autoStartAttempted.current = false;
+      })
+      .finally(() => {
+        setIsStartingRound(false);
+      });
+  }, [currentPlayer?.isHost, currentRound, gameRoom?.questionIds, questionMap, startInitialRound]);
+
+  useEffect(() => {
+    if (currentRound) {
+      setAutoStartError(null);
+    }
+  }, [currentRound]);
+
+  useEffect(() => {
+    autoStartAttempted.current = false;
+  }, [gameRoom?.id]);
 
   if (!currentRound) {
     const isHost = currentPlayer?.isHost;
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg font-medium mb-2">Waiting for round to start...</p>
-          {isHost ? (
-            <Button 
-              onClick={handleStartRound} 
-              disabled={isStartingRound}
-              className="mt-4"
-            >
-              {isStartingRound ? "Starting..." : "Start Round"}
-            </Button>
-          ) : (
-            <p className="text-muted-foreground">The host will start the next round.</p>
+        <div className="text-center max-w-sm px-4">
+          <div className="flex justify-center mb-4">
+            <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full"></div>
+          </div>
+          <p className="text-lg font-medium mb-2">
+            {isHost ? "Preparing the first round..." : "Waiting for the host..."}
+          </p>
+          <p className="text-muted-foreground">
+            {isHost
+              ? "Hang tight while we load the first question."
+              : "The host is getting the first round ready."}
+          </p>
+          {isHost && autoStartError && (
+            <>
+              <p className="text-sm text-destructive mt-4">{autoStartError}</p>
+              <Button 
+                onClick={handleStartRound} 
+                disabled={isStartingRound}
+                className="mt-4"
+              >
+                {isStartingRound ? "Retrying..." : "Retry starting round"}
+              </Button>
+            </>
           )}
         </div>
       </div>
