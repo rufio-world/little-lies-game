@@ -105,6 +105,7 @@ export default function GameRound() {
   const [readiness, setReadiness] = useState<any[]>([]);
   const [isCurrentPlayerReady, setIsCurrentPlayerReady] = useState(false);
   const [allPlayersReady, setAllPlayersReady] = useState(false);
+  const [isStartingRound, setIsStartingRound] = useState(false);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
   const [leavingGame, setLeavingGame] = useState(false);
 
@@ -336,12 +337,58 @@ export default function GameRound() {
     );
   }
 
+  const handleStartRound = async () => {
+    if (!currentPlayer?.isHost || isStartingRound || !gameRoom || !questionMap.size) return;
+    
+    setIsStartingRound(true);
+    try {
+      // Get the first question from the sequence
+      const firstQuestionId = gameRoom.questionIds?.[0];
+      if (!firstQuestionId) {
+        throw new Error('No questions available');
+      }
+      
+      const firstQuestion = questionMap.get(firstQuestionId);
+      if (!firstQuestion) {
+        throw new Error('Question not found');
+      }
+      
+      await GameRoundService.createRound(gameRoom.id, 1, firstQuestion);
+      
+      toast({
+        title: "Round started!",
+        description: "Get ready to play!"
+      });
+    } catch (error) {
+      console.error('Error starting round:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to start round",
+        variant: "destructive"
+      });
+    } finally {
+      setIsStartingRound(false);
+    }
+  };
+
   if (!currentRound) {
+    const isHost = currentPlayer?.isHost;
+    
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
         <div className="text-center">
           <p className="text-lg font-medium mb-2">Waiting for round to start...</p>
-          <p className="text-muted-foreground">The host will start the next round.</p>
+          {isHost ? (
+            <Button 
+              onClick={handleStartRound} 
+              disabled={isStartingRound}
+              className="mt-4"
+            >
+              {isStartingRound ? "Starting..." : "Start Round"}
+            </Button>
+          ) : (
+            <p className="text-muted-foreground">The host will start the next round.</p>
+          )}
         </div>
       </div>
     );
