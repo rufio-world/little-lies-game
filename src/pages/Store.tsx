@@ -1,3 +1,6 @@
+{
+  /* This page is off for now 
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -148,8 +151,12 @@ export default function Store() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-6">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        {/* Header */
+}
+
+{
+  /* 
+<div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <Button
               variant="outline"
@@ -168,9 +175,14 @@ export default function Store() {
             </div>
           </div>
         </div>
+*/
+}
 
-        {/* Packs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+{
+  /* Packs Grid */
+}
+{
+  /*     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {packs.map((pack) => {
             const owned = isPackOwned(pack.id);
             
@@ -239,9 +251,13 @@ export default function Store() {
             );
           })}
         </div>
-
-        {/* Coming Soon */}
-        <div className="mt-12 text-center">
+*/
+}
+{
+  /* Coming Soon */
+}
+{
+  /*   <div className="mt-12 text-center">
           <div className="inline-block p-6 rounded-lg bg-muted/50">
             <Package className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
             <h3 className="text-lg font-semibold mb-2">More Packs Coming Soon</h3>
@@ -253,4 +269,6 @@ export default function Store() {
       </div>
     </div>
   );
+}
+*/
 }
