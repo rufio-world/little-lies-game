@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 export default function MainMenu() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading } = useAuth();
 
   const menuItems = [
     {
@@ -43,6 +43,48 @@ export default function MainMenu() {
       primary: false
     }
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
+        <p className="text-muted-foreground text-sm">{t('common.loading') || 'Loading...'}</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex flex-col">
+        <div className="flex justify-end p-3 md:p-4">
+          <LanguageToggle />
+        </div>
+        <div className="flex-1 flex flex-col items-center justify-center px-4 text-center space-y-6">
+          <img
+            src="/little-lies-logo.svg"
+            alt="Little Lies Logo"
+            className="w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 mx-auto"
+          />
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              {t('mainMenu.title')}
+            </h1>
+            <p className="mt-2 text-muted-foreground text-base sm:text-lg">
+              {t('mainMenu.subtitle')}
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button variant="outline" size="lg" onClick={() => navigate('/auth')}>
+              <LogIn className="h-4 w-4 mr-2" />
+              Sign In
+            </Button>
+            <Button size="lg" onClick={() => navigate('/auth#signup')}>
+              Sign Up
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex flex-col">
