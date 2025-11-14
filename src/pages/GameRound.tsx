@@ -347,6 +347,14 @@ export default function GameRound() {
     }
 
     const roundNumber = (gameRoom.currentQuestionIndex ?? 0) + 1;
+    
+    // Check if round already exists to prevent duplicate creation
+    const existingRound = await GameRoundService.getCurrentRound(gameRoom.id);
+    if (existingRound && existingRound.round_number === roundNumber) {
+      console.log('Round already exists, skipping creation');
+      return;
+    }
+    
     await GameRoundService.createRound(gameRoom.id, roundNumber, targetQuestion);
   }, [gameRoom, questionMap]);
 
