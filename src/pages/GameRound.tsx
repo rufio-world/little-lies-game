@@ -326,19 +326,6 @@ export default function GameRound() {
     }
   };
 
-  const isRoomLoading = roomLoading && !initialGameRoom;
-
-  if (!gameRoom || !questionMap.size || !currentPlayer || roundLoading || isRoomLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading game...</p>
-        </div>
-      </div>
-    );
-  }
-
   const startInitialRound = useCallback(async () => {
     if (!gameRoom?.questionIds?.length || !questionMap.size) {
       throw new Error('No questions available');
@@ -387,6 +374,19 @@ export default function GameRound() {
       setIsStartingRound(false);
     }
   }, [currentPlayer?.isHost, isStartingRound, startInitialRound]);
+
+  const isRoomLoading = roomLoading && !initialGameRoom;
+
+  if (!gameRoom || !questionMap.size || !currentPlayer || roundLoading || isRoomLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading game...</p>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (!currentPlayer?.isHost) return;
