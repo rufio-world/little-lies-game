@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,7 @@ export function FinalResults({ gameRoom, onPlayAgain, onReturnToMenu }: FinalRes
   // Sort players by final score
   const sortedPlayers = [...gameRoom.players].sort((a, b) => b.score - a.score);
   const winner = sortedPlayers[0];
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   
   // Play victory music and confetti on mount
   useEffect(() => {
@@ -24,6 +25,7 @@ export function FinalResults({ gameRoom, onPlayAgain, onReturnToMenu }: FinalRes
     const audio = new Audio('/victory-fanfare.mp3');
     audio.volume = 0.5;
     audio.play().catch(err => console.log('Audio play failed:', err));
+    audioRef.current = audio;
     
     // Trigger confetti
     const duration = 3000;
@@ -50,6 +52,14 @@ export function FinalResults({ gameRoom, onPlayAgain, onReturnToMenu }: FinalRes
       }
     };
     frame();
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+    };
   }, []);
   
   const getRankIcon = (rank: number) => {
