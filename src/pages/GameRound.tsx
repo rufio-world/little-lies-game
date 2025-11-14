@@ -386,7 +386,7 @@ export default function GameRound() {
     } finally {
       setIsStartingRound(false);
     }
-  }, [currentPlayer?.isHost, isStartingRound, startInitialRound, toast]);
+  }, [currentPlayer?.isHost, isStartingRound, startInitialRound]);
 
   useEffect(() => {
     if (!currentPlayer?.isHost) return;
