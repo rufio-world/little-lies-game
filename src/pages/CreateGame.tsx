@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,12 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, RefreshCw, Play } from "lucide-react";
-import { Globe, MapPin, Zap, Smile, Users as UsersIcon } from "lucide-react";
+import { Globe, MapPin, Zap, Smile, Users as UsersIcon, Sun } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { storage } from "@/lib/storage";
 import { GameLogic } from "@/lib/gameState";
 import { GameService } from "@/services/gameService";
 import { useToast } from "@/hooks/use-toast";
+import { PACK_LOCALES } from "@/lib/questionPacks";
 
 export default function CreateGame() {
   const { t } = useTranslation();
@@ -30,28 +31,20 @@ export default function CreateGame() {
 
   const availablePacks = [
     { id: "pop_culture", nameKey: "packs.popCulture", free: true },
+    { id: "canarias_es", nameKey: "packs.canarias", free: true },
     { id: "travel_places", nameKey: "packs.travelPlaces", free: false },
     { id: "impossible", nameKey: "packs.impossible", free: false },
     { id: "troll_corner", nameKey: "packs.trollCorner", free: false },
     { id: "grandparents", nameKey: "packs.grandparents", free: false },
   ];
 
-  // Map which packs have localized data available. Keep this conservative and
-  // change if new localized packs are added under src/data/*.json
-  const PACK_LOCALES: Record<string, Array<'en' | 'es'>> = {
-    pop_culture: ['en', 'es'],
-    travel_places: ['en'],
-    impossible: ['en'],
-    troll_corner: ['en'],
-    grandparents: ['en']
-  };
-
   const PACK_ICONS: Record<string, any> = {
     pop_culture: Globe,
     travel_places: MapPin,
     impossible: Zap,
     troll_corner: Smile,
-    grandparents: UsersIcon
+    grandparents: UsersIcon,
+    canarias_es: Sun
   };
 
   const questionOptions = [
@@ -66,6 +59,19 @@ export default function CreateGame() {
   };
 
   const togglePack = (packId: string) => {
+    const locales = PACK_LOCALES[packId] || ['en'];
+    if (!locales.includes(language)) {
+      const languageNames = locales
+        .map((loc) => (loc === 'en' ? t('languages.english') : t('languages.spanish')))
+        .join(' / ');
+      toast({
+        title: t("common.error"),
+        description: t("createGame.languageRestriction", { language: languageNames }),
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!ownedPacks.includes(packId)) {
       toast({
         title: t("common.error"),
@@ -139,6 +145,14 @@ export default function CreateGame() {
     }
   };
 
+  useEffect(() => {
+    // Remove any packs that don't support the currently selected language
+    setSelectedPacks((prev) => prev.filter((packId) => {
+      const locales = PACK_LOCALES[packId] || ['en'];
+      return locales.includes(language);
+    }));
+  }, [language]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 p-3 md:p-4">
       <div className="max-w-md mx-auto">
@@ -170,32 +184,44 @@ export default function CreateGame() {
             <div className="space-y-3">
               <Label>{t("createGame.selectPacks")}</Label>
               <div className="space-y-2">
-                {availablePacks.map((pack) => (
-                  <div key={pack.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={pack.id}
-                      checked={selectedPacks.includes(pack.id)}
-                      onCheckedChange={() => togglePack(pack.id)}
-                      disabled={!ownedPacks.includes(pack.id)}
-                    />
-                    <Label
-                      htmlFor={pack.id}
-                      className={`flex-1 ${!ownedPacks.includes(pack.id) ? "text-muted-foreground" : ""}`}
-                    >
-                      {t(pack.nameKey)}
-                      {pack.free && (
-                        <span className="ml-2 text-xs bg-success text-success-foreground px-2 py-0.5 rounded">
-                          {t("store.free")}
+                {availablePacks.map((pack) => {
+                  const locales = PACK_LOCALES[pack.id] || ['en'];
+                  const supportsLanguage = locales.includes(language);
+                  const languageLabel = locales.map((loc) => loc.toUpperCase()).join('/');
+                  const disabled = !ownedPacks.includes(pack.id) || !supportsLanguage;
+
+                  return (
+                    <div key={pack.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={pack.id}
+                        checked={selectedPacks.includes(pack.id)}
+                        onCheckedChange={() => togglePack(pack.id)}
+                        disabled={disabled}
+                      />
+                      <Label
+                        htmlFor={pack.id}
+                        className={`flex-1 flex items-center justify-between ${disabled ? "text-muted-foreground" : ""}`}
+                      >
+                        <span>
+                          {t(pack.nameKey)}
+                          {pack.free && (
+                            <span className="ml-2 text-xs bg-success text-success-foreground px-2 py-0.5 rounded">
+                              {t("store.free")}
+                            </span>
+                          )}
+                          {!ownedPacks.includes(pack.id) && (
+                            <span className="ml-2 text-xs bg-warning text-warning-foreground px-2 py-0.5 rounded">
+                              {t("store.premium")}
+                            </span>
+                          )}
                         </span>
-                      )}
-                      {!ownedPacks.includes(pack.id) && (
-                        <span className="ml-2 text-xs bg-warning text-warning-foreground px-2 py-0.5 rounded">
-                          {t("store.premium")}
-                        </span>
-                      )}
-                    </Label>
-                  </div>
-                ))}
+                        <Badge className={`ml-2 ${supportsLanguage ? 'bg-success text-success-foreground border-none' : 'bg-muted text-muted-foreground border'}`}>
+                          {supportsLanguage ? languageLabel : `${languageLabel} only`}
+                        </Badge>
+                      </Label>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -237,7 +263,7 @@ export default function CreateGame() {
                         <Icon className="h-4 w-4 text-muted-foreground" />
                         <span className="font-medium">{name}</span>
                         <Badge className={`ml-2 ${badgeClass}`}>
-                          {supports ? (language === 'en' ? 'EN' : 'ES') : 'EN only'}
+                          {supports ? locales.map((loc) => loc.toUpperCase()).join('/') : `${locales.map((loc) => loc.toUpperCase()).join('/')} only`}
                         </Badge>
                       </div>
                     );

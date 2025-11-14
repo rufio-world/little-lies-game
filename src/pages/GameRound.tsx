@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useToast } from "@/hooks/use-toast";
-import { GameRoom, GameState, QuestionPack, Question, GameLogic, Player } from "@/lib/gameState";
+import { GameRoom, GameState, Question, GameLogic, Player } from "@/lib/gameState";
 import { QuestionDisplay } from "@/components/game/QuestionDisplay";
 import { AnswerSubmission } from "@/components/game/AnswerSubmission";
 import { VotingPhase } from "@/components/game/VotingPhase";
@@ -13,8 +13,6 @@ import { useGameRoom } from "@/hooks/useGameRoom";
 import { GameRoundService } from "@/services/gameRoundService";
 import { GameService } from "@/services/gameService";
 import { supabase } from "@/integrations/supabase/client";
-import popCultureEn from "@/data/popCulture.json";
-import popCultureEs from "@/data/popCultureEs.json";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -29,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { storage } from "@/lib/storage";
 import { PLAYER_INACTIVITY_LIMIT_MS } from "@/lib/constants";
+import { getQuestionPacks } from "@/lib/questionPacks";
 
 export default function GameRound() {
   const location = useLocation();
@@ -72,14 +71,7 @@ export default function GameRound() {
     setCurrentPlayer(playerInRoom);
 
     // Load question pack based on selected language to create a question map
-    const questionPacks: QuestionPack[] = [];
-    if (room.selectedPacks.includes('pop_culture')) {
-      if (room.language === 'es') {
-        questionPacks.push(popCultureEs as QuestionPack);
-      } else {
-        questionPacks.push(popCultureEn as QuestionPack);
-      }
-    }
+    const questionPacks = getQuestionPacks(room.selectedPacks, room.language);
 
     // Create a map of question ID -> question for quick lookup
     const questions = questionPacks.flatMap(pack => pack.questions);

@@ -42,10 +42,11 @@ export const translations = {
       selectPacks: "Select Question Packs",
       language: "Select cards language",
       cardsLocalePrefix: "Cards locale:",
-  usingPacksPrefix: "Using packs:",
+      usingPacksPrefix: "Using packs:",
       numberOfQuestions: "Number of Questions",
       createRoom: "Create Room",
-      back: "Back"
+      back: "Back",
+      languageRestriction: "This pack is only available in {{language}}."
     },
 
     // Join Game
@@ -185,7 +186,8 @@ export const translations = {
       travelPlaces: "Travel & Places", 
       impossible: "Impossible Questions",
       trollCorner: "Troll Corner",
-      grandparents: "For Playing with Grandparents"
+      grandparents: "For Playing with Grandparents",
+      canarias: "Canary Islands"
     },
 
     // Common
@@ -199,6 +201,11 @@ export const translations = {
       no: "No",
       ok: "OK",
       of: "of"
+    },
+
+    languages: {
+      english: "English",
+      spanish: "Spanish"
     }
   },
 
@@ -245,10 +252,11 @@ export const translations = {
       selectPacks: "Seleccionar Paquetes de Preguntas",
       language: "Idioma de las cartas",
       cardsLocalePrefix: "Idioma de las cartas:",
-  usingPacksPrefix: "Usando paquetes:",
+      usingPacksPrefix: "Usando paquetes:",
       numberOfQuestions: "Número de Preguntas",
       createRoom: "Crear Sala",
-      back: "Volver"
+      back: "Volver",
+      languageRestriction: "Este paquete solo está disponible en {{language}}."
     },
 
     // Join Game
@@ -388,7 +396,8 @@ export const translations = {
       travelPlaces: "Viajes y Lugares",
       impossible: "Preguntas Impossibles",
       trollCorner: "Rincón del Troll",
-      grandparents: "Para Jugar con los Abuelos"
+      grandparents: "Para Jugar con los Abuelos",
+      canarias: "Islas Canarias"
     },
 
     // Common
@@ -402,6 +411,11 @@ export const translations = {
       no: "No",
       ok: "OK",
       of: "de"
+    },
+
+    languages: {
+      english: "Inglés",
+      spanish: "Español"
     }
   }
 };

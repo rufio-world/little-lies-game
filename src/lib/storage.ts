@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { DEFAULT_FREE_PACKS } from "@/lib/questionPacks";
 
 export interface PlayerProfile {
   name: string;
@@ -96,14 +97,15 @@ class StorageManager {
   // Owned Packs
   getOwnedPacks(): string[] {
     const saved = localStorage.getItem(STORAGE_KEYS.OWNED_PACKS);
+    let owned: string[] = [];
     if (saved) {
       try {
-        return JSON.parse(saved);
+        owned = JSON.parse(saved);
       } catch (e) {
         console.error('Failed to parse owned packs:', e);
       }
     }
-    return ['pop_culture']; // Pop Culture is free by default
+    return Array.from(new Set([...DEFAULT_FREE_PACKS, ...owned]));
   }
 
   setOwnedPacks(packs: string[]) {

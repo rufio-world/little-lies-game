@@ -12,6 +12,7 @@ import { Player, GameLogic, Question } from "@/lib/gameState";
 import { useGameRoom } from "@/hooks/useGameRoom";
 import { GameService } from "@/services/gameService";
 import { Copy, Crown, Users, Play, AlertTriangle, X } from "lucide-react";
+import { getQuestionPacks } from "@/lib/questionPacks";
 
 export default function WaitingRoom() {
   const { gameCode } = useParams();
@@ -88,20 +89,9 @@ export default function WaitingRoom() {
 
     try {
       console.log('🎮 Host starting game...');
+      const questionPacks = getQuestionPacks(gameRoom.selectedPacks, gameRoom.language);
       
-      // Import the question pack based on selected language
-      const questionPacks: any[] = [];
-      if (gameRoom.selectedPacks.includes('pop_culture')) {
-        if (gameRoom.language === 'es') {
-          const { default: popCultureEs } = await import('@/data/popCultureEs.json');
-          questionPacks.push(popCultureEs);
-        } else {
-          const { default: popCultureEn } = await import('@/data/popCulture.json');
-          questionPacks.push(popCultureEn);
-        }
-      }
-      
-      const allQuestions: Question[] = questionPacks.flatMap((pack: any) => pack.questions);
+      const allQuestions: Question[] = questionPacks.flatMap((pack) => pack.questions);
       const shuffledQuestions = GameLogic.shuffleArray(allQuestions).slice(0, gameRoom.maxQuestions);
       const firstQuestion = shuffledQuestions[0];
       
