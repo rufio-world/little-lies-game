@@ -375,19 +375,7 @@ export default function GameRound() {
     }
   }, [currentPlayer?.isHost, isStartingRound, startInitialRound]);
 
-  const isRoomLoading = roomLoading && !initialGameRoom;
-
-  if (!gameRoom || !questionMap.size || !currentPlayer || roundLoading || isRoomLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading game...</p>
-        </div>
-      </div>
-    );
-  }
-
+  // Auto-start round effect - must be before early returns
   useEffect(() => {
     if (!currentPlayer?.isHost) return;
     if (currentRound) return;
@@ -414,15 +402,30 @@ export default function GameRound() {
       });
   }, [currentPlayer?.isHost, currentRound, gameRoom?.questionIds, questionMap, startInitialRound]);
 
+  // Clear error when round loads
   useEffect(() => {
     if (currentRound) {
       setAutoStartError(null);
     }
   }, [currentRound]);
 
+  // Reset auto-start flag when game room changes
   useEffect(() => {
     autoStartAttempted.current = false;
   }, [gameRoom?.id]);
+
+  const isRoomLoading = roomLoading && !initialGameRoom;
+
+  if (!gameRoom || !questionMap.size || !currentPlayer || roundLoading || isRoomLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading game...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!currentRound) {
     const isHost = currentPlayer?.isHost;
