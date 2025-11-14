@@ -216,10 +216,10 @@ export default function GameRound() {
             console.log('✅ All players ready, advancing to next round');
             const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
             
-            if (nextQuestionIndex > gameRoom.maxQuestions) {
-              // Game finished - navigate to final results
-              // Note: currentQuestionIndex is 0-indexed, maxQuestions is 1-indexed
-              // So if maxQuestions = 5, valid indices are 0-4, and nextIndex > 5 means we've completed all 5
+            // Check if game is finished (currentQuestionIndex is 0-indexed, maxQuestions is 1-indexed)
+            // After playing maxQuestions rounds, nextQuestionIndex equals maxQuestions
+            if (nextQuestionIndex >= gameRoom.maxQuestions) {
+              console.log('🏁 Game complete, navigating to final results');
               navigate('/final-results', { 
                 state: { gameRoom, currentPlayer } 
               });
@@ -230,13 +230,20 @@ export default function GameRound() {
                 throw new Error('Game question sequence is corrupted');
               }
 
+              // Check if round already exists to prevent duplicate creation
+              const existingRound = await GameRoundService.getCurrentRound(gameRoom.id);
+              if (existingRound && existingRound.round_number === nextQuestionIndex + 1) {
+                console.log('Round already exists, skipping creation');
+                return;
+              }
+
               // Update the question index in the database first
               const updatedIndex = await GameService.advanceToNextQuestion(gameRoom.id, currentPlayer.id);
               
-              // Get the next question ID from the stored sequence
-              const nextQuestionId = gameRoom.questionIds?.[nextQuestionIndex];
+              // Use the updated index to get the correct question
+              const nextQuestionId = gameRoom.questionIds?.[updatedIndex];
               if (!nextQuestionId) {
-                console.error('No question ID found at index', nextQuestionIndex, 'sequence length:', gameRoom.questionIds.length);
+                console.error('No question ID found at index', updatedIndex, 'sequence length:', gameRoom.questionIds.length);
                 throw new Error('Question sequence error: index out of bounds');
               }
               
@@ -246,6 +253,7 @@ export default function GameRound() {
                 throw new Error('Question not found in loaded data');
               }
               
+              // Create round with round_number = updatedIndex + 1 (1-indexed)
               await GameRoundService.createRound(
                 gameRoom.id,
                 updatedIndex + 1,
@@ -283,9 +291,9 @@ export default function GameRound() {
         if (allReady) {
           const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
           
-          if (nextQuestionIndex > gameRoom.maxQuestions) {
-            // Game finished - navigate to final results
-            // Note: currentQuestionIndex is 0-indexed, maxQuestions is 1-indexed
+          // Check if game is finished (use >= since indices are 0-based but maxQuestions is 1-based)
+          if (nextQuestionIndex >= gameRoom.maxQuestions) {
+            console.log('🏁 Game complete from checkGameEnd, navigating to final results');
             navigate('/final-results', { 
               state: { gameRoom, currentPlayer } 
             });
