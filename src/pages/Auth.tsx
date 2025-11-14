@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const authSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -24,6 +25,7 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Check if user is already logged in
@@ -125,7 +127,7 @@ export default function Auth() {
             <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
           <h1 className="text-xl md:text-2xl font-bold">
-            {isLogin ? "Sign In" : "Sign Up"}
+            {isLogin ? t('auth.signIn') : t('auth.signUp')}
           </h1>
         </div>
 
@@ -190,7 +192,7 @@ export default function Auth() {
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Loading..." : (isLogin ? "Sign In" : "Sign Up")}
+                {loading ? "Loading..." : (isLogin ? t('auth.signIn') : t('auth.signUp'))}
               </Button>
             </form>
 
@@ -200,10 +202,7 @@ export default function Auth() {
                 onClick={() => setIsLogin(!isLogin)}
                 className="text-sm"
               >
-                {isLogin
-                  ? "Don't have an account? Sign up"
-                  : "Already have an account? Sign in"
-                }
+                {isLogin ? t('auth.signUpPrompt') : t('auth.signInPrompt')}
               </Button>
             </div>
           </CardContent>

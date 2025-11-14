@@ -11,6 +11,14 @@ export const translations = {
       leaderboard: "Leaderboard",
       quit: "Quit"
     },
+
+    // Auth
+    auth: {
+      signIn: "Sign In",
+      signUp: "Sign Up",
+      signUpPrompt: "Don't have an account? Sign up",
+      signInPrompt: "Already have an account? Sign in"
+    },
     
     // Settings
     settings: {
@@ -205,6 +213,14 @@ export const translations = {
       store: "Tienda",
       leaderboard: "Clasificación",
       quit: "Salir"
+    },
+
+    // Auth
+    auth: {
+      signIn: "Accede",
+      signUp: "Regístrate",
+      signUpPrompt: "¿No tienes cuenta? Regístrate",
+      signInPrompt: "¿Ya tienes una cuenta? Accede"
     },
 
     // Settings  

@@ -545,7 +545,7 @@ export default function Settings() {
                     {t('settings.save')}
                   </Button>
                   <Button onClick={() => navigate('/auth')} className="flex-1">
-                    Sign In
+                    {t('auth.signIn')}
                   </Button>
                 </>
               )}
