@@ -67,7 +67,7 @@ export class GameRoundService {
   // Get current round for a room
   static async getCurrentRound(roomId: string): Promise<GameRound | null> {
     const { data, error } = await supabase
-      .from('game_rounds_safe')
+      .from('game_rounds')
       .select('*')
       .eq('room_id', roomId)
       .order('round_number', { ascending: false })
