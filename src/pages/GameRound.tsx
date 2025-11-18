@@ -102,6 +102,7 @@ export default function GameRound() {
   const [leavingGame, setLeavingGame] = useState(false);
   const [autoStartError, setAutoStartError] = useState<string | null>(null);
   const autoStartAttempted = useRef(false);
+  const isAdvancingRound = useRef(false);
 
   // Heartbeat to keep the player marked as active while they are in the round screen
   useEffect(() => {
@@ -204,7 +205,8 @@ export default function GameRound() {
           const allReady = await GameRoundService.checkAllPlayersReady(currentRound.id, gameRoom.id);
           setAllPlayersReady(allReady);
           
-          if (allReady) {
+          if (allReady && !isAdvancingRound.current) {
+            isAdvancingRound.current = true;
             console.log('✅ All players ready, advancing to next round');
             const nextQuestionIndex = gameRoom.currentQuestionIndex + 1;
             
@@ -212,6 +214,7 @@ export default function GameRound() {
             // After playing maxQuestions rounds, nextQuestionIndex equals maxQuestions
             if (nextQuestionIndex >= gameRoom.maxQuestions) {
               console.log('🏁 Game complete, navigating to final results');
+              isAdvancingRound.current = false; // Reset before navigation
               navigate('/final-results', { 
                 state: { gameRoom, currentPlayer } 
               });
@@ -226,6 +229,7 @@ export default function GameRound() {
               const existingRound = await GameRoundService.getCurrentRound(gameRoom.id);
               if (existingRound && existingRound.round_number === nextQuestionIndex + 1) {
                 console.log('Round already exists, skipping creation');
+                isAdvancingRound.current = false; // Reset flag
                 return;
               }
 
@@ -252,6 +256,9 @@ export default function GameRound() {
                 nextQuestion
               );
               
+              // Reset the flag after successful creation
+              isAdvancingRound.current = false;
+              
               toast({
                 title: "New round started!",
                 description: "Get ready for the next question."
@@ -261,6 +268,8 @@ export default function GameRound() {
         }
       } catch (error) {
         console.error('Error advancing phase:', error);
+        // Reset flag on error to allow retry
+        isAdvancingRound.current = false;
         toast({
           title: "Error",
           description: error instanceof Error ? error.message : "Failed to advance phase",
