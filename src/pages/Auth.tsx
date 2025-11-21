@@ -20,6 +20,7 @@ export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [isResetPassword, setIsResetPassword] = useState(false);
+  const [passwordResetSuccess, setPasswordResetSuccess] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -31,14 +32,7 @@ export default function Auth() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session && window.location.hash !== '#reset-password') {
-        navigate('/');
-      }
-    });
-
-    // Check URL hash for different modes
+    // Check URL hash for different modes first
     if (window.location.hash === '#signup') {
       setIsLogin(false);
       setIsResetPassword(false);
@@ -46,6 +40,13 @@ export default function Auth() {
       setIsResetPassword(true);
       setIsLogin(false);
       setIsForgotPassword(false);
+    } else {
+      // Only check for existing session if not in reset password mode
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          navigate('/');
+        }
+      });
     }
   }, [navigate]);
 
@@ -83,9 +84,9 @@ export default function Auth() {
             title: "Success",
             description: "Password updated successfully!"
           });
-          window.location.hash = '';
-          navigate('/');
+          setPasswordResetSuccess(true);
         }
+        setLoading(false);
         return;
       }
 
@@ -213,10 +214,31 @@ export default function Auth() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base md:text-lg">
-              {isResetPassword ? "Enter Your New Password" : (isForgotPassword ? "Reset Your Password" : (isLogin ? "Welcome Back!" : "Create Account"))}
+              {passwordResetSuccess ? "Password Reset Complete" : (isResetPassword ? "Enter Your New Password" : (isForgotPassword ? "Reset Your Password" : (isLogin ? "Welcome Back!" : "Create Account")))}
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {passwordResetSuccess ? (
+              <div className="space-y-4 text-center">
+                <p className="text-muted-foreground">
+                  Your password has been updated successfully. You can now log in with your new password.
+                </p>
+                <Button 
+                  onClick={() => {
+                    setPasswordResetSuccess(false);
+                    setIsResetPassword(false);
+                    setIsLogin(true);
+                    setPassword("");
+                    setConfirmPassword("");
+                    window.location.hash = '';
+                  }}
+                  className="w-full"
+                >
+                  Login
+                </Button>
+              </div>
+            ) : (
+            <>
             <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
               {!isLogin && !isForgotPassword && !isResetPassword && (
                 <div className="space-y-2">
@@ -331,6 +353,8 @@ export default function Auth() {
                 </Button>
               )}
               </div>
+            )}
+            </>
             )}
           </CardContent>
         </Card>
