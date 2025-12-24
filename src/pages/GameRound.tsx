@@ -134,7 +134,18 @@ export default function GameRound() {
 
   // Subscribe to readiness updates
   useEffect(() => {
-    if (!currentRound?.id) return;
+    if (!currentRound?.id) {
+      // Reset readiness state when there's no round
+      setReadiness([]);
+      setIsCurrentPlayerReady(false);
+      setAllPlayersReady(false);
+      return;
+    }
+
+    // Reset readiness state immediately when round changes to prevent stale data
+    setReadiness([]);
+    setIsCurrentPlayerReady(false);
+    setAllPlayersReady(false);
 
     const fetchReadiness = async () => {
       try {
@@ -169,6 +180,11 @@ export default function GameRound() {
       supabase.removeChannel(channel);
     };
   }, [currentRound?.id, currentPlayer?.id]);
+
+  // Reset isAdvancingRound flag when the round changes to allow next round advancement
+  useEffect(() => {
+    isAdvancingRound.current = false;
+  }, [currentRound?.id]);
 
   // Auto-advance phases based on completion (HOST ONLY)
   useEffect(() => {
@@ -219,10 +235,23 @@ export default function GameRound() {
                 state: { gameRoom, currentPlayer } 
               });
             } else {
-              // Validate question sequence exists
-              if (!gameRoom.questionIds || gameRoom.questionIds.length === 0) {
-                console.error('Question sequence missing');
-                throw new Error('Game question sequence is corrupted');
+              // Get fresh question IDs from the database if not available in state
+              let questionIds = gameRoom.questionIds;
+              if (!questionIds || questionIds.length === 0) {
+                console.log('⚠️ Question IDs missing from state, fetching from database...');
+                const { data: freshRoom, error: fetchError } = await supabase
+                  .from('game_rooms')
+                  .select('question_ids')
+                  .eq('id', gameRoom.id)
+                  .single();
+                
+                if (fetchError || !freshRoom?.question_ids || freshRoom.question_ids.length === 0) {
+                  console.error('Failed to fetch question IDs from database:', fetchError);
+                  isAdvancingRound.current = false;
+                  throw new Error('Game question sequence is corrupted. Please restart the game.');
+                }
+                questionIds = freshRoom.question_ids;
+                console.log('✅ Fetched question IDs from database:', questionIds.length, 'questions');
               }
 
               // Check if round already exists to prevent duplicate creation
@@ -237,15 +266,17 @@ export default function GameRound() {
               const updatedIndex = await GameService.advanceToNextQuestion(gameRoom.id, currentPlayer.id);
               
               // Use the updated index to get the correct question
-              const nextQuestionId = gameRoom.questionIds?.[updatedIndex];
+              const nextQuestionId = questionIds[updatedIndex];
               if (!nextQuestionId) {
-                console.error('No question ID found at index', updatedIndex, 'sequence length:', gameRoom.questionIds.length);
+                console.error('No question ID found at index', updatedIndex, 'sequence length:', questionIds.length);
+                isAdvancingRound.current = false;
                 throw new Error('Question sequence error: index out of bounds');
               }
               
               const nextQuestion = questionMap.get(nextQuestionId);
               if (!nextQuestion) {
                 console.error('Question not found in map:', nextQuestionId);
+                isAdvancingRound.current = false;
                 throw new Error('Question not found in loaded data');
               }
               

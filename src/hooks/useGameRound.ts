@@ -105,7 +105,16 @@ export function useGameRound(roomId: string, playerId: string): UseGameRoundRetu
         },
         async (payload) => {
           console.log('Round update:', payload);
-          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+          if (payload.eventType === 'INSERT') {
+            // When a new round is inserted, fetch the latest round to ensure we have the correct one
+            console.log('🔄 New round detected, fetching latest round...');
+            const latestRound = await GameRoundService.getCurrentRound(roomId);
+            if (latestRound) {
+              console.log('✅ Latest round:', latestRound.round_number, latestRound.phase);
+              setCurrentRound(latestRound);
+            }
+          } else if (payload.eventType === 'UPDATE') {
+            // For updates, use the payload data directly as it's just a phase change
             setCurrentRound(payload.new as GameRound);
           }
         }
